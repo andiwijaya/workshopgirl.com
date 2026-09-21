@@ -1,0 +1,173 @@
+---
+import ShareButton from '../../../components/ShareButton.astro';
+
+const title = 'How to Replace Brake Pads: Beginner’s Guide | WorkshopGirl';
+const description = 'Learn the basic process of replacing front brake pads safely, including caliper support, piston retraction, new pad installation and critical final brake checks.';
+const canonical = 'https://workshopgirl.com/tutorials/how-to-replace-brake-pads/';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content="How to Replace Brake Pads — A Beginner’s Guide" />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content="https://workshopgirl.com/images/tutorials/brake-pads/workshopgirl-brake-pad-inspection.webp?v=1" />
+    <meta property="article:section" content="Cars / Brakes / Maintenance" />
+    <meta property="article:published_time" content="2026-09-22" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+      :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
+      * { box-sizing:border-box; }
+      html { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; }
+      body { margin:0; min-width:320px; }
+      a { color:inherit; }
+      .shell { min-height:100vh; overflow:hidden; position:relative; }
+      .shell::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:.22; background-image:radial-gradient(#b8afa4 .7px,transparent .7px); background-size:18px 18px; mask-image:linear-gradient(to bottom,black,transparent 70%); }
+      header { align-items:center; display:flex; justify-content:space-between; margin:0 auto; max-width:1180px; padding:30px 5vw; position:relative; z-index:1; }
+      .brand { font-family:'Space Grotesk',sans-serif; font-size:1.2rem; font-weight:700; letter-spacing:-.04em; text-decoration:none; }
+      .brand span, .eyebrow, .category { color:var(--pink); }
+      nav { display:flex; gap:24px; }
+      nav a { color:var(--muted); font-size:.9rem; text-decoration:none; }
+      nav a:hover, nav a:focus-visible { color:var(--pink); }
+      main { margin:0 auto; max-width:920px; padding:9vh 5vw 12vh; position:relative; z-index:1; }
+      .back { color:var(--muted); font-size:.9rem; text-decoration:none; }
+      .back:hover { color:var(--pink); }
+      .eyebrow { font-size:.78rem; font-weight:700; letter-spacing:.14em; margin-top:54px; text-transform:uppercase; }
+      h1, h2 { font-family:'Space Grotesk',sans-serif; letter-spacing:-.065em; }
+      h1 { font-size:clamp(3rem,7vw,6.2rem); line-height:.94; margin:20px 0 26px; max-width:820px; }
+      .dek { color:var(--muted); font-size:1.2rem; line-height:1.7; max-width:700px; }
+      .byline { border-bottom:1px solid var(--line); color:var(--muted); font-size:.86rem; margin:30px 0 54px; padding-bottom:22px; }
+      .hero { margin:0 0 54px; }
+      figure { margin:0; }
+      figure img { display:block; height:auto; width:100%; }
+      figcaption { color:var(--muted); font-size:.86rem; line-height:1.5; margin-top:12px; }
+      article { font-size:1.06rem; line-height:1.78; }
+      article p { margin:0 0 1.35em; }
+      article h2 { font-size:clamp(2rem,4vw,3.1rem); line-height:1; margin:2.4em 0 .65em; }
+      article h3 { font-family:'Space Grotesk',sans-serif; font-size:1.35rem; margin:2em 0 .5em; }
+      article ul, article ol { margin:0 0 1.5em; padding-left:1.35em; }
+      article li { margin:.35em 0; padding-left:.2em; }
+      .safety, .tip, .critical { background:var(--soft); border-left:4px solid var(--pink); margin:28px 0 34px; padding:22px 24px; }
+      .critical { border-left-color:var(--ink); }
+      .safety strong, .tip strong, .critical strong { display:block; font-family:'Space Grotesk',sans-serif; margin-bottom:6px; }
+      .safety p, .tip p, .critical p { margin:0; }
+      .checklist { background:var(--soft); border:1px solid var(--line); list-style:none; padding:22px 26px; }
+      .checklist li::before { color:var(--pink); content:'□'; font-size:1.2em; margin-right:10px; }
+      .related { border-top:1px solid var(--line); margin-top:54px; padding-top:24px; }
+      .related a { color:var(--pink); font-weight:700; }
+      .closing { border-top:1px solid var(--line); margin-top:56px; padding-top:26px; }
+      :focus-visible { outline:3px solid var(--pink); outline-offset:4px; }
+      @media (max-width:700px) { header { padding:22px 7vw; } nav { gap:14px; } nav a:nth-child(n+3) { display:none; } main { padding:7vh 7vw 10vh; } .eyebrow { margin-top:40px; } h1 { font-size:clamp(2.8rem,14vw,5rem); } article { font-size:1rem; } }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <a class="brand" href="/" aria-label="Workshop Girl home">Workshop<span>Girl</span><sup>™</sup></a>
+        <nav aria-label="Primary navigation">
+          <a href="/">Home</a><a href="/tutorials/" aria-current="page">Tutorials</a><a href="/#coming-soon">Diary</a><a href="/#coming-soon">Projects</a><a href="/#coming-soon">About</a>
+        </nav>
+      </header>
+      <main>
+        <a class="back" href="/tutorials/">← Back to tutorials</a>
+        <div class="eyebrow">Tutorials / Cars / Brakes / Maintenance</div>
+        <h1>How to Replace Brake Pads — A Beginner’s Guide</h1>
+        <p class="dek">Brake pads are wear components: every application converts the vehicle’s motion into heat through friction between the pads and rotor. Replacing them is understandable, but it is more safety-critical than an oil change and must be performed and verified correctly.</p>
+        <div class="byline">Published September 22, 2026 · Workshop Girl</div>
+        <ShareButton title="How to Replace Brake Pads — A Beginner’s Guide" canonical={canonical} />
+
+        <article>
+          <p>Brake systems vary by vehicle. Caliper design, pad hardware, torque values, lubrication points, piston-retraction procedures, electronic parking brakes, wear sensors, rear mechanisms, and brake-fluid requirements can all differ. This guide focuses on a conventional front floating-caliper disc brake as a general learning example. Consult the vehicle-specific manufacturer service information before starting, and choose professional service if you cannot confidently complete and verify the work safely.</p>
+
+          <figure class="hero">
+            <img src="/images/tutorials/brake-pads/workshopgirl-brake-pad-inspection.webp?v=1" alt="Workshop Girl inspecting the exposed front brake rotor and caliper before replacing the brake pads." width="1672" height="941" fetchpriority="high" />
+            <figcaption>Workshop Girl takes a closer look at the front brake assembly before starting the pad replacement.</figcaption>
+          </figure>
+
+          <h2>First: Know What You’re Looking At</h2>
+          <p>A front disc brake normally includes the brake rotor or disc, brake caliper, brake pads, caliper bracket, flexible brake hose, and wheel hub. When you press the pedal, hydraulic pressure moves the caliper piston and clamps the pads against the rotating rotor. Friction slows the wheel and turns motion into heat.</p>
+
+          <h2>When Might Brake Pads Need Attention?</h2>
+          <p>Possible signs include a wear-indicator noise where equipped, a brake warning or wear message, reduced pad thickness found during inspection, unusual braking noise, or a vehicle-specific service inspection result. Do not diagnose every noise as worn pads: grinding, pulling, vibration, fluid leakage, a soft pedal, or abnormal braking behavior can point to other problems that need proper diagnosis.</p>
+
+          <h2>Tools &amp; Materials</h2>
+          <p>Requirements vary, but a typical front-pad job may involve:</p>
+          <ul>
+            <li>Correct replacement brake pads and required clips, shims, or hardware</li><li>Appropriate jack or lift and safe vehicle support</li><li>Wheel-removal tools, ratchet, and correct sockets</li><li>Torque wrench</li><li>Brake piston retraction or compression tool</li><li>Caliper support hook</li><li>Brake cleaner where appropriate and manufacturer-approved brake lubricant where required</li><li>Gloves, eye protection, and shop towels</li><li>Vehicle-specific service information</li>
+          </ul>
+
+          <h2>Step 1 — Prepare and Secure the Vehicle</h2>
+          <p>Work on a firm, level surface. Follow the vehicle’s parking procedure, use wheel chocks where appropriate, locate the manufacturer’s lifting points, and support the vehicle safely before removing the wheel.</p>
+          <div class="safety"><strong>Safety first</strong><p>Never work on brakes with the vehicle supported unsafely. Never put any part of your body under a vehicle supported only by an emergency jack. If you cannot establish safe support, stop and get professional help.</p></div>
+
+          <h2>Step 2 — Inspect Before Disassembly</h2>
+          <p>Look at the pad condition, rotor, caliper, brake hose, obvious fluid leakage, and hardware. If significant damage or leakage is visible, stop and diagnose the problem before simply replacing the pads. New pads do not correct every braking fault.</p>
+
+          <h2>Step 3 — Access the Brake Pads</h2>
+          <p>On many floating-caliper designs, one or more caliper fasteners are removed so the caliper can pivot or lift away from the pads. The exact procedure varies, so follow the vehicle-specific service information and keep the fasteners and hardware organized.</p>
+          <div class="safety"><strong>Never let the caliper hang from the brake hose</strong><p>The flexible hose carries hydraulic pressure and allows suspension and steering movement; it is not intended to support the caliper’s weight. Use a proper caliper hook or another appropriate support method without stretching, twisting, or kinking the hose.</p></div>
+
+          <h2>Step 4 — Remove the Old Brake Pads</h2>
+          <figure class="hero">
+            <img src="/images/tutorials/brake-pads/workshopgirl-removing-brake-pad.webp?v=1" alt="Workshop Girl removing a worn front brake pad while the brake caliper is supported." width="1672" height="941" loading="lazy" />
+            <figcaption>Workshop Girl removes a worn brake pad while the caliper remains properly supported.</figcaption>
+          </figure>
+          <p>Note the orientation of the old pads, clips, shims, and other hardware before removing them. Compare inner and outer pad wear and keep relevant parts together. Uneven wear can indicate caliper-slide or piston problems; do not assume new pads alone will fix it.</p>
+
+          <h2>Old Pad vs New Pad</h2>
+          <p>A brake pad is broadly made from a backing plate and friction material. The friction material becomes thinner with use, but there is no universal minimum thickness to apply to every vehicle. Manufacturer limits and inspection methods vary.</p>
+
+          <h2>Step 5 — Inspect the Rotor</h2>
+          <p>Look for scoring, cracking, heat damage or discoloration, abnormal wear, and signs that the rotor may be damaged. Appearance alone cannot establish serviceability: rotor thickness and runout require correct measurement against vehicle-specific limits. If the condition is questionable, measure it correctly or obtain a professional evaluation.</p>
+
+          <h2>Step 6 — Retract the Brake Piston Correctly</h2>
+          <p>New pads are thicker than worn pads, so additional space is usually needed. On many conventional front floating calipers, the piston is carefully retracted with an appropriate tool. Do not force a piston when the correct procedure is unknown.</p>
+          <p>Different systems need different procedures. Some rear systems integrated with parking brakes or electronic parking brakes may require piston rotation, special tools, electronic service mode, or a scan-tool procedure. Retracting pistons can also raise the brake-fluid level in the reservoir, so monitor it according to the manufacturer’s instructions and do not allow it to overflow.</p>
+
+          <h2>Step 7 — Install the New Brake Pads</h2>
+          <figure class="hero">
+            <img src="/images/tutorials/brake-pads/workshopgirl-installing-brake-pad.webp?v=1" alt="Workshop Girl installing a new front brake pad into the brake assembly." width="1672" height="941" loading="lazy" />
+            <figcaption>Workshop Girl installs the new brake pad after preparing the caliper for the thicker friction material.</figcaption>
+          </figure>
+          <p>Install the correct pads in the correct orientation. Refit required clips, shims, and hardware. Use lubricant only where the manufacturer specifies it, and keep friction surfaces clean. Never apply grease or lubricant to the pad friction surface or rotor friction surface; contamination can seriously reduce braking performance.</p>
+
+          <h2>Step 8 — Reinstall the Caliper</h2>
+          <p>Position the caliper correctly, confirm that the brake hose is not twisted, reinstall the fasteners, and torque them to the manufacturer’s specification. Do not substitute a universal torque value.</p>
+
+          <h2>Step 9 — Reinstall the Wheel</h2>
+          <p>Reinstall the wheel, start the lug nuts correctly, lower the vehicle according to the safe procedure, and complete final tightening to the manufacturer’s specification. For the wheel-changing fundamentals, see <a href="/tutorials/how-to-change-a-flat-tire/">How to Change a Flat Tire — A Beginner’s Guide</a>.</p>
+
+          <div class="critical"><strong>Critical — restore brake pedal pressure before moving</strong><p>After the pistons have been retracted, the brake pedal may initially travel farther than normal. Before moving the vehicle, press the pedal repeatedly according to the correct service procedure until normal firm pedal feel is restored. If the pedal remains soft, sinks abnormally, does not become firm, or behaves unexpectedly, do not drive. Investigate the system or obtain professional assistance.</p></div>
+
+          <h2>Step 10 — Final Inspection</h2>
+          <p>Before driving, verify that the caliper is installed correctly, fasteners are torqued, the brake hose is not twisted, there are no fluid leaks, the wheel is correctly installed, wheel fasteners are torqued, the fluid level has been checked according to the manufacturer’s procedure, and the pedal feels correct.</p>
+
+          <h2>What About Bedding-In New Brake Pads?</h2>
+          <p>Bedding or burnishing procedures vary by pad manufacturer, pad compound, rotor condition, and vehicle manufacturer. Follow the brake-pad and/or vehicle manufacturer’s procedure. Do not invent or apply one universal aggressive-braking sequence.</p>
+
+          <h2>Common Beginner Mistakes</h2>
+          <ul>
+            <li>Working with unsafe vehicle support</li><li>Letting the caliper hang from the brake hose</li><li>Mixing up pad or hardware orientation</li><li>Contaminating friction surfaces</li><li>Using incorrect lubricant</li><li>Forcing the piston back incorrectly</li><li>Ignoring electronic parking-brake procedures</li><li>Guessing bolt torque</li><li>Failing to inspect the rotor</li><li>Ignoring uneven pad wear</li><li>Forgetting to restore brake pedal pressure</li><li>Driving before verifying the brake system</li><li>Using an arbitrary bedding procedure</li>
+          </ul>
+
+          <div class="tip"><strong>Workshop Girl tip</strong><p>Take a photo before removing the pads and hardware. It gives you a quick reference for how everything was positioned.</p></div>
+
+          <h2>Quick Checklist Before the Car Moves</h2>
+          <ul class="checklist">
+            <li>Correct pads installed</li><li>Pad hardware installed correctly</li><li>Caliper correctly positioned</li><li>Brake hose free from twists or tension</li><li>Required fasteners torqued to specification</li><li>Wheel installed correctly</li><li>Wheel fasteners torqued to specification</li><li>Brake fluid level checked appropriately</li><li>No visible leaks</li><li>Brake pedal restored to normal firm feel</li><li>Manufacturer bedding procedure understood</li>
+          </ul>
+
+          <div class="related"><strong>Keep learning:</strong> <a href="/tutorials/how-to-change-engine-oil/">How to Change Engine Oil — A Beginner’s Guide</a> · <a href="/tutorials/how-to-change-a-flat-tire/">How to Change a Flat Tire — A Beginner’s Guide</a></div>
+          <div class="closing"><h2>Final Thoughts</h2><p>Brake pad replacement shows why mechanical work is more than removing old parts and installing new ones. Correct support, clean friction surfaces, proper torque, hose routing, piston procedure, and final brake verification are what make the repair safe.</p></div>
+        </article>
+      </main>
+    </div>
+  </body>
+</html>

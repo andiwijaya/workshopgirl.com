@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Replace Brake Pads — A Beginner’s Guide',
+    slug: '/tutorials/how-to-replace-brake-pads/',
+    category: 'Cars / Brakes / Maintenance',
+    description: 'A practical, safety-first guide to inspecting front disc brakes, replacing conventional pads, and verifying the brake system before driving.',
+    image: '/images/tutorials/brake-pads/workshopgirl-brake-pad-inspection.webp?v=1',
+    imageAlt: 'Workshop Girl inspecting the exposed front brake rotor and caliper before replacing the brake pads.',
+    published: 'September 22, 2026',
+  },
+  {
     title: 'How to Change a Flat Tire — A Beginner’s Guide',
     slug: '/tutorials/how-to-change-a-flat-tire/',
     category: 'Cars / Basic Maintenance',
