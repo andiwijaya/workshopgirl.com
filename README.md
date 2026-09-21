@@ -20,6 +20,8 @@ Create `.env` from `.env.example` and set `PUBLIC_GA_MEASUREMENT_ID` to a value 
 ## Production build
 
 ```bash
+npm ci
+npm run lint
 npm run check
 npm run build
 ```

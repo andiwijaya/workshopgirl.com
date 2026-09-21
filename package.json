@@ -6,11 +6,18 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "check": "astro check"
+    "check": "astro check",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
-    "astro": "^5.13.5",
+    "astro": "^7.3.3",
     "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-astro": "^1.7.0"
   }
 }
