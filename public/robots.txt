@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://workshopgirl.com/sitemap-index.xml
