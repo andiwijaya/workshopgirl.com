@@ -2,6 +2,11 @@
 const title = 'Workshop Girl — Build. Fix. Learn.';
 const description = 'Follow Workshop Girl as she builds, fixes, experiments and learns through engines, electrical work, HVAC, woodworking and practical engineering projects.';
 const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
+const featuredTutorial = {
+  title: 'How to Change Engine Oil — A Beginner’s Guide',
+  description: 'A practical, safety-first guide to preparing your tools, draining old oil, replacing the filter, and checking the final level.',
+  image: '/images/tutorials/engine-oil/workshopgirl-engine-oil-preparation.webp',
+};
 ---
 <!doctype html>
 <html lang="en">
@@ -59,6 +64,14 @@ const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
       .portrait img { display:block; filter:saturate(.95); height:auto; max-height:calc(100vh - 115px); max-width:100%; object-fit:contain; width:auto; }
       .note { bottom:8%; color:var(--muted); font-family:'Space Grotesk',sans-serif; font-size:.86rem; position:absolute; right:7%; transform:rotate(-7deg); }
       .note span { color:var(--pink); font-size:1.4rem; }
+      .featured { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:32px 5vw 72px; position:relative; z-index:1; }
+      .featured-inner { align-items:center; background:#fffaf4; border:1px solid var(--line); display:grid; grid-template-columns:190px 1fr auto; gap:24px; padding:16px; }
+      .featured img { display:block; height:128px; object-fit:cover; width:190px; }
+      .featured-label { color:var(--pink); font-size:.74rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
+      .featured h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.2rem,2vw,1.65rem); letter-spacing:-.04em; margin:7px 0; }
+      .featured p { color:var(--muted); line-height:1.5; margin:0; max-width:560px; }
+      .featured a { background:var(--ink); color:#fff; display:inline-block; font-size:.9rem; font-weight:700; padding:12px 16px; text-decoration:none; white-space:nowrap; }
+      .featured a:hover, .featured a:focus-visible { background:var(--pink); }
       @media (max-width: 760px) {
         header { padding:22px 7vw; }
         nav { gap:14px; }
@@ -84,7 +97,7 @@ const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
       <header>
         <a class="brand" href="/" aria-label="Workshop Girl home">Workshop<span>Girl</span><sup>™</sup></a>
         <nav aria-label="Primary navigation">
-          <a href="#coming-soon">Diary</a><a href="#coming-soon">Tutorials</a><a href="#coming-soon">Projects</a><a href="#coming-soon">About</a>
+          <a href="#coming-soon">Diary</a><a href="/tutorials/">Tutorials</a><a href="#coming-soon">Projects</a><a href="#coming-soon">About</a>
         </nav>
       </header>
       <main>
@@ -99,6 +112,17 @@ const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
           <figcaption class="note">Real machines.<br />Real skills.<br /><span>♥</span></figcaption>
         </figure>
       </main>
+      <section class="featured" aria-labelledby="featured-title">
+        <div class="featured-inner">
+          <img src={featuredTutorial.image} alt="Workshop Girl preparing tools and supplies for an engine oil change beside a car." width="1672" height="941" loading="lazy" />
+          <div>
+            <div class="featured-label">First tutorial · Engines</div>
+            <h2 id="featured-title">{featuredTutorial.title}</h2>
+            <p>{featuredTutorial.description}</p>
+          </div>
+          <a href="/tutorials/how-to-change-engine-oil/">Read tutorial</a>
+        </div>
+      </section>
     </div>
   </body>
 </html>
