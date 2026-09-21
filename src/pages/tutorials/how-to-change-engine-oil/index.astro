@@ -42,6 +42,10 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/'
       h1 { font-size:clamp(3rem,7vw,6.2rem); line-height:.94; margin:20px 0 26px; max-width:820px; }
       .dek { color:var(--muted); font-size:1.2rem; line-height:1.7; max-width:700px; }
       .byline { border-bottom:1px solid var(--line); color:var(--muted); font-size:.86rem; margin:30px 0 54px; padding-bottom:22px; }
+      .share-row { align-items:center; display:flex; flex-wrap:wrap; gap:12px; margin:-28px 0 54px; }
+      .share-button { background:var(--pink); border:0; color:#fff; cursor:pointer; font:600 .9rem 'DM Sans',sans-serif; padding:12px 16px; }
+      .share-button:hover, .share-button:focus-visible { background:var(--ink); }
+      .share-status { color:var(--muted); font-size:.86rem; }
       .hero { margin:0 0 54px; }
       figure { margin:0; }
       figure img { display:block; height:auto; width:100%; }
@@ -76,6 +80,10 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/'
         <h1>How to Change Engine Oil — A Beginner’s Guide</h1>
         <p class="dek">Changing engine oil is one of the most useful maintenance skills a beginner can learn. Done carefully, it gives you a better understanding of your vehicle and a solid workshop habit.</p>
         <div class="byline">Published September 21, 2026 · Workshop Girl</div>
+        <div class="share-row">
+          <button class="share-button" type="button" id="share-tutorial">Share this tutorial</button>
+          <span class="share-status" id="share-status" role="status" aria-live="polite"></span>
+        </div>
 
         <article>
           <p>The exact oil specification, capacity, drain-plug torque, filter type, and service interval vary by vehicle. Before starting, verify every vehicle-specific detail in the owner’s manual or the manufacturer’s service information.</p>
@@ -140,5 +148,25 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/'
         </article>
       </main>
     </div>
+    <script is:inline define:vars={{ canonical, title }}>
+      const shareButton = document.querySelector('#share-tutorial');
+      const shareStatus = document.querySelector('#share-status');
+      shareButton?.addEventListener('click', async () => {
+        try {
+          if (navigator.share) {
+            await navigator.share({ title, text: 'How to Change Engine Oil — A Beginner’s Guide', url: canonical });
+            if (shareStatus) shareStatus.textContent = 'Thanks for sharing.';
+          } else if (navigator.clipboard) {
+            await navigator.clipboard.writeText(canonical);
+            if (shareStatus) shareStatus.textContent = 'Tutorial link copied.';
+          } else if (shareStatus) {
+            shareStatus.textContent = canonical;
+          }
+        } catch (error) {
+          if (error instanceof DOMException && error.name === 'AbortError') return;
+          if (shareStatus) shareStatus.textContent = canonical;
+        }
+      });
+    </script>
   </body>
 </html>
