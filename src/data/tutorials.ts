@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Change a Flat Tire — A Beginner’s Guide',
+    slug: '/tutorials/how-to-change-a-flat-tire/',
+    category: 'Cars / Basic Maintenance',
+    description: 'A safety-first guide to securing the vehicle, removing a flat wheel, installing a spare, and finishing the job correctly.',
+    image: '/images/tutorials/flat-tire/workshopgirl-flat-tire-preparation.webp?v=1',
+    imageAlt: 'Workshop Girl preparing tools beside a car with a flat front tire.',
+    published: 'September 21, 2026',
+  },
+  {
     title: 'How to Change Engine Oil — A Beginner’s Guide',
     slug: '/tutorials/how-to-change-engine-oil/',
     category: 'Engines',

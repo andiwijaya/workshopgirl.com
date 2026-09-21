@@ -1,12 +1,11 @@
 ---
+import { tutorials } from '../data/tutorials';
+
 const title = 'Workshop Girl — Build. Fix. Learn.';
 const description = 'Follow Workshop Girl as she builds, fixes, experiments and learns through engines, electrical work, HVAC, woodworking and practical engineering projects.';
 const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
-const featuredTutorial = {
-  title: 'How to Change Engine Oil — A Beginner’s Guide',
-  description: 'A practical, safety-first guide to preparing your tools, draining old oil, replacing the filter, and checking the final level.',
-  image: '/images/tutorials/engine-oil/workshopgirl-engine-oil-preparation.webp?v=2',
-};
+const featuredTutorial = tutorials[0];
+const previousTutorial = tutorials[1];
 ---
 <!doctype html>
 <html lang="en">
@@ -72,6 +71,9 @@ const featuredTutorial = {
       .featured p { color:var(--muted); line-height:1.5; margin:0; max-width:560px; }
       .featured a { background:var(--ink); color:#fff; display:inline-block; font-size:.9rem; font-weight:700; padding:12px 16px; text-decoration:none; white-space:nowrap; }
       .featured a:hover, .featured a:focus-visible { background:var(--pink); }
+      .featured-next { color:var(--muted); font-size:.9rem; margin:18px 0 0; text-align:right; }
+      .featured-next a { background:none; color:var(--ink); padding:0; text-decoration:underline; white-space:normal; }
+      .featured-next a:hover, .featured-next a:focus-visible { background:none; color:var(--pink); }
       @media (max-width: 760px) {
         header { padding:22px 7vw; }
         nav { gap:14px; }
@@ -120,14 +122,15 @@ const featuredTutorial = {
       </main>
       <section class="featured" aria-labelledby="featured-title">
         <div class="featured-inner">
-          <img src={featuredTutorial.image} alt="Workshop Girl preparing tools and supplies for an engine oil change beside a car." width="1672" height="941" loading="lazy" />
+          <img src={featuredTutorial.image} alt={featuredTutorial.imageAlt} width="1672" height="941" loading="lazy" />
           <div>
-            <div class="featured-label">First tutorial · Engines</div>
+            <div class="featured-label">Latest tutorial · {featuredTutorial.category}</div>
             <h2 id="featured-title">{featuredTutorial.title}</h2>
             <p>{featuredTutorial.description}</p>
           </div>
-          <a href="/tutorials/how-to-change-engine-oil/">Read tutorial</a>
+          <a href={featuredTutorial.slug}>Read tutorial</a>
         </div>
+        <p class="featured-next">Next workshop skill: <a href={previousTutorial.slug}>{previousTutorial.title}</a></p>
       </section>
     </div>
   </body>

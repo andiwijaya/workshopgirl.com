@@ -70,7 +70,7 @@ const description = 'Practical Workshop Girl tutorials for learning useful works
         <div class="section-label">Latest tutorial</div>
         {tutorials.map((tutorial) => (
           <article class="card">
-            <img src={tutorial.image} alt={tutorial.imageAlt} width="1672" height="941" loading="eager" />
+            <img src={tutorial.image} alt={tutorial.imageAlt} width="1672" height="941" loading={tutorial.slug === tutorials[0].slug ? 'eager' : 'lazy'} />
             <div class="card-copy">
               <div class="category">{tutorial.category}</div>
               <h2>{tutorial.title}</h2>
