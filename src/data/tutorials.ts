@@ -14,7 +14,7 @@ export const tutorials: TutorialSummary[] = [
     slug: '/tutorials/how-to-change-engine-oil/',
     category: 'Engines',
     description: 'A practical, safety-first guide to preparing your tools, draining old oil, replacing the filter, and checking the final level.',
-    image: '/images/tutorials/engine-oil/workshopgirl-engine-oil-preparation.webp',
+    image: '/images/tutorials/engine-oil/workshopgirl-engine-oil-preparation.webp?v=2',
     imageAlt: 'Workshop Girl preparing tools and supplies for an engine oil change beside a car.',
     published: 'September 21, 2026',
   },
