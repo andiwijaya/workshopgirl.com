@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'Cordless Drill vs Impact Driver: What’s the Difference?',
+    slug: '/tutorials/cordless-drill-vs-impact-driver',
+    category: 'Tools / Drilling / Fastening',
+    description: 'Compare a cordless drill/driver and impact driver: their chucks, mechanisms, strengths, limitations, and which tool makes sense for your work.',
+    image: '/images/tutorials/drill-vs-impact-driver/workshopgirl-drill-vs-impact-driver.webp',
+    imageAlt: 'WorkshopGirl comparing a cordless drill driver and a compact impact driver.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'How to Use a Cordless Drill: A Beginner’s Guide',
     slug: '/tutorials/how-to-use-a-cordless-drill/',
     category: 'Tools / Drilling / Woodworking',
