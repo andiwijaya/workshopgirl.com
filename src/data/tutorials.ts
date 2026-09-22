@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Inspect, Clean or Replace Your Engine Air Filter',
+    slug: '/tutorials/engine-air-filter/',
+    category: 'Cars / Engine / Maintenance',
+    description: 'A practical guide to finding, inspecting, cleaning only approved reusable filters, and replacing an engine air filter correctly.',
+    image: '/images/tutorials/engine-air-filter/workshopgirl-engine-air-filter-inspection.webp?v=1',
+    imageAlt: 'Workshop Girl removing a dusty engine air filter from the open airbox of a car.',
+    published: 'September 22, 2026',
+  },
+  {
     title: 'How to Replace Brake Pads — A Beginner’s Guide',
     slug: '/tutorials/how-to-replace-brake-pads/',
     category: 'Cars / Brakes / Maintenance',

@@ -1,0 +1,26 @@
+---
+const tools = [
+  'Portable air compressor',
+  'Air blow gun',
+  'Safety glasses',
+  'Particulate mask or respirator',
+  'Replacement engine air filter',
+];
+---
+<section class="tools-used" aria-labelledby="tools-used-title">
+  <h2 id="tools-used-title">Tools Used in This Guide</h2>
+  <p>These are general tool categories, not product endorsements. The exact items you need depend on your vehicle and the filter manufacturer’s instructions.</p>
+  <ul>
+    {tools.map((tool) => <li>{tool}</li>)}
+  </ul>
+  <small>Product recommendations and verified links may be added here in the future.</small>
+</section>
+
+<style>
+  .tools-used { background:#fffaf4; border:1px solid #ded8d0; margin:38px 0 42px; padding:24px 26px; }
+  .tools-used h2 { font-family:'Space Grotesk',sans-serif; letter-spacing:-.065em; margin:0 0 .65em; }
+  .tools-used p { margin:0 0 1em; }
+  .tools-used ul { margin:0 0 1em; }
+  .tools-used li { margin:.3em 0; }
+  .tools-used small { color:#655f59; display:block; line-height:1.5; }
+</style>
