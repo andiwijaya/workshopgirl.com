@@ -1,0 +1,29 @@
+---
+import { diaryEntries } from '../../data/diary';
+import SiteHeader from '../../components/SiteHeader.astro';
+
+const title = 'Diary | WorkshopGirl';
+const description = 'Stories from the WorkshopGirl workshop — mistakes, stubborn machines, small victories, and the things they teach me.';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} /><link rel="canonical" href="https://workshopgirl.com/diary/" />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content="https://workshopgirl.com/diary/" /><meta property="og:image" content="https://workshopgirl.com/images/diary/workshopgirl-diary-stubborn-bolt.webp?v=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{title}</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+      :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; } * { box-sizing:border-box; } html { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; } body { margin:0; min-width:320px; } a { color:inherit; }
+      .shell { min-height:100vh; overflow:hidden; position:relative; } .shell::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:.22; background-image:radial-gradient(#b8afa4 .7px,transparent .7px); background-size:18px 18px; mask-image:linear-gradient(to bottom,black,transparent 75%); }
+      main { margin:0 auto; max-width:1180px; padding:9vh 5vw 12vh; position:relative; z-index:1; } .intro { max-width:700px; } .eyebrow,.category { color:var(--pink); font-size:.78rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; } h1,h2 { font-family:'Space Grotesk',sans-serif; letter-spacing:-.075em; } h1 { font-size:clamp(3.5rem,7vw,6.5rem); line-height:.92; margin:22px 0; } .lead { color:var(--muted); font-size:1.2rem; line-height:1.7; max-width:620px; }
+      .rule { border:0; border-top:1px solid var(--line); margin:65px 0 28px; } .section-label { color:var(--muted); font-size:.8rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; } .card { background:var(--soft); border:1px solid var(--line); display:grid; grid-template-columns:minmax(280px,.9fr) 1.1fr; margin-top:18px; } .card img { display:block; height:100%; min-height:300px; object-fit:cover; width:100%; } .card-copy { align-self:center; padding:clamp(26px,5vw,64px); } h2 { font-size:clamp(2rem,4vw,3.5rem); line-height:1; margin:16px 0; } .card p { color:var(--muted); line-height:1.7; } .date { color:var(--muted); font-size:.85rem; } .button { background:var(--ink); color:#fff; display:inline-block; font-weight:700; margin-top:18px; padding:13px 19px; text-decoration:none; } .button:hover,.button:focus-visible { background:var(--pink); } :focus-visible { outline:3px solid var(--pink); outline-offset:4px; }
+      @media (max-width:700px) { main { padding:7vh 7vw 10vh; } .card { display:block; } .card img { height:auto; min-height:0; } }
+    </style>
+  </head>
+  <body><div class="shell"><SiteHeader current="diary" /><main>
+    <section class="intro"><div class="eyebrow">Workshop Girl Diary</div><h1>Diary.</h1><p class="lead">Not every repair goes according to plan. Stories from the workshop — mistakes, stubborn machines, small victories, and the things they teach me.</p></section>
+    <hr class="rule" /><div class="section-label">Latest from the workshop</div>
+    {diaryEntries.map((entry) => <article class="card"><img src={entry.image} alt={entry.imageAlt} width="1672" height="941" loading="eager" /><div class="card-copy"><div class="category">{entry.category}</div><h2>{entry.title}</h2><p>{entry.excerpt}</p><div class="date">{entry.published}</div><a class="button" href={entry.slug}>Read the diary</a></div></article>)}
+  </main></div></body>
+</html>
