@@ -1,5 +1,6 @@
 ---
 import ShareButton from '../../../components/ShareButton.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
 
 const title = 'How to Replace Brake Pads: Beginner’s Guide | WorkshopGirl';
 const description = 'Learn the basic process of replacing front brake pads safely, including caliper support, piston retraction, new pad installation and critical final brake checks.';
@@ -69,12 +70,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-replace-brake-pads/
   </head>
   <body>
     <div class="shell">
-      <header>
-        <a class="brand" href="/" aria-label="Workshop Girl home">Workshop<span>Girl</span><sup>™</sup></a>
-        <nav aria-label="Primary navigation">
-          <a href="/">Home</a><a href="/tutorials/" aria-current="page">Tutorials</a><a href="/#coming-soon">Diary</a><a href="/#coming-soon">Projects</a><a href="/#coming-soon">About</a>
-        </nav>
-      </header>
+      <SiteHeader current="tutorials" />
       <main>
         <a class="back" href="/tutorials/">← Back to tutorials</a>
         <div class="eyebrow">Tutorials / Cars / Brakes / Maintenance</div>

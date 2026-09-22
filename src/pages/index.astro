@@ -1,5 +1,6 @@
 ---
 import { tutorials } from '../data/tutorials';
+import SiteHeader from '../components/SiteHeader.astro';
 
 const title = 'Workshop Girl — Build. Fix. Learn.';
 const description = 'Follow Workshop Girl as she builds, fixes, experiments and learns through engines, electrical work, HVAC, woodworking and practical engineering projects.';
@@ -102,12 +103,7 @@ const previousTutorial = tutorials[1];
   </head>
   <body>
     <div class="shell">
-      <header>
-        <a class="brand" href="/" aria-label="Workshop Girl home">Workshop<span>Girl</span><sup>™</sup></a>
-        <nav aria-label="Primary navigation">
-          <a href="#coming-soon">Diary</a><a href="/tutorials/">Tutorials</a><a href="#coming-soon">Projects</a><a href="#coming-soon">About</a>
-        </nav>
-      </header>
+      <SiteHeader current="home" />
       <main>
         <section class="copy" id="coming-soon">
           <div class="eyebrow">The workshop is opening soon</div>

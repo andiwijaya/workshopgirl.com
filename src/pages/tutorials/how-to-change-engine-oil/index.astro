@@ -1,5 +1,6 @@
 ---
 import ShareButton from '../../../components/ShareButton.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
 
 const title = 'How to Change Engine Oil: Beginner’s Guide | WorkshopGirl';
 const description = 'Learn how to change engine oil step by step, from preparing your tools and draining old oil to replacing the filter and adding fresh oil safely.';
@@ -68,12 +69,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/'
   </head>
   <body>
     <div class="shell">
-      <header>
-        <a class="brand" href="/" aria-label="Workshop Girl home">Workshop<span>Girl</span><sup>™</sup></a>
-        <nav aria-label="Primary navigation">
-          <a href="/">Home</a><a href="/tutorials/" aria-current="page">Tutorials</a><a href="/#coming-soon">Diary</a><a href="/#coming-soon">Projects</a><a href="/#coming-soon">About</a>
-        </nav>
-      </header>
+      <SiteHeader current="tutorials" />
       <main>
         <a class="back" href="/tutorials/">← Back to tutorials</a>
         <div class="eyebrow">Tutorials / Engines</div>
