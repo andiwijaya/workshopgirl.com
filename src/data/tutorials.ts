@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'Socket & Ratchet Sizes Explained: 1/4", 3/8" & 1/2" Drive',
+    slug: '/tutorials/socket-ratchet-sizes-explained',
+    category: 'Tools / Sockets / Fasteners',
+    description: 'Learn what 1/4, 3/8 and 1/2-inch drive mean, how socket size differs, and how to choose ratchets, sockets and extensions for the job.',
+    image: '/images/tutorials/socket-ratchet-sizes/workshopgirl-ratchet-drive-sizes.webp',
+    imageAlt: 'WorkshopGirl comparing 1/4-inch, 3/8-inch and 1/2-inch drive ratchets and sockets on a workbench.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'Drill Bit Types Explained: Which Bit Should You Use?',
     slug: '/tutorials/drill-bit-types-explained',
     category: 'Tools / Drilling / Materials',
