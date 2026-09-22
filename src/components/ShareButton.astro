@@ -6,21 +6,31 @@ interface Props {
 }
 
 const { title, canonical, label = 'Share this tutorial' } = Astro.props;
+const encodedUrl = encodeURIComponent(canonical);
+const encodedTitle = encodeURIComponent(title);
 ---
 <div class="share-row">
   <button class="share-button" type="button" id="share-content">{label}</button>
+  <a href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on WhatsApp">WhatsApp</a>
+  <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on Facebook">Facebook</a>
+  <a href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on X">X</a>
+  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on LinkedIn">LinkedIn</a>
+  <button class="copy-button" type="button" id="copy-link">Copy Link</button>
   <span class="share-status" id="share-status" role="status" aria-live="polite"></span>
 </div>
 
 <style>
-  .share-row { align-items:center; display:flex; flex-wrap:wrap; gap:12px; margin:-28px 0 54px; }
-  .share-button { background:#e53b7d; border:0; color:#fff; cursor:pointer; font:600 .9rem 'DM Sans',sans-serif; padding:12px 16px; }
-  .share-button:hover, .share-button:focus-visible { background:#171717; }
+  .share-row { align-items:center; display:flex; flex-wrap:wrap; gap:8px; margin:-28px 0 54px; }
+  .share-button,.copy-button,.share-row a { border:1px solid #171717; cursor:pointer; font:600 .82rem 'DM Sans',sans-serif; padding:10px 12px; text-decoration:none; }
+  .share-button { background:#e53b7d; border-color:#e53b7d; color:#fff; }
+  .copy-button,.share-row a { background:transparent; color:#171717; }
+  .share-button:hover,.share-button:focus-visible,.copy-button:hover,.copy-button:focus-visible,.share-row a:hover,.share-row a:focus-visible { background:#171717; color:#fff; }
   .share-status { color:#655f59; font-size:.86rem; }
 </style>
 
 <script is:inline define:vars={{ canonical, title }}>
   const shareButton = document.querySelector('#share-content');
+  const copyButton = document.querySelector('#copy-link');
   const shareStatus = document.querySelector('#share-status');
   shareButton?.addEventListener('click', async () => {
     try {
@@ -35,6 +45,15 @@ const { title, canonical, label = 'Share this tutorial' } = Astro.props;
       }
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return;
+      if (shareStatus) shareStatus.textContent = canonical;
+    }
+  });
+  copyButton?.addEventListener('click', async () => {
+    try {
+      if (!navigator.clipboard) throw new Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(canonical);
+      if (shareStatus) shareStatus.textContent = 'Link copied.';
+    } catch (error) {
       if (shareStatus) shareStatus.textContent = canonical;
     }
   });
