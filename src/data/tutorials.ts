@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'Jigsaw vs Circular Saw: Which One Should a Beginner Use?',
+    slug: '/tutorials/jigsaw-vs-circular-saw',
+    category: 'Tools / Woodworking / Power Tools',
+    description: 'Compare jigsaws and circular saws, learn when curved or straight cuts call for each, and see what beginners should know about blades, setup and safety.',
+    image: '/images/tutorials/jigsaw-vs-circular-saw/workshopgirl-jigsaw-vs-circular-saw.webp',
+    imageAlt: 'WorkshopGirl comparing a cordless jigsaw and circular saw on a workshop bench.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'Socket & Ratchet Sizes Explained: 1/4", 3/8" & 1/2" Drive',
     slug: '/tutorials/socket-ratchet-sizes-explained',
     category: 'Tools / Sockets / Fasteners',
