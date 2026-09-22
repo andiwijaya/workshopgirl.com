@@ -1,0 +1,128 @@
+---
+import ShareButton from '../../components/ShareButton.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+
+const title = 'Types of Clamps Explained: Which Clamp Should You Use?';
+const seoTitle = `${title} | WorkshopGirl`;
+const description = 'Learn the differences between bar clamps, quick-grip clamps, C-clamps, spring clamps, and corner clamps — plus how to choose and use clamps for beginner DIY projects.';
+const canonical = 'https://workshopgirl.com/tutorials/types-of-clamps-explained';
+const hero = 'https://workshopgirl.com/images/tutorials/types-of-clamps-explained/workshopgirl-types-of-clamps.webp';
+const schema = {
+  '@context': 'https://schema.org', '@type': 'Article', headline: title,
+  description, url: canonical, mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }, image: hero,
+  datePublished: '2026-09-23', dateModified: '2026-09-23',
+  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
+  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: 'Tools / Woodworking / Clamps'
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content="Tools / Woodworking / Clamps" /><meta property="article:published_time" content="2026-09-23" />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+      :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
+      * { box-sizing:border-box; } html { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; } body { margin:0; min-width:320px; } a { color:inherit; }
+      .shell { min-height:100vh; overflow:hidden; position:relative; } .shell::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:.22; background-image:radial-gradient(#b8afa4 .7px,transparent .7px); background-size:18px 18px; mask-image:linear-gradient(to bottom,black,transparent 70%); }
+      main { margin:0 auto; max-width:1080px; padding:9vh 5vw 12vh; position:relative; z-index:1; } .back { color:var(--muted); font-size:.9rem; text-decoration:none; } .back:hover { color:var(--pink); } .eyebrow { color:var(--pink); font-size:.78rem; font-weight:700; letter-spacing:.14em; margin-top:54px; text-transform:uppercase; }
+      h1,h2,h3 { font-family:'Space Grotesk',sans-serif; letter-spacing:-.045em; } h1 { font-size:clamp(2.8rem,5.5vw,5rem); line-height:.98; margin:20px 0 26px; max-width:940px; } .dek { color:var(--muted); font-size:1.18rem; line-height:1.7; max-width:800px; } .byline { border-bottom:1px solid var(--line); color:var(--muted); font-size:.86rem; margin:30px 0 26px; padding-bottom:22px; }
+      figure { margin:0; } figure img { aspect-ratio:1672/941; display:block; height:auto; object-fit:contain; width:100%; } .hero { margin:34px auto 54px; max-width:980px; } figcaption { color:var(--muted); font-size:.9rem; line-height:1.55; margin-top:12px; }
+      article { font-size:1.06rem; line-height:1.78; margin:0 auto; max-width:820px; } article p { margin:0 0 1.35em; } article h2 { font-size:clamp(2rem,4vw,3.1rem); line-height:1.04; margin:2.35em 0 .65em; } article h3 { font-size:1.35rem; line-height:1.16; margin:0 0 .5em; } article ul,article ol { margin:0 0 1.5em; padding-left:1.35em; } article li { margin:.38em 0; padding-left:.2em; } article a { color:#a91d56; font-weight:600; text-decoration-thickness:1px; text-underline-offset:3px; }
+      .quick,.callout,.mistake { background:var(--soft); border:1px solid var(--line); border-left:4px solid var(--pink); margin:30px 0 38px; padding:23px; } .quick h2,.callout h3,.mistake h3 { margin:0 0 9px; } .quick p:last-child,.callout p:last-child,.mistake p:last-child { margin-bottom:0; } .callout strong,.mistake strong { font-family:'Space Grotesk',sans-serif; } .clamp-grid,.decision-grid,.criteria-grid { display:grid; gap:16px; grid-template-columns:repeat(2,minmax(0,1fr)); margin:22px 0 32px; } .clamp-card,.decision-card,.criteria-card { background:#fffdf9; border:1px solid var(--line); min-width:0; padding:20px; } .clamp-card p:last-child,.decision-card p:last-child,.criteria-card p:last-child { margin-bottom:0; } .clamp-card h3 { color:#a91d56; }
+      .decision-card h3 { font-size:1.12rem; margin:0 0 6px; } .decision-card p { color:var(--muted); font-size:.96rem; line-height:1.55; } .checklist { background:#fffdf9; border:1px solid var(--line); list-style:none; margin:20px 0 30px; padding:12px 22px; } .checklist li { border-bottom:1px solid var(--line); margin:0; padding:12px 0 12px 30px; position:relative; } .checklist li:last-child { border-bottom:0; } .checklist li::before { border:2px solid var(--pink); border-radius:4px; content:''; height:14px; left:2px; position:absolute; top:18px; width:14px; }
+      .mistake { background:#fff3f2; border-left-color:#a91d56; } .quick-rule { background:#171717; border-left:5px solid var(--pink); color:#fff; margin:36px 0; padding:26px; } .quick-rule h2 { color:#fff; font-size:1.55rem; margin:0 0 12px; } .quick-rule p { color:#f4eaf0; margin:0 0 10px; } .quick-rule p:last-child { margin-bottom:0; }
+      .faq,.related,.closing { border-top:1px solid var(--line); margin-top:50px; padding-top:24px; } .faq h3 { font-size:1.15rem; margin:1.5em 0 .35em; } .related-grid { display:grid; gap:14px; grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:18px; } .related-card { background:#fffdf9; border:1px solid var(--line); display:block; min-width:0; padding:18px; text-decoration:none; } .related-card strong { color:var(--ink); display:block; font-family:'Space Grotesk',sans-serif; font-size:1.08rem; line-height:1.25; margin-bottom:8px; } .related-card span { color:var(--muted); font-size:.92rem; line-height:1.5; } .related-card:hover strong,.related-card:focus-visible strong { color:#a91d56; } .closing { padding-top:24px; } :focus-visible { outline:3px solid var(--pink); outline-offset:4px; }
+      @media(max-width:800px) { .related-grid { grid-template-columns:1fr; } }
+      @media(max-width:700px) { main { padding:7vh 6vw 10vh; } .eyebrow { margin-top:40px; } h1 { font-size:clamp(2.25rem,9vw,3.6rem); } .dek { font-size:1.08rem; } article { font-size:1rem; } .hero { margin:28px 0 42px; } .quick,.callout,.mistake,.quick-rule { padding:19px; } .clamp-grid,.decision-grid,.criteria-grid { grid-template-columns:1fr; } .checklist { padding:8px 15px; } }
+    </style>
+  </head>
+  <body><div class="shell"><SiteHeader current="tutorials" /><main>
+    <a class="back" href="/tutorials/">← Back to tutorials</a><div class="eyebrow">Tutorials / Tools / Woodworking / Clamps</div><h1>{title}</h1>
+    <p class="dek">Clamps look simple until you walk into a tool aisle and find bar clamps, F-clamps, quick-grip clamps, C-clamps, spring clamps and corner clamps. They all hold things, but their shapes and adjustments suit different jobs.</p>
+    <p class="dek">A clamp temporarily holds workpieces in a controlled position. Sometimes you need pressure to bring a joint together; sometimes you only need alignment, a steady guide or a safe hold while you work. There is no single clamp that is ideal for every workshop task.</p>
+    <div class="byline">Published September 23, 2026 · Workshop Girl</div><ShareButton title={title} canonical={canonical} label="Share this guide" />
+    <figure class="hero"><img src="/images/tutorials/types-of-clamps-explained/workshopgirl-types-of-clamps.webp" alt="WorkshopGirl comparing common woodworking clamp types on a workshop bench" width="1672" height="941" fetchpriority="high" /><figcaption>Clamp styles trade off reach, speed, pressure and the shape of work they can hold.</figcaption></figure>
+
+    <article>
+      <aside class="quick"><h2>The quick choice</h2><p><strong>Match the clamp to the work:</strong> use a bar or F-clamp to reach across a larger assembly, a quick-grip clamp for fast temporary positioning, a spring clamp for light holding, a C-clamp for compact localized pressure, and a corner clamp to help position a right-angle joint.</p></aside>
+
+      <h2>What does a clamp actually do?</h2>
+      <p>A clamp is a temporary third hand. It can hold parts in place while you mark, drill, saw, assemble or glue them. It can also help align two edges, resist movement, or maintain contact while an adhesive cures. The useful question is not “How hard can I tighten this?” but “What movement am I trying to prevent?”</p>
+      <p><strong>More clamping force is not automatically better.</strong> Excess pressure can bow a board, distort an assembly, crush a soft surface or squeeze too much adhesive out of a joint. Clamp firmly enough to do the job—not as hard as physically possible. Pads or scrap blocks can spread pressure and protect the work, but make sure they do not slip.</p>
+
+      <h2>Common types of clamps</h2>
+      <p>The names overlap a little: “bar clamp” is often used broadly, while an F-clamp describes a familiar frame shape that slides along a bar. Capacity and force depend on the specific clamp, so check its rating and intended use.</p>
+      <div class="clamp-grid">
+        <section class="clamp-card"><h3>1. F-clamp or bar clamp</h3><p>A long bar carries a fixed jaw and a sliding jaw. A threaded screw advances one jaw to tighten the work. The bar gives useful reach, which makes these clamps a common choice for woodworking assemblies, panel glue-ups and holding larger pieces together.</p><p>Before buying, compare the maximum opening, throat depth (how far the jaw reaches from the bar), bar stiffness and jaw-pad design. A long opening does not guarantee a deep throat or a particular clamping force.</p></section>
+        <section class="clamp-card"><h3>2. Quick-grip, one-handed clamp</h3><p>A trigger moves a sliding jaw along a bar, so you can position and tighten many models with one hand. They are handy for temporary holding, light-to-medium assembly, securing a guide, or getting pieces into position while another clamp is added.</p><p>Quick adjustment is convenient, but it does not make every model a substitute for a heavier screw clamp on a demanding glue-up. Check the tool’s rating and whether it is designed to convert into a spreader before reversing its jaws.</p></section>
+        <section class="clamp-card"><h3>3. C-clamp</h3><p>A rigid C-shaped frame and threaded screw concentrate pressure in a compact space. C-clamps are useful for small assemblies, metalworking, securing a component to a bench, or jobs where a larger bar clamp will not fit.</p><p>The small contact faces can mark or dent a soft or finished surface. Use suitable pads or a scrap caul, and check that the frame and work are positioned securely before tightening.</p></section>
+        <section class="clamp-card"><h3>4. Spring clamp</h3><p>A spring-loaded hinge opens the jaws when you squeeze the handles and closes them when you let go. Spring clamps are quick and simple for small parts, templates, light positioning and temporary holding.</p><p>Their pressure and jaw opening are limited by the particular clamp. They are not the universal replacement for a bar clamp when a larger joint needs even, adjustable pressure.</p></section>
+        <section class="clamp-card"><h3>5. 90-degree corner clamp</h3><p>A corner or angle clamp uses shaped jaws to hold two pieces near a right-angle relationship while you assemble a box, frame or cabinet-style joint. It can make the parts easier to position while you fasten or glue them.</p><p>A corner clamp helps position the parts; it does not prove they are square. Check the actual assembly with a reliable square or by comparing diagonals where appropriate.</p></section>
+      </div>
+
+      <h2>Clamping a wood glue-up</h2>
+      <p>Imagine joining several boards edge-to-edge to make a wider panel. Clamps bring the mating edges into contact and help keep the boards in position while the adhesive cures. The goal is a well-fitted joint held in alignment—not a contest to see how much force the clamps can apply.</p>
+      <figure><img src="/images/tutorials/types-of-clamps-explained/workshopgirl-clamping-wood-glue-up.webp" alt="WorkshopGirl tightening bar clamps during an edge-glued wood panel assembly" width="1672" height="941" loading="lazy" /><figcaption>Good clamping is about alignment and controlled pressure, not brute force.</figcaption></figure>
+      <p>Dry-fit the boards before applying glue so you can confirm their order, orientation and joint fit. Lay out enough suitable clamps to support the assembly, then apply adhesive as its maker directs. Position clamps sensibly along the panel and tighten them progressively; do not fully crank down one clamp before checking the rest of the assembly.</p>
+      <p>As pressure comes on, watch the board faces and edges for shifting or bowing. A small amount of squeeze-out can be a useful sign that the joint closed, but excessive squeeze-out may mean too much glue or pressure, and cleanup method depends on the adhesive and finish. Follow the adhesive maker’s instructions for clamp time and cure time before stressing or moving the panel.</p>
+      <p>There is no universal pressure number for every glue-up. Appropriate pressure depends on the wood species, how well the joint fits, the adhesive, clamp type and workpiece dimensions. A sound joint and the adhesive maker’s instructions matter more than an arbitrary setting.</p>
+      <aside class="mistake"><h3>Common beginner mistake: overtightening every clamp</h3><p>More force does not magically make a stronger joint. It can bow boards or squeeze out too much adhesive. Tighten only until the parts are held together as intended, then recheck alignment.</p></aside>
+
+      <h2>Clamping is not the same as alignment</h2>
+      <p>A clamp can hold components firmly while the assembly is still slightly out of square. Parts can shift as pressure is applied, and a corner clamp may hold the edges together without correcting a cut that is not quite 90 degrees. Clamping answers “Are these pieces being held?” A square answers “Is this angle actually right?”</p>
+      <figure><img src="/images/tutorials/types-of-clamps-explained/workshopgirl-checking-corner-joint-square.webp" alt="WorkshopGirl checking a clamped 90-degree woodworking joint with a combination square" width="1672" height="941" loading="lazy" /><figcaption>A corner clamp holds the pieces; the square verifies the geometry.</figcaption></figure>
+      <p>In the corner-clamp example, two boards meet at approximately a right angle while the clamp maintains their position. The combination square checks the angle itself. Those tools do different jobs: <strong>the clamp holds; the square checks.</strong> Verify the assembly after tightening and make small adjustments before fastening or leaving glue to cure.</p>
+
+      <h2>Which clamp should a beginner buy first?</h2>
+      <p>Start with the work you expect to do, the size of the parts and how much reach you need. This is a useful starting point, not a rule that every project must follow:</p>
+      <div class="decision-grid">
+        <section class="decision-card"><h3>General woodworking assembly</h3><p>An F-clamp or bar clamp offers reach and adjustable screw pressure.</p></section>
+        <section class="decision-card"><h3>Fast temporary positioning</h3><p>A one-handed quick-grip clamp is convenient when speed and repositioning matter.</p></section>
+        <section class="decision-card"><h3>Small or light holding</h3><p>A spring clamp is simple for templates, small parts and temporary setups.</p></section>
+        <section class="decision-card"><h3>Compact localized pressure</h3><p>A C-clamp fits small spaces; protect delicate surfaces with suitable pads.</p></section>
+        <section class="decision-card"><h3>Right-angle assembly</h3><p>A corner clamp can help position a frame or box joint; still check it for square.</p></section>
+        <section class="decision-card"><h3>Panel glue-up</h3><p>Several appropriately sized bar or F-clamps can distribute pressure across the panel.</p></section>
+      </div>
+
+      <h2>What to look for when buying clamps</h2>
+      <p>Choose clamps by the workpiece and job rather than the largest force claim on the package. Useful details to compare include:</p>
+      <div class="criteria-grid">
+        <section class="criteria-card"><strong>Opening capacity and throat depth</strong><p>Will the jaws span the work and reach the spot that needs holding?</p></section>
+        <section class="criteria-card"><strong>Frame or bar stiffness</strong><p>Does the clamp suit the span and load without visibly flexing in normal use?</p></section>
+        <section class="criteria-card"><strong>Pressure and jaw pads</strong><p>Is force adjustable, and are the contact surfaces broad or replaceable enough to protect the material?</p></section>
+        <section class="criteria-card"><strong>Handle and adjustment</strong><p>Can you tighten it comfortably, and does it adjust at a useful speed for your workflow?</p></section>
+        <section class="criteria-card"><strong>Size, weight and application</strong><p>Will it fit the project and your workspace? Check any stated rating and intended use.</p></section>
+      </div>
+      <p>Several appropriately sized clamps are often more useful than one enormous clamp that is awkward on smaller work. You can add a specialized style later when a real project calls for one.</p>
+
+      <h2>How many clamps do you need?</h2>
+      <p>Woodworkers have a running joke that the correct number of clamps is always one more. The practical answer depends on project scale: a small repair may need one or two, while a wide panel or frame may call for several clamps placed to support the assembly evenly. Start with a few versatile clamps, learn what your projects actually require, and add sizes or styles when you meet a specific need.</p>
+
+      <h2>Quick beginner checklist</h2>
+      <p>Before tightening a clamp, pause and check:</p>
+      <ul class="checklist"><li>Is this the right clamp for the job?</li><li>Are the jaws contacting solid, stable surfaces?</li><li>Could the jaws damage the workpiece or its finish?</li><li>Is the workpiece aligned before pressure is applied?</li><li>Is the clamp pulling the parts in the direction I intend?</li><li>Am I using controlled rather than excessive pressure?</li><li>If this is a square assembly, have I actually checked it for square?</li></ul>
+
+      <aside class="quick-rule"><h2>WorkshopGirl Quick Rule</h2><p><strong>The best clamp is the one that fits the work, pushes in a useful direction and keeps the assembly controlled.</strong></p><p>After clamping, check the part itself—especially the alignment and squareness.</p></aside>
+
+      <section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">Clamp FAQ</h2>
+        <h3>How tight should I make a clamp?</h3><p>Tight enough to hold the work or close a properly fitted joint, without bowing, crushing or shifting the pieces. The right pressure varies with the material, adhesive, clamp and joint.</p>
+        <h3>Can quick-grip clamps be used for glue-ups?</h3><p>Some models can help with light or medium assemblies, but capacity and pressure vary. Check the clamp’s rating and use an appropriate setup for the size and demands of the glue-up.</p>
+        <h3>Does a corner clamp guarantee a 90-degree corner?</h3><p>No. It helps position two pieces, but the parts or cuts may still be out of square. Check the assembled corner with a square and adjust it before the joint is fixed.</p>
+        <h3>Do clamp jaws need pads?</h3><p>Pads or scrap cauls can spread pressure and protect soft or finished surfaces. Keep them clean and stable so they do not slip or introduce a new alignment problem.</p>
+        <h3>How long should a glue-up stay clamped?</h3><p>It depends on the adhesive, temperature, joint and work. Follow the adhesive manufacturer’s clamp-time and cure-time instructions, and avoid stressing the joint too early.</p>
+      </section>
+
+      <section class="related" aria-labelledby="related-title"><h2 id="related-title">Related Tutorials</h2><div class="related-grid">
+        <a class="related-card" href="/tutorials/jigsaw-vs-circular-saw"><strong>Jigsaw vs Circular Saw</strong><span>Choose a saw for shaped or straight cuts.</span></a>
+        <a class="related-card" href="/tutorials/drill-bit-types-explained"><strong>Drill Bit Types Explained</strong><span>Match a cutter to the material and hole.</span></a>
+        <a class="related-card" href="/tutorials/how-to-use-a-cordless-drill/"><strong>How to Use a Cordless Drill</strong><span>Learn drill controls, pilot holes and safe technique.</span></a>
+      </div></section>
+      <div class="closing"><h2>Final thoughts</h2><p>Clamps do more than squeeze: the right one holds pieces steady, brings a joint together or helps maintain position. Choose for the workpiece and direction of force, tighten with control, then measure what matters. That habit makes a small clamp collection go a long way as your projects grow.</p></div>
+    </article>
+  </main><SiteFooter /></div></body>
+</html>

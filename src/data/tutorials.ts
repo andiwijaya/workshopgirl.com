@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'Types of Clamps Explained: Which Clamp Should You Use?',
+    slug: '/tutorials/types-of-clamps-explained',
+    category: 'Tools / Woodworking / Clamps',
+    description: 'Learn the differences between bar clamps, quick-grip clamps, C-clamps, spring clamps, and corner clamps — plus how to choose and use clamps for beginner DIY projects.',
+    image: '/images/tutorials/types-of-clamps-explained/workshopgirl-types-of-clamps.webp',
+    imageAlt: 'WorkshopGirl comparing common woodworking clamp types on a workshop bench.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'Jigsaw vs Circular Saw: Which One Should a Beginner Use?',
     slug: '/tutorials/jigsaw-vs-circular-saw',
     category: 'Tools / Woodworking / Power Tools',
