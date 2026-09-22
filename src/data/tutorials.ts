@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'Drill Bit Types Explained: Which Bit Should You Use?',
+    slug: '/tutorials/drill-bit-types-explained',
+    category: 'Tools / Drilling / Materials',
+    description: 'Learn what twist, brad-point, spade, Forstner, masonry, step, countersink and hole-saw cutters do — and choose by material and hole.',
+    image: '/images/tutorials/drill-bit-types/workshopgirl-drill-bit-types.webp',
+    imageAlt: 'WorkshopGirl comparing different types of drill bits and hole-making tools on a workshop bench.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'Cordless Drill vs Impact Driver: What’s the Difference?',
     slug: '/tutorials/cordless-drill-vs-impact-driver',
     category: 'Tools / Drilling / Fastening',
