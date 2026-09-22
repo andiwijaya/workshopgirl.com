@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Replace a Car Battery: A Beginner’s Step-by-Step Guide',
+    slug: '/tutorials/how-to-replace-a-car-battery/',
+    category: 'Cars / Electrical / Maintenance',
+    description: 'A careful beginner workflow for replacing a conventional 12V car battery, reconnecting the terminals correctly, and knowing when vehicle-specific service is required.',
+    image: '/images/tutorials/car-battery/workshopgirl-car-battery-replacement.webp?v=1',
+    imageAlt: 'Workshop Girl replacing a 12V car battery in a home garage.',
+    published: 'September 22, 2026',
+  },
+  {
     title: 'How to Inspect, Clean or Replace Your Engine Air Filter',
     slug: '/tutorials/engine-air-filter/',
     category: 'Cars / Engine / Maintenance',
