@@ -1,6 +1,7 @@
 ---
 import { diaryEntries } from '../../data/diary';
 import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
 
 const title = 'Diary | WorkshopGirl';
 const description = 'Stories from the WorkshopGirl workshop — mistakes, stubborn machines, small victories, and the things they teach me.';
@@ -25,5 +26,5 @@ const description = 'Stories from the WorkshopGirl workshop — mistakes, stubbo
     <section class="intro"><div class="eyebrow">Workshop Girl Diary</div><h1>Diary.</h1><p class="lead">Not every repair goes according to plan. Stories from the workshop — mistakes, stubborn machines, small victories, and the things they teach me.</p></section>
     <hr class="rule" /><div class="section-label">Latest from the workshop</div>
     {diaryEntries.map((entry) => <article class="card"><img src={entry.image} alt={entry.imageAlt} width="1672" height="941" loading="eager" /><div class="card-copy"><div class="category">{entry.category}</div><h2>{entry.title}</h2><p>{entry.excerpt}</p><div class="date">{entry.published}</div><a class="button" href={entry.slug}>Read the diary</a></div></article>)}
-  </main></div></body>
+  </main><SiteFooter /></div></body>
 </html>

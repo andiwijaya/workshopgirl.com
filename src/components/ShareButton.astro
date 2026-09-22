@@ -2,12 +2,13 @@
 interface Props {
   title: string;
   canonical: string;
+  label?: string;
 }
 
-const { title, canonical } = Astro.props;
+const { title, canonical, label = 'Share this tutorial' } = Astro.props;
 ---
 <div class="share-row">
-  <button class="share-button" type="button" id="share-tutorial">Share this tutorial</button>
+  <button class="share-button" type="button" id="share-content">{label}</button>
   <span class="share-status" id="share-status" role="status" aria-live="polite"></span>
 </div>
 
@@ -19,7 +20,7 @@ const { title, canonical } = Astro.props;
 </style>
 
 <script is:inline define:vars={{ canonical, title }}>
-  const shareButton = document.querySelector('#share-tutorial');
+  const shareButton = document.querySelector('#share-content');
   const shareStatus = document.querySelector('#share-status');
   shareButton?.addEventListener('click', async () => {
     try {

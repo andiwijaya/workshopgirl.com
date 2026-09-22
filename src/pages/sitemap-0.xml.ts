@@ -4,6 +4,7 @@ export function GET() {
     'https://workshopgirl.com/tutorials/',
     'https://workshopgirl.com/diary/',
     'https://workshopgirl.com/diary/the-first-bolt-i-couldnt-remove/',
+    'https://workshopgirl.com/about/',
     'https://workshopgirl.com/tutorials/engine-air-filter/',
     'https://workshopgirl.com/tutorials/how-to-replace-brake-pads/',
     'https://workshopgirl.com/tutorials/how-to-change-a-flat-tire/',
