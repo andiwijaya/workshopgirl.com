@@ -1,6 +1,7 @@
 ---
 import { tutorials } from '../data/tutorials';
 import { diaryEntries } from '../data/diary';
+import { projects } from '../data/projects';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 
@@ -10,6 +11,7 @@ const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
 const featuredTutorial = tutorials[0];
 const previousTutorial = tutorials[1];
 const latestDiary = diaryEntries[0];
+const latestProject = projects[0];
 ---
 <!doctype html>
 <html lang="en">
@@ -89,6 +91,15 @@ const latestDiary = diaryEntries[0];
       .diary-card p { color:var(--muted); font-size:1.05rem; line-height:1.65; }
       .diary-card a { background:var(--ink); color:#fff; display:inline-block; font-weight:700; margin-top:14px; padding:13px 18px; text-decoration:none; }
       .diary-card a:hover, .diary-card a:focus-visible { background:var(--pink); }
+      .project-feature { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:64px 5vw 96px; position:relative; z-index:1; }
+      .project-card { background:#fffaf4; border:1px solid var(--line); display:grid; grid-template-columns:minmax(300px,1.3fr) 1fr; }
+      .project-card img { display:block; height:100%; min-height:330px; object-fit:cover; width:100%; }
+      .project-card-copy { align-self:center; padding:clamp(26px,5vw,68px); }
+      .project-card h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.5rem); letter-spacing:-.06em; line-height:1; margin:14px 0; }
+      .project-card p { color:var(--muted); font-size:1.05rem; line-height:1.65; }
+      .project-status { color:var(--muted); font-size:.78rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+      .project-card a { background:var(--ink); color:#fff; display:inline-block; font-weight:700; margin-top:14px; padding:13px 18px; text-decoration:none; }
+      .project-card a:hover, .project-card a:focus-visible { background:var(--pink); }
       @media (max-width: 760px) {
         header { padding:22px 7vw; }
         nav { gap:14px; }
@@ -157,6 +168,13 @@ const latestDiary = diaryEntries[0];
         <article class="diary-card">
           <img src={latestDiary.image} alt={latestDiary.imageAlt} width="1672" height="941" loading="lazy" />
           <div class="diary-card-copy"><div class="featured-label">Diary · {latestDiary.published}</div><h3>{latestDiary.title}</h3><p>{latestDiary.excerpt}</p><a href={latestDiary.slug}>Read the diary</a></div>
+        </article>
+      </section>
+      <section class="project-feature" aria-labelledby="project-title">
+        <div class="featured-label">Latest project</div>
+        <article class="project-card">
+          <img src={latestProject.image} alt={latestProject.imageAlt} width="1672" height="941" loading="lazy" />
+          <div class="project-card-copy"><div class="featured-label">{latestProject.category}</div><h2 id="project-title">{latestProject.title}</h2><p>{latestProject.excerpt}</p><div class="project-status">Status · {latestProject.status}</div><a href={latestProject.slug}>View project</a></div>
         </article>
       </section>
       <SiteFooter />
