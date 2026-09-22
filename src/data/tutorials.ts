@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Use a Multimeter: Voltage, Resistance & Continuity for Beginners',
+    slug: '/tutorials/how-to-use-a-multimeter',
+    category: 'Electrical / Tools',
+    description: 'Learn how to use a digital multimeter for basic voltage, resistance and continuity checks, including a 12V battery test and fuse continuity test.',
+    image: '/images/tutorials/how-to-use-a-multimeter/multimeter-basics-workshopgirl.webp',
+    imageAlt: 'WorkshopGirl learning the controls and test leads of a digital multimeter.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'Types of Clamps Explained: Which Clamp Should You Use?',
     slug: '/tutorials/types-of-clamps-explained',
     category: 'Tools / Woodworking / Clamps',

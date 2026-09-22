@@ -17,6 +17,7 @@ export function GET() {
     'https://workshopgirl.com/tutorials/socket-ratchet-sizes-explained',
     'https://workshopgirl.com/tutorials/jigsaw-vs-circular-saw',
     'https://workshopgirl.com/tutorials/types-of-clamps-explained',
+    'https://workshopgirl.com/tutorials/how-to-use-a-multimeter',
     'https://workshopgirl.com/tutorials/how-to-replace-brake-pads/',
     'https://workshopgirl.com/tutorials/how-to-change-a-flat-tire/',
     'https://workshopgirl.com/tutorials/how-to-change-engine-oil/',

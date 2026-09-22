@@ -3,20 +3,24 @@ interface Props {
   title: string;
   canonical: string;
   label?: string;
+  idSuffix?: string;
 }
 
-const { title, canonical, label = 'Share this tutorial' } = Astro.props;
+const { title, canonical, label = 'Share this tutorial', idSuffix = '' } = Astro.props;
 const encodedUrl = encodeURIComponent(canonical);
 const encodedTitle = encodeURIComponent(title);
+const shareButtonId = idSuffix ? `share-content-${idSuffix}` : 'share-content';
+const copyButtonId = idSuffix ? `copy-link-${idSuffix}` : 'copy-link';
+const statusId = idSuffix ? `share-status-${idSuffix}` : 'share-status';
 ---
-<div class="share-row">
-  <button class="share-button" type="button" id="share-content">{label}</button>
+<div class="share-row" data-canonical={canonical} data-title={title}>
+  <button class="share-button" type="button" id={shareButtonId}>{label}</button>
   <a href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on WhatsApp">WhatsApp</a>
   <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on Facebook">Facebook</a>
   <a href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on X">X</a>
   <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on LinkedIn">LinkedIn</a>
-  <button class="copy-button" type="button" id="copy-link">Copy Link</button>
-  <span class="share-status" id="share-status" role="status" aria-live="polite"></span>
+  <button class="copy-button" type="button" id={copyButtonId}>Copy Link</button>
+  <span class="share-status" id={statusId} role="status" aria-live="polite"></span>
 </div>
 
 <style>
@@ -28,38 +32,47 @@ const encodedTitle = encodeURIComponent(title);
   .share-status { color:#655f59; font-size:.86rem; }
 </style>
 
-<script is:inline define:vars={{ canonical, title }}>
-  const shareButton = document.querySelector('#share-content');
-  const copyButton = document.querySelector('#copy-link');
-  const shareStatus = document.querySelector('#share-status');
-  let statusTimeout;
-  const setStatus = (message) => {
-    if (!shareStatus) return;
-    window.clearTimeout(statusTimeout);
-    shareStatus.textContent = message;
-    statusTimeout = window.setTimeout(() => { shareStatus.textContent = ''; }, 2400);
-  };
-  shareButton?.addEventListener('click', async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({ title, text: title, url: canonical });
-        setStatus('Thanks for sharing.');
-      } else if (navigator.clipboard) {
+<script is:inline data-share-button-id={shareButtonId} data-copy-button-id={copyButtonId} data-status-id={statusId}>
+  (() => {
+    const script = document.currentScript;
+    const shareButtonId = script?.dataset.shareButtonId;
+    const copyButtonId = script?.dataset.copyButtonId;
+    const statusId = script?.dataset.statusId;
+    const shareButton = shareButtonId ? document.getElementById(shareButtonId) : null;
+    const copyButton = copyButtonId ? document.getElementById(copyButtonId) : null;
+    const shareStatus = statusId ? document.getElementById(statusId) : null;
+    const shareRow = shareButton?.closest('.share-row');
+    const canonical = shareRow?.dataset.canonical ?? '';
+    const title = shareRow?.dataset.title ?? '';
+    let statusTimeout;
+    const setStatus = (message) => {
+      if (!shareStatus) return;
+      window.clearTimeout(statusTimeout);
+      shareStatus.textContent = message;
+      statusTimeout = window.setTimeout(() => { shareStatus.textContent = ''; }, 2400);
+    };
+    shareButton?.addEventListener('click', async () => {
+      try {
+        if (navigator.share) {
+          await navigator.share({ title, text: title, url: canonical });
+          setStatus('Thanks for sharing.');
+        } else if (navigator.clipboard) {
+          await navigator.clipboard.writeText(canonical);
+          setStatus('Link copied.');
+        } else setStatus(canonical);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        setStatus(canonical);
+      }
+    });
+    copyButton?.addEventListener('click', async () => {
+      try {
+        if (!navigator.clipboard) throw new Error('Clipboard unavailable');
         await navigator.clipboard.writeText(canonical);
         setStatus('Link copied.');
-      } else setStatus(canonical);
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') return;
-      setStatus(canonical);
-    }
-  });
-  copyButton?.addEventListener('click', async () => {
-    try {
-      if (!navigator.clipboard) throw new Error('Clipboard unavailable');
-      await navigator.clipboard.writeText(canonical);
-      setStatus('Link copied.');
-    } catch (error) {
-      setStatus(canonical);
-    }
-  });
+      } catch (error) {
+        setStatus(canonical);
+      }
+    });
+  })();
 </script>
