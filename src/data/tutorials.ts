@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Change Spark Plugs: A Beginner’s Step-by-Step Guide',
+    slug: '/tutorials/how-to-change-spark-plugs/',
+    category: 'Cars / Engine / Maintenance',
+    description: 'A practical guide to identifying the correct spark plugs, removing them carefully, checking the evidence they leave behind, and installing replacements without guessing specifications.',
+    image: '/images/tutorials/spark-plugs/workshopgirl-change-spark-plugs.webp?v=1',
+    imageAlt: 'Workshop Girl replacing spark plugs on a gasoline engine.',
+    published: 'September 22, 2026',
+  },
+  {
     title: 'How to Replace a Car Battery: A Beginner’s Step-by-Step Guide',
     slug: '/tutorials/how-to-replace-a-car-battery/',
     category: 'Cars / Electrical / Maintenance',
