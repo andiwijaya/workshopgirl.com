@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Use a Cordless Drill: A Beginner’s Guide',
+    slug: '/tutorials/how-to-use-a-cordless-drill/',
+    category: 'Tools / Drilling / Woodworking',
+    description: 'A practical beginner guide to cordless drill controls, bit selection, pilot holes, clutch settings, screw-driving, safe use and battery care.',
+    image: '/images/tutorials/cordless-drill/workshopgirl-cordless-drill-pilot-hole.webp?v=1',
+    imageAlt: 'Workshop Girl using a cordless drill to drill a pilot hole in a clamped wooden board.',
+    published: 'September 22, 2026',
+  },
+  {
     title: 'How to Use a Torque Wrench: A Beginner’s Guide',
     slug: '/tutorials/how-to-use-a-torque-wrench/',
     category: 'Tools / Torque / Maintenance',
