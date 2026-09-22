@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Use a Torque Wrench: A Beginner’s Guide',
+    slug: '/tutorials/how-to-use-a-torque-wrench/',
+    category: 'Tools / Torque / Maintenance',
+    description: 'Learn what torque means, how to set and use a click-type torque wrench, why the click means stop, and how to choose and care for the right tool.',
+    image: '/images/tutorials/torque-wrench/workshopgirl-use-torque-wrench.webp?v=1',
+    imageAlt: 'Workshop Girl using a click-type torque wrench to tighten a wheel lug nut.',
+    published: 'September 22, 2026',
+  },
+  {
     title: 'How to Change Spark Plugs: A Beginner’s Step-by-Step Guide',
     slug: '/tutorials/how-to-change-spark-plugs/',
     category: 'Cars / Engine / Maintenance',
