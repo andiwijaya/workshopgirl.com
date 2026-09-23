@@ -1,0 +1,131 @@
+---
+import ShareButton from '../../components/ShareButton.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+
+const title = 'How to Solder Wires: A Beginner’s Guide';
+const seoTitle = 'How to Solder Wires: Beginner’s Guide | WorkshopGirl';
+const description = 'Learn how to solder low-voltage wires step by step, from stripping and joining conductors to heat-shrink insulation and continuity testing.';
+const canonical = 'https://workshopgirl.com/tutorials/how-to-solder-wires';
+const hero = 'https://workshopgirl.com/images/tutorials/soldering-wires/workshopgirl-soldering-wire-preparation.webp';
+const schema = {
+  '@context': 'https://schema.org', '@type': 'Article', headline: title,
+  description, url: canonical, mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }, image: hero,
+  datePublished: '2026-09-23', dateModified: '2026-09-23',
+  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
+  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: 'Electrical / Electronics / Tools'
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content="Electrical / Electronics / Tools" /><meta property="article:published_time" content="2026-09-23" />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+      :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
+      * { box-sizing:border-box; } html { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; } body { margin:0; min-width:320px; } a { color:inherit; }
+      .shell { min-height:100vh; overflow:hidden; position:relative; } .shell::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:.22; background-image:radial-gradient(#b8afa4 .7px,transparent .7px); background-size:18px 18px; mask-image:linear-gradient(to bottom,black,transparent 70%); }
+      main { margin:0 auto; max-width:1080px; padding:9vh 5vw 12vh; position:relative; z-index:1; } .back { color:var(--muted); font-size:.9rem; text-decoration:none; } .back:hover { color:var(--pink); } .eyebrow { color:var(--pink); font-size:.78rem; font-weight:700; letter-spacing:.14em; margin-top:54px; text-transform:uppercase; }
+      h1,h2,h3 { font-family:'Space Grotesk',sans-serif; letter-spacing:-.045em; } h1 { font-size:clamp(2.8rem,5.5vw,5rem); line-height:.98; margin:20px 0 26px; max-width:960px; } .dek { color:var(--muted); font-size:1.18rem; line-height:1.7; max-width:790px; } .byline { border-bottom:1px solid var(--line); color:var(--muted); font-size:.86rem; margin:30px 0 26px; padding-bottom:22px; }
+      figure { margin:0; } figure img { aspect-ratio:1672/941; border-radius:4px; box-shadow:0 12px 32px #17171717; display:block; height:auto; object-fit:contain; width:100%; } .hero { margin:30px auto 54px; max-width:980px; } figcaption { color:var(--muted); font-size:.9rem; line-height:1.55; margin-top:12px; }
+      article { font-size:1.06rem; line-height:1.78; margin:0 auto; max-width:820px; } article p { margin:0 0 1.35em; } article h2 { font-size:clamp(2rem,4vw,3.1rem); line-height:1.04; margin:2.3em 0 .65em; } article h3 { font-size:1.3rem; line-height:1.18; margin:0 0 .55em; } article ul,article ol { margin:0 0 1.45em; padding-left:1.35em; } article li { margin:.4em 0; padding-left:.2em; } article a { color:#a91d56; font-weight:600; text-decoration-thickness:1px; text-underline-offset:3px; }
+      .safety,.tip,.mistake { background:var(--soft); border:1px solid var(--line); border-left:4px solid var(--pink); margin:28px 0 36px; padding:22px; } .safety { background:#171717; border:0; border-left:5px solid var(--pink); color:#fff; } .safety h2 { color:#fff; font-size:1.6rem; margin:0 0 10px; } .safety p,.safety li { color:#f4eaf0; } .safety p:last-child,.tip p:last-child,.mistake p:last-child { margin-bottom:0; } .tip { background:#fff7e9; } .mistake { background:#fff3f2; border-left-color:#a91d56; } .tip h3,.mistake h3 { margin:0 0 10px; }
+      .parts-grid,.mistakes-grid,.related-grid { display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); margin:20px 0 30px; } .part,.mistake-card,.related-card { background:#fffdf9; border:1px solid var(--line); min-width:0; padding:17px 18px; } .part strong,.mistake-card strong { color:#a91d56; display:block; font-family:'Space Grotesk',sans-serif; margin-bottom:5px; } .part p,.mistake-card p { font-size:.95rem; line-height:1.55; margin:0; }
+      .checklist { background:#fffdf9; border:1px solid var(--line); list-style:none; margin:20px 0 30px; padding:10px 22px; } .checklist li { border-bottom:1px solid var(--line); margin:0; padding:11px 0 11px 30px; position:relative; } .checklist li:last-child { border-bottom:0; } .checklist li::before { border:2px solid var(--pink); border-radius:4px; content:''; height:14px; left:2px; position:absolute; top:17px; width:14px; }
+      .steps { counter-reset:step; list-style:none; margin:20px 0 30px; padding:0; } .steps li { counter-increment:step; margin:0; padding:9px 0 9px 42px; position:relative; } .steps li::before { align-items:center; background:var(--pink); border-radius:50%; color:#fff; content:counter(step); display:flex; font-size:.84rem; font-weight:700; height:28px; justify-content:center; left:0; position:absolute; top:10px; width:28px; }
+      .quick-rule { background:#171717; border-left:5px solid var(--pink); color:#fff; margin:36px 0; padding:24px; } .quick-rule h2 { color:#fff; font-size:1.55rem; margin:0 0 12px; } .quick-rule p { color:#f4eaf0; margin:0 0 10px; } .quick-rule p:last-child { margin-bottom:0; }
+      .sequence { background:var(--soft); border-left:4px solid var(--pink); overflow-wrap:anywhere; padding:14px 18px; }
+      .faq,.related,.share-end,.closing { border-top:1px solid var(--line); margin-top:48px; padding-top:24px; } .faq h3 { font-size:1.12rem; margin:1.5em 0 .35em; } .related-grid { grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:18px; } .related-card { display:block; text-decoration:none; } .related-card strong { color:var(--ink); display:block; font-family:'Space Grotesk',sans-serif; font-size:1.08rem; line-height:1.25; margin-bottom:8px; } .related-card span { color:var(--muted); font-size:.92rem; line-height:1.5; } .related-card:hover strong,.related-card:focus-visible strong { color:#a91d56; } .share-end h2 { margin-top:0; } .closing { padding-top:24px; } :focus-visible { outline:3px solid var(--pink); outline-offset:4px; }
+      @media(max-width:850px) { .related-grid { grid-template-columns:1fr; } }
+      @media(max-width:700px) { main { padding:7vh 6vw 10vh; } .eyebrow { margin-top:40px; } h1 { font-size:clamp(2.2rem,8.8vw,3.6rem); } .dek { font-size:1.08rem; } article { font-size:1rem; } .hero { margin:26px 0 40px; } .safety,.tip,.mistake,.quick-rule { padding:18px; } .sequence { padding:12px 14px; } .parts-grid,.mistakes-grid { grid-template-columns:1fr; } .checklist { padding:8px 15px; } .share-end { margin-top:42px; } }
+      @media(max-width:350px) { main { padding-left:18px; padding-right:18px; } .part,.mistake-card { padding:15px; } }
+    </style>
+  </head>
+  <body><div class="shell"><SiteHeader current="tutorials" /><main>
+    <a class="back" href="/tutorials/">← Back to tutorials</a><div class="eyebrow">Tutorials / Electrical / Electronics</div><h1>{title}</h1>
+    <p class="dek">A tidy soldered wire repair starts before the iron gets hot. Strip and join the conductors carefully, heat the joint so solder flows into it, then insulate and test the finished connection.</p>
+    <p class="dek">This guide is for small <strong>low-voltage stranded-wire connections only</strong>. It does not cover circuit boards, household wiring, automotive high-current circuits or other applications that need a rated connector or specialist procedure.</p>
+    <div class="byline">Published September 23, 2026 · Workshop Girl</div>
+
+    <article>
+      <aside class="safety"><h2>A calm safety check</h2><p>A soldering iron tip is hot enough to burn skin and damage nearby materials. Wear eye protection, work with good ventilation or suitable fume extraction, and return the iron to its stand whenever you are not using it. Keep the circuit disconnected from every power source while preparing, soldering and testing continuity. Let joints cool before touching them, wash your hands after handling solder, and follow the solder maker’s safety information. Solder compositions vary; read the product label rather than assuming what it contains.</p></aside>
+
+      <h2>What you are making</h2>
+      <p>A good wire repair needs three things: a mechanically sound connection, a reliable electrical path and proper insulation afterward. A helpful sequence is:</p>
+      <p class="sequence"><strong>PREPARE → JOIN → HEAT → APPLY SOLDER → COOL → INSULATE → TEST</strong></p>
+      <p>The solder should reinforce a neat conductor-to-conductor connection; it should not be the only thing holding two wires that merely touch. For safety-critical, high-current, vehicle, mains or strain-heavy applications, use the specified rated joining method instead of this beginner low-voltage technique.</p>
+
+      <h2>What you need</h2>
+      <ul class="checklist"><li><strong>Temperature-controlled soldering iron:</strong> lets you use a suitable setting for the iron, solder and wire.</li><li><strong>Stable iron stand:</strong> gives the hot tool a safe place between steps.</li><li><strong>Electronics solder:</strong> choose solder and flux intended for electrical/electronics work; plumbing or acid-core products are not substitutes.</li><li><strong>Wire stripper and side cutters:</strong> remove insulation cleanly and trim stray strands.</li><li><strong>Correctly sized heat-shrink tubing:</strong> covers the finished joint and overlaps intact insulation on both sides.</li><li><strong>Helping hands or a small work holder:</strong> keeps the joined wires still without using your fingers as clamps.</li><li><strong>Multimeter:</strong> checks continuity across the unpowered repaired path.</li><li><strong>Safety glasses and fume extraction or ventilation:</strong> protect your eyes and reduce exposure to flux fumes.</li></ul>
+      <p>A brass-wool tip cleaner is optional. Follow your iron maker’s instructions for cleaning and tip care.</p>
+
+      <figure class="hero"><img src="/images/tutorials/soldering-wires/workshopgirl-soldering-wire-preparation.webp" alt="Workshop Girl preparing stripped low-voltage wires at an electronics workbench" width="1672" height="941" fetchpriority="high" /><figcaption>Prepare the wire and work area before bringing the hot iron near the connection.</figcaption></figure>
+      <h2>Step 1 — Disconnect power</h2>
+      <p>Unplug or otherwise disconnect the circuit from its power source before stripping, joining or soldering. Remove batteries where practical, and make sure stored energy is dealt with according to the equipment instructions. Do not solder an energized wire.</p>
+
+      <h2>Step 2 — Strip and inspect the wires</h2>
+      <p>Use a stripper suited to the wire gauge and remove only enough insulation to make the planned joint. Avoid nicking or cutting copper strands: damaged strands reduce the conductor’s cross-section and can break later. Inspect the exposed copper, trim damaged ends, and gently gather loose strands together so none stick out.</p>
+
+      <h2>Step 3 — Put the heat-shrink on first</h2>
+      <p>Slide a correctly sized piece of heat-shrink onto one wire before joining anything. Move it well away from the work area so soldering heat cannot shrink it early.</p>
+      <aside class="tip"><h3>A small step that saves a redo</h3><p>The easiest heat-shrink mistake is remembering it five seconds after finishing a beautiful solder joint. Put it on now and keep it away from the iron.</p></aside>
+
+      <h2>Step 4 — Make a mechanical connection</h2>
+      <p>Arrange the stripped conductors so they make stable contact before soldering. The right overlap or splice shape depends on the wire and application; follow any repair or equipment instructions that apply. Gently check that the joined wires stay together in the holder. Do not rely on a loose crossing of strands and a blob of solder to create the mechanical connection.</p>
+
+      <figure class="hero"><img src="/images/tutorials/soldering-wires/workshopgirl-soldering-wire-joint.webp" alt="Workshop Girl heating a low-voltage wire joint and applying solder" width="1672" height="941" loading="lazy" /><figcaption>Hold the conductors steady and bring solder to the heated metal joint.</figcaption></figure>
+      <h2>Step 5 — Heat the joint, then feed solder</h2>
+      <p>The goal is to heat the metal conductors so solder melts against the joint and flows through the connection. Do not make the joint by melting a ball of solder on the iron and carrying it to cold wires. A small amount on a properly prepared tip can help heat transfer, but feed the solder into the heated connection.</p>
+      <ol class="steps"><li>Secure the joined wires in a holder so they cannot move.</li><li>Place the clean iron tip against the conductor joint, not the insulation.</li><li>Give the metal a moment to warm, following the iron and solder instructions.</li><li>Touch solder to the heated joint and let it flow through the connection.</li><li>Use only enough solder to wet and reinforce the joined conductors; do not bury the wire in a large blob.</li><li>Remove the solder first, then lift away the iron.</li><li>Keep the connection still while it cools naturally.</li></ol>
+
+      <h2>How much solder is enough?</h2>
+      <p>On a reasonable small connection, the conductor shape remains visible and solder has flowed through the joined area without a large mass. The connection should be stable, with no loose strands. Too much solder can hide the joint and make inspection harder; a shiny or smooth appearance by itself does not prove the repair is electrically sound.</p>
+      <p>Watch for solder sitting only on the surface, incomplete wetting, stray strands, damaged insulation or movement while cooling. If the joint looks questionable, disconnect the iron, let it cool, then correct the connection before insulating it.</p>
+
+      <h2>Step 6 — Let the joint cool and inspect it</h2>
+      <p>After removing the iron, leave the wires still until the solder has solidified and the joint has cooled. Do not hold the fresh joint with your fingers or blow on it as a required cooling method. Once cool, check that the conductors remain mechanically secure, no strands escape, the solder has flowed into the joint, and the surrounding insulation is not excessively melted or damaged. Repair a questionable connection before covering it.</p>
+
+      <h2>Step 7 — Insulate with heat-shrink</h2>
+      <p>When the joint is cool, slide the tubing over the exposed connection and center it so it fully covers the joint and overlaps intact insulation on both sides. Shrink it with a suitable controlled heat source, such as an appropriate heat gun, while keeping the heat moving and away from nearby insulation. Do not use an open flame as the preferred beginner method. Follow the tubing maker’s instructions and avoid overheating the wire.</p>
+
+      <figure class="hero"><img src="/images/tutorials/soldering-wires/workshopgirl-testing-soldered-wire-continuity.webp" alt="Workshop Girl testing a heat-shrink-covered low-voltage wire repair with a digital multimeter" width="1672" height="941" loading="lazy" /><figcaption>After insulating the cooled joint, check continuity at conductive test points on either side of the repaired wire.</figcaption></figure>
+      <h2>Step 8 — Test continuity with a multimeter</h2>
+      <p>A continuity check can help confirm there is an electrical path through the repaired conductor. <strong>The circuit must remain disconnected from power.</strong> Continuity is not a powered-circuit test, and a beep alone does not prove that the whole system is healthy under load.</p>
+      <ol class="steps"><li>Confirm the circuit is unpowered and isolated as needed.</li><li>Set the multimeter to continuity mode and use the correct input jacks according to its manual.</li><li>Touch the probes to conductive points on opposite sides of the repaired path. The points must be bare conductive contacts—not the outside of the heat-shrink.</li><li>Check the meter’s display or audible indication. A stable low-resistance path generally indicates continuity; behavior varies by meter.</li><li>If the result is absent or unstable, recheck probe contact, meter mode, conductor integrity and the joint before returning the project to service.</li></ol>
+      <p>For a fuller walk-through of the meter, lead jacks and continuity mode, see <a href="/tutorials/how-to-use-a-multimeter">How to Use a Multimeter: Voltage, Resistance &amp; Continuity for Beginners</a>.</p>
+
+      <h2>Common beginner mistakes</h2>
+      <div class="mistakes-grid"><section class="mistake-card"><strong>Forgetting the heat-shrink</strong><p>Slide it onto a wire before making the joint, then park it well away from the heat.</p></section><section class="mistake-card"><strong>Stripping too much or nicking strands</strong><p>Expose only the conductor needed and trim damaged wire back to clean strands.</p></section><section class="mistake-card"><strong>Using too much solder</strong><p>A large blob hides the connection and does not automatically make it stronger.</p></section><section class="mistake-card"><strong>Melting solder only on the iron</strong><p>Heat the conductor joint, then feed solder into the heated metal.</p></section><section class="mistake-card"><strong>Moving or touching a hot joint</strong><p>Let it cool still; freshly soldered metal can burn and movement can spoil the connection.</p></section><section class="mistake-card"><strong>Melting insulation or poor fume control</strong><p>Use a suitable technique and ventilation; stop and reassess if insulation softens or fumes build up.</p></section><section class="mistake-card"><strong>Leaving the iron on the bench</strong><p>Return it to its stand whenever it is not in active use.</p></section><section class="mistake-card"><strong>Testing continuity with power connected</strong><p>Disconnect power before using continuity or resistance mode.</p></section></div>
+
+      <h2>Troubleshooting a wire joint</h2>
+      <h3>Solder will not flow into the joint</h3><p>The conductors may not be hot enough, may be dirty or oxidized, or the tip may need cleaning. Confirm that the solder and flux are intended for electronics work, and follow the iron maker’s recommended temperature and technique. Do not compensate by piling solder onto the tip.</p>
+      <h3>The insulation keeps melting</h3><p>The iron may be held too long, the joint may be receiving excessive heat, or heat may be traveling along a small conductor. Use a suitable setting and technique, keep the tip on the metal, and stop if insulation damage continues.</p>
+      <h3>The joint looks like a large ball</h3><p>More solder does not mean a better connection. Let it cool, inspect whether solder flowed through the conductors, and rework the joint if the wire is loose or the solder only coats the surface.</p>
+      <h3>The continuity test fails</h3><p>Check that the circuit is unpowered, the meter is in continuity mode, and probes touch conductive test points. If those are correct, inspect the conductor and joint; do not probe through or onto the heat-shrink.</p>
+
+      <aside class="quick-rule"><h2>Workshop Girl’s beginner tips</h2><ul><li>Practice on scrap low-voltage wire first.</li><li>Slide heat-shrink on before joining the wires.</li><li>Keep the tip clean and the work secured.</li><li>Heat the joint, then feed the solder into it.</li><li>Let the connection cool before moving it.</li><li>Test the unpowered repair before putting the project back together.</li></ul></aside>
+
+      <section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">Soldering Wires FAQ</h2>
+        <h3>Can a beginner learn to solder wires?</h3><p>Yes. Practice on scrap low-voltage wire, use a stable holder, follow the iron and solder instructions, and keep the circuit disconnected from power.</p>
+        <h3>Should I twist wires before soldering?</h3><p>Arrange the conductors into a stable mechanical connection before soldering. The correct splice shape depends on the wire and application, so follow the relevant repair instructions.</p>
+        <h3>Do I put solder on the iron or the wire?</h3><p>Heat the joined conductors with the iron, then feed solder into the heated joint. A small amount on the tip may help heat transfer, but do not carry a blob to cold wire to form the connection.</p>
+        <h3>How much solder should I use?</h3><p>Enough to flow through and wet the joined conductors, while leaving the connection shape reasonably visible. A large blob is not a goal.</p>
+        <h3>Why will solder not stick to my wire?</h3><p>The wire may be dirty or oxidized, the joint may not be hot enough, the tip may need care, or the solder/flux may not suit the job. Recheck the materials and iron instructions.</p>
+        <h3>Can I use electrical tape instead of heat-shrink tubing?</h3><p>This guide uses properly sized heat-shrink for a compact insulated repair. The right insulation method depends on the application; use a rated method specified for the circuit rather than assuming tape is interchangeable.</p>
+        <h3>How do I know if my soldered connection works?</h3><p>Inspect that the joint is secure and insulated, then check for continuity while the circuit is disconnected from power. A continuity result is one basic check, not proof of performance under load.</p>
+        <h3>Can I test continuity on a powered circuit?</h3><p>No. Disconnect power before using continuity or resistance mode, and follow the multimeter’s instructions.</p>
+      </section>
+
+      <section class="share-end" aria-labelledby="share-end-title"><h2 id="share-end-title">Share this guide</h2><p>Know someone learning to make a careful low-voltage wire repair? Send them this beginner guide.</p><ShareButton title={title} canonical={canonical} label="Share this guide" idSuffix="solder-wires" /></section>
+
+      <section class="related" aria-labelledby="related-title"><h2 id="related-title">Related Tutorials</h2><div class="related-grid">
+        <a class="related-card" href="/tutorials/how-to-use-a-multimeter"><strong>How to Use a Multimeter</strong><span>Learn continuity, resistance and voltage checks with a digital meter.</span></a>
+      </div></section>
+      <div class="closing"><h2>Final thoughts</h2><p>A dependable low-voltage wire repair is not about using lots of solder. Prepare the conductors, make a stable connection, heat the joint so solder flows, let it cool, insulate it properly and verify continuity with the circuit unpowered. Practice on scrap wire first, and follow the equipment instructions whenever the application calls for a specific joining method.</p></div>
+    </article>
+  </main><SiteFooter /></div></body>
+</html>

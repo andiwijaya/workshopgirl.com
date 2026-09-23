@@ -37,6 +37,15 @@ export const tutorials: TutorialSummary[] = [
     published: 'September 23, 2026',
   },
   {
+    title: 'How to Solder Wires: A Beginner’s Guide',
+    slug: '/tutorials/how-to-solder-wires',
+    category: 'Electrical / Electronics / Tools',
+    description: 'Learn how to prepare, solder, insulate, and continuity-test a low-voltage wire connection.',
+    image: '/images/tutorials/soldering-wires/workshopgirl-soldering-wire-preparation.webp',
+    imageAlt: 'Workshop Girl preparing stripped low-voltage wires at an electronics workbench.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'Types of Clamps Explained: Which Clamp Should You Use?',
     slug: '/tutorials/types-of-clamps-explained',
     category: 'Tools / Woodworking / Clamps',
