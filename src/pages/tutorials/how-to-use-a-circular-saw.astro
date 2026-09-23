@@ -1,0 +1,133 @@
+---
+import ShareButton from '../../components/ShareButton.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+
+const title = 'How to Use a Circular Saw: A Beginner’s Guide';
+const seoTitle = `${title} | WorkshopGirl`;
+const description = 'Learn how to use a circular saw safely, from setting blade depth and supporting the workpiece to making a straight cut and avoiding common beginner mistakes.';
+const canonical = 'https://workshopgirl.com/tutorials/how-to-use-a-circular-saw';
+const hero = 'https://workshopgirl.com/images/tutorials/circular-saw/workshopgirl-circular-saw-preparation.webp';
+const schema = {
+  '@context': 'https://schema.org', '@type': 'Article', headline: title,
+  description, url: canonical, mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }, image: hero,
+  datePublished: '2026-09-23', dateModified: '2026-09-23',
+  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
+  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: 'Tools / Woodworking / Power Tools'
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content="Tools / Woodworking / Power Tools" /><meta property="article:published_time" content="2026-09-23" />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+      :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
+      * { box-sizing:border-box; } html { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; } body { margin:0; min-width:320px; } a { color:inherit; }
+      .shell { min-height:100vh; overflow:hidden; position:relative; } .shell::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:.22; background-image:radial-gradient(#b8afa4 .7px,transparent .7px); background-size:18px 18px; mask-image:linear-gradient(to bottom,black,transparent 70%); }
+      main { margin:0 auto; max-width:1080px; padding:9vh 5vw 12vh; position:relative; z-index:1; } .back { color:var(--muted); font-size:.9rem; text-decoration:none; } .back:hover { color:var(--pink); } .eyebrow { color:var(--pink); font-size:.78rem; font-weight:700; letter-spacing:.14em; margin-top:54px; text-transform:uppercase; }
+      h1,h2,h3 { font-family:'Space Grotesk',sans-serif; letter-spacing:-.05em; } h1 { font-size:clamp(2.8rem,5.5vw,5rem); line-height:.98; margin:20px 0 26px; max-width:940px; } .dek { color:var(--muted); font-size:1.18rem; line-height:1.7; max-width:800px; } .byline { border-bottom:1px solid var(--line); color:var(--muted); font-size:.86rem; margin:30px 0 26px; padding-bottom:22px; }
+      figure { margin:0; } figure img { aspect-ratio:16/9; display:block; height:auto; object-fit:contain; width:100%; } .hero { margin:34px auto 54px; max-width:980px; } figcaption { color:var(--muted); font-size:.9rem; line-height:1.55; margin-top:12px; }
+      article { font-size:1.06rem; line-height:1.78; margin:0 auto; max-width:820px; } article p { margin:0 0 1.35em; } article h2 { font-size:clamp(2rem,4vw,3.1rem); line-height:1.04; margin:2.35em 0 .65em; } article h3 { font-size:1.3rem; line-height:1.15; margin:1.4em 0 .45em; } article ul,article ol { margin:0 0 1.5em; padding-left:1.35em; } article li { margin:.38em 0; padding-left:.2em; } article a { color:#a91d56; font-weight:600; text-decoration-thickness:1px; text-underline-offset:3px; }
+      .safety,.tip,.mistake { background:var(--soft); border:1px solid var(--line); border-left:4px solid var(--pink); margin:30px 0 38px; padding:23px; } .safety { background:#171717; border:0; border-left:5px solid var(--pink); color:#fff; } .safety h2 { color:#fff; font-size:1.55rem; letter-spacing:-.035em; margin:0 0 12px; } .safety p,.safety li { color:#f4eaf0; } .safety p:last-child { margin-bottom:0; } .tip h3,.mistake h3 { margin:0 0 8px; } .tip p:last-child,.mistake p:last-child { margin-bottom:0; } .mistake { background:#fff3f2; border-left-color:#a91d56; }
+      .parts-grid,.related-grid { display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); margin:20px 0 32px; } .part-card,.related-card { background:#fffdf9; border:1px solid var(--line); min-width:0; padding:18px; } .part-card h3 { margin:0 0 7px; } .part-card p { font-size:.96rem; line-height:1.6; margin:0; } .checklist { background:#fffdf9; border:1px solid var(--line); list-style:none; margin:20px 0 30px; padding:10px 22px; } .checklist li { border-bottom:1px solid var(--line); margin:0; padding:11px 0 11px 30px; position:relative; } .checklist li:last-child { border-bottom:0; } .checklist li::before { border:2px solid var(--pink); border-radius:4px; content:''; height:14px; left:2px; position:absolute; top:17px; width:14px; }
+      .tip { background:#fffaf4; } .quick-rule { background:#171717; border-left:5px solid var(--pink); color:#fff; margin:36px 0; padding:26px; } .quick-rule h2 { color:#fff; font-size:1.55rem; margin:0 0 12px; } .quick-rule p { color:#f4eaf0; margin:0 0 10px; } .quick-rule p:last-child { margin-bottom:0; }
+      .faq,.related,.closing { border-top:1px solid var(--line); margin-top:50px; padding-top:24px; } .faq h3 { font-size:1.15rem; margin:1.5em 0 .35em; } .related-grid { grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:18px; } .related-card { display:block; text-decoration:none; } .related-card strong { color:var(--ink); display:block; font-family:'Space Grotesk',sans-serif; font-size:1.08rem; line-height:1.25; margin-bottom:8px; } .related-card span { color:var(--muted); font-size:.92rem; line-height:1.5; } .related-card:hover strong,.related-card:focus-visible strong { color:#a91d56; } .closing { padding-top:24px; } :focus-visible { outline:3px solid var(--pink); outline-offset:4px; }
+      @media(max-width:800px) { .related-grid { grid-template-columns:1fr; } }
+      @media(max-width:700px) { main { padding:7vh 6vw 10vh; } .eyebrow { margin-top:40px; } h1 { font-size:clamp(2.25rem,9vw,3.6rem); } .dek { font-size:1.08rem; } article { font-size:1rem; } .hero { margin:28px 0 42px; } .safety,.tip,.mistake,.quick-rule { padding:19px; } .parts-grid { grid-template-columns:1fr; } .checklist { padding:8px 15px; } }
+    </style>
+  </head>
+  <body><div class="shell"><SiteHeader current="tutorials" /><main>
+    <a class="back" href="/tutorials/">← Back to tutorials</a><div class="eyebrow">Tutorials / Tools / Woodworking / Power Tools</div><h1>{title}</h1>
+    <p class="dek">A circular saw can make quick, clean straight cuts in boards and sheet material, but its spinning blade deserves respect. Once you understand the guard, shoe, depth setting, cut line and workpiece support, the setup becomes much less mysterious.</p>
+    <p class="dek">This beginner guide walks through a basic straight cut. If you are still choosing between saws, our <a href="/tutorials/jigsaw-vs-circular-saw">jigsaw vs circular saw guide</a> explains which tool fits different cuts.</p>
+    <div class="byline">Published September 23, 2026 · Workshop Girl</div><ShareButton title={title} canonical={canonical} />
+    <article>
+      <aside class="safety"><h2>A safety note before you begin</h2><p>Circular saws can cause serious injury. Read the instructions for your specific saw, wear suitable eye and hearing protection, secure the work correctly, and keep hands out of the blade path. Disconnect the cord or remove the battery before adjusting the saw or handling its blade.</p></aside>
+
+      <h2>What is a circular saw?</h2>
+      <p>A circular saw is a handheld power saw with a round blade that spins through the material. It is commonly used for straight crosscuts and rip cuts in lumber, breaking down sheet material such as plywood, and everyday DIY woodworking. Blade capacity, material limits and suitable applications depend on the saw and blade.</p>
+      <p>A jigsaw moves a narrow blade up and down and can be steered around curves and cutouts. A circular saw is intended for straight cuts and usually works best guided along a reference edge. Neither tool is a substitute for the other on every job.</p>
+
+      <h2>Know the main parts</h2>
+      <p>Controls vary between models, so identify these on your saw using its manual before plugging in or installing a battery.</p>
+      <div class="parts-grid">
+        <section class="part-card"><h3>Blade and guards</h3><p>The blade does the cutting. The fixed upper guard covers its top; the lower guard should retract for a cut and return over the blade afterward. Check that it moves freely.</p></section>
+        <section class="part-card"><h3>Base plate or shoe</h3><p>The flat plate rests on the work. Keeping it flat and supported helps the saw follow its intended path.</p></section>
+        <section class="part-card"><h3>Main and front handles</h3><p>These give you control of the saw. Use the handles intended by the manufacturer and keep both hands away from the blade path.</p></section>
+        <section class="part-card"><h3>Trigger and safety lock</h3><p>The trigger runs the motor; a lock or safety switch may prevent accidental starting. Learn the controls before the saw is near the work.</p></section>
+        <section class="part-card"><h3>Depth and bevel adjustments</h3><p>Depth changes how far the blade extends below the shoe. Bevel changes the blade angle for angled cuts. Lock both settings as the manual directs.</p></section>
+        <section class="part-card"><h3>Battery, cord and dust outlet</h3><p>Cordless models use a battery; corded models need a clear cord route. Some saws have a dust outlet for a compatible extractor.</p></section>
+      </div>
+
+      <h2>What you need</h2>
+      <ul class="checklist"><li>A circular saw in good condition</li><li>A compatible, sharp blade suited to the material and cut</li><li>The workpiece and a stable workbench or supports</li><li>Clamps placed clear of the saw and blade path</li><li>Tape measure, pencil, and a carpenter’s square or straightedge</li><li>Eye protection and hearing protection</li><li>Respiratory protection when the material or dust conditions call for it</li></ul>
+      <p>Choose clamps that fit the job and hold the stock firmly; our guide to <a href="/tutorials/types-of-clamps-explained">types of clamps</a> covers common options. If you are new to cordless tools, see <a href="/tutorials/how-to-use-a-cordless-drill/">how to use a cordless drill</a> and <a href="/tutorials/cordless-drill-vs-impact-driver">how drills and impact drivers differ</a>.</p>
+
+      <figure class="hero"><img src="/images/tutorials/circular-saw/workshopgirl-circular-saw-preparation.webp" alt="Workshop Girl measuring and preparing a wooden board before a circular saw cut" width="1672" height="941" fetchpriority="high" /><figcaption>A little time spent checking the saw, cut line and support makes the cut easier to control.</figcaption></figure>
+      <p>Before setup, inspect the saw and blade for damage, confirm the blade is correct for the saw and material, and check that the lower guard returns properly. Mark the cut, secure the stock and keep your finger off the trigger while positioning everything. Never start a saw while its blade is touching the work unless the manufacturer’s instructions specifically describe that procedure.</p>
+
+      <h2>Step 1 — Measure and mark the cut</h2>
+      <p>Measure from a known edge and make a clear pencil mark. Use a carpenter’s square for a crosscut or a straightedge for a long rip. Mark the waste side so you know which side of the line the blade should remove; account for the blade’s kerf, the narrow strip of material the teeth cut away.</p>
+      <p>Check the measurement and the line before clamping. A clear reference is easier to follow than trying to correct a wandering cut halfway through.</p>
+
+      <h2>Step 2 — Support and secure the workpiece</h2>
+      <p>The board or panel must sit steadily, with the blade able to pass underneath without striking the bench, sawhorse or another support. Do not put the cut line directly over the workbench. Support the material on both sides as needed while leaving clearance for the blade.</p>
+      <ul><li>Clamp the supported portion firmly and keep every clamp outside the saw’s travel path.</li><li>Plan where the offcut will settle when the cut is complete; it must not drop, twist or close the kerf around the blade.</li><li>Arrange supports so the material does not sag into the cut. A closing kerf can squeeze the blade and make the saw bind.</li><li>Keep your hands clear of the cut line and the area underneath it.</li></ul>
+      <p>For larger sheet goods, use a stable setup designed to support the panel without trapping the blade. If you cannot make the material stable and clear beneath the cut, change the setup before switching the saw on.</p>
+
+      <h2>Step 3 — Set the blade depth</h2>
+      <p>With the saw disconnected from power and following its manual, set the blade so it extends only a little below the underside of the material. That gives the teeth enough reach without exposing more blade than the cut needs. The right setting depends on the saw, blade and stock; do not rely on one measurement for every setup. Lock the depth adjustment before cutting.</p>
+
+      <h2>Step 4 — Get into position</h2>
+      <p>Stand with a balanced stance and a clear view of the reference line. Hold the saw by its intended handles with two hands where the design provides them. Keep fingers and loose clothing away from the blade path, and keep the shoe flat on the work. Stand slightly to the side rather than directly behind the saw’s line of travel, while staying balanced and able to control it.</p>
+      <p>Check that a cord cannot cross the cut or catch on the work. Make sure the blade, guide and supports are aligned. Kickback is a sudden backward or upward movement that can happen if a blade binds or the saw twists; correct support and steady control help reduce the chance. Follow the instructions for your exact saw, since its controls and safety features may differ.</p>
+
+      <figure class="hero"><img src="/images/tutorials/circular-saw/workshopgirl-using-circular-saw.webp" alt="Workshop Girl making a straight cut through a secured wooden board with a cordless circular saw" width="1672" height="941" loading="lazy" /><figcaption>Keep the shoe flat, guide the saw steadily and let the blade cut at its own pace.</figcaption></figure>
+      <h2>Step 5 — Start and make the cut</h2>
+      <ol><li>Position the shoe securely and align the blade with the correct side of your marked line.</li><li>Confirm the blade is clear of the material before starting, unless your saw’s manual gives a different procedure.</li><li>Start the saw using its specified controls and let the blade reach operating speed.</li><li>Guide it steadily into and through the work, following your reference while keeping the shoe flat.</li><li>Do not force the saw. Let the blade do the cutting and keep control through the end of the cut.</li></ol>
+      <p>If progress slows or the saw begins to bind, do not push harder. Release the trigger, hold the saw steady until the blade stops, then inspect the blade choice and condition, material support and kerf. Disconnect power before making adjustments or clearing anything near the blade.</p>
+
+      <h2>Step 6 — Finish the cut safely</h2>
+      <p>Maintain control as the blade exits the far edge. Release the trigger and keep holding the saw in place until the blade has stopped. Let the lower guard return as designed, then lift or set the saw down carefully according to its instructions. Never put it down while the blade is still moving, and do not force the guard closed by hand.</p>
+
+      <figure class="hero"><img src="/images/tutorials/circular-saw/workshopgirl-checking-circular-saw-cut.webp" alt="Workshop Girl checking a finished straight cut in a wooden board with a square" width="1672" height="941" loading="lazy" /><figcaption>Check the result only after the blade has stopped and the saw is safely clear.</figcaption></figure>
+      <h2>Step 7 — Inspect the cut</h2>
+      <p>Check that the edge follows the intended line and use a square if the cut needs to meet an edge at a right angle. Look for roughness, splintering or a blade that wandered. A wandering cut can come from a poor reference, a loose guide, rushing, a dull or unsuitable blade, or stock moving during the cut.</p>
+      <p>Before cleaning the saw, changing the blade or inspecting it closely, disconnect it from power or remove the battery as appropriate. Follow the manual for blade changes and maintenance.</p>
+
+      <h2>Common beginner mistakes</h2>
+      <ul><li><strong>Poor support:</strong> A moving board is hard to control and can pinch the blade.</li><li><strong>Cutting into the bench:</strong> Check the clearance below the cut before starting.</li><li><strong>Too much blade exposed:</strong> Set depth conservatively for the material and saw.</li><li><strong>Hands or clamps in the path:</strong> Keep the cut and saw travel clear.</li><li><strong>Forcing or twisting the saw:</strong> This can cause binding, a rough cut or kickback.</li><li><strong>Wrong or damaged blade:</strong> Check compatibility, condition and material suitability.</li><li><strong>Ignoring the offcut:</strong> Support it so it cannot fall or squeeze the blade.</li><li><strong>Lifting the shoe during the cut:</strong> Keep the base plate flat and supported.</li><li><strong>Setting the saw down too soon:</strong> Wait for the blade to stop completely.</li></ul>
+
+      <h2>Understanding kickback</h2>
+      <p>Kickback is when the saw reacts suddenly and moves back toward the operator or lifts from the work. A blade that gets trapped, a saw that twists, unstable stock, poor support, an unsuitable or damaged blade, or forcing the cut can contribute. It is one reason to plan the support and offcut before starting.</p>
+      <p>Reduce the chance by using a sound compatible blade, supporting the material so the kerf stays open, keeping the shoe flat, guiding without twisting and stopping if the saw binds. Do not restart a trapped blade in the cut. Follow the saw maker’s safety instructions; this guide does not replace them.</p>
+
+      <h2>Circular saw vs jigsaw</h2>
+      <p>A circular saw is usually the better fit for a guided straight cut. A jigsaw is more maneuverable for curves, cutouts and shaped work. The right choice still depends on the material, blade and tool. For a fuller comparison, read <a href="/tutorials/jigsaw-vs-circular-saw">Jigsaw vs Circular Saw: Which One Should a Beginner Use?</a></p>
+
+      <aside class="tip"><h3>Workshop Girl’s beginner tips</h3><ul><li>Practice on scrap of the same material first.</li><li>Mark the waste side and check the blade’s kerf.</li><li>Look underneath the work before you cut.</li><li>Let the blade reach speed, then guide without rushing.</li><li>Stop if the saw binds or anything about the setup feels wrong.</li></ul></aside>
+
+      <section class="faq" aria-labelledby="faq-title"><h2 id="faq-title">Circular Saw FAQ</h2>
+        <h3>Can a beginner use a circular saw?</h3><p>Yes, after reading the saw manual, learning its controls and practicing a basic cut with suitable PPE, a stable setup and a compatible blade. Start slowly with scrap material.</p>
+        <h3>What can you cut with a circular saw?</h3><p>Depending on the saw and blade, common jobs include straight cuts in lumber and sheet goods. Check the tool and blade ratings before cutting other materials.</p>
+        <h3>How deep should a circular saw blade be set?</h3><p>Set it only far enough below the material to complete the cut, following the saw manufacturer’s guidance. The suitable amount varies with the saw and workpiece.</p>
+        <h3>Why does my circular saw wander from the line?</h3><p>The guide may have shifted, the stock may be moving, the blade may be unsuitable or dull, or the saw may be forced or twisted. Stop and check the setup rather than steering harder.</p>
+        <h3>What causes circular saw kickback?</h3><p>Binding or pinching, twisting, unstable support, a damaged or unsuitable blade, and forcing the tool can contribute. Correct the setup and follow the saw manual.</p>
+        <h3>Do I need to clamp wood before using a circular saw?</h3><p>The workpiece must be secured so it cannot shift. Clamps are often useful, but place them clear of the saw path and use supports that will not pinch the blade.</p>
+        <h3>Circular saw or jigsaw: which should I buy first?</h3><p>Choose based on your projects: a circular saw suits guided straight cuts; a jigsaw is useful for curves and cutouts. Our <a href="/tutorials/jigsaw-vs-circular-saw">comparison guide</a> can help you decide.</p>
+      </section>
+
+      <section class="related" aria-labelledby="related-title"><h2 id="related-title">Related Tutorials</h2><div class="related-grid">
+        <a class="related-card" href="/tutorials/jigsaw-vs-circular-saw"><strong>Jigsaw vs Circular Saw</strong><span>Choose a saw for shaped or straight cuts.</span></a>
+        <a class="related-card" href="/tutorials/types-of-clamps-explained"><strong>Types of Clamps Explained</strong><span>Pick a clamp to hold your work securely.</span></a>
+        <a class="related-card" href="/tutorials/how-to-use-a-cordless-drill/"><strong>How to Use a Cordless Drill</strong><span>Get comfortable with another common power tool.</span></a>
+      </div></section>
+      <div class="closing"><h2>Final thoughts</h2><p>Good circular-saw work comes from preparation and control, not force. Measure carefully, support the work so the blade cannot bind, set up the saw as its manufacturer directs and keep a steady grip. Let the blade do the work—and stop to reassess if anything feels wrong.</p></div>
+    </article>
+  </main><SiteFooter /></div></body>
+</html>

@@ -16,6 +16,7 @@ export function GET() {
     'https://workshopgirl.com/tutorials/drill-bit-types-explained',
     'https://workshopgirl.com/tutorials/socket-ratchet-sizes-explained',
     'https://workshopgirl.com/tutorials/jigsaw-vs-circular-saw',
+    'https://workshopgirl.com/tutorials/how-to-use-a-circular-saw',
     'https://workshopgirl.com/tutorials/types-of-clamps-explained',
     'https://workshopgirl.com/tutorials/how-to-use-a-multimeter',
     'https://workshopgirl.com/tutorials/angle-grinder-basics',

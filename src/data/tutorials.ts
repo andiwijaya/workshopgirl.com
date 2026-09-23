@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Use a Circular Saw: A Beginner’s Guide',
+    slug: '/tutorials/how-to-use-a-circular-saw',
+    category: 'Tools / Woodworking / Power Tools',
+    description: 'Learn how to use a circular saw safely, from setting blade depth and supporting the workpiece to making a straight cut and avoiding common beginner mistakes.',
+    image: '/images/tutorials/circular-saw/workshopgirl-circular-saw-preparation.webp',
+    imageAlt: 'Workshop Girl preparing a circular saw and measuring a wooden board before cutting.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'Angle Grinder Basics: Cutting Disc vs Grinding Wheel vs Flap Disc',
     slug: '/tutorials/angle-grinder-basics',
     category: 'Tools / Metalworking',
