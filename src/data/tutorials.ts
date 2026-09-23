@@ -41,7 +41,7 @@ export const tutorials: TutorialSummary[] = [
     slug: '/tutorials/how-to-solder-wires',
     category: 'Electrical / Electronics / Tools',
     description: 'Learn how to prepare, solder, insulate, and continuity-test a low-voltage wire connection.',
-    image: '/images/tutorials/soldering-wires/workshopgirl-soldering-wire-preparation.webp',
+    image: '/images/tutorials/soldering-wires/workshopgirl-soldering-wire-preparation-v2.webp',
     imageAlt: 'Workshop Girl preparing stripped low-voltage wires at an electronics workbench.',
     published: 'September 23, 2026',
   },
