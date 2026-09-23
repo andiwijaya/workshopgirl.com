@@ -1,0 +1,73 @@
+---
+import ShareButton from '../../../components/ShareButton.astro';
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+
+const title = 'Workshop Girl Tries Indoor Rock Climbing';
+const seoTitle = `${title} | WorkshopGirl`;
+const description = 'Workshop Girl steps away from the workbench and onto the climbing wall for an indoor rock-climbing session about balance, patience and trying again.';
+const canonical = 'https://workshopgirl.com/sport/indoor-rock-climbing/';
+const hero = 'https://workshopgirl.com/images/sport/rock-climbing/workshopgirl-indoor-rock-climbing.webp';
+const published = '2026-09-23';
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  image: [hero],
+  datePublished: published,
+  dateModified: published,
+  author: { '@type': 'Organization', name: 'Workshop Girl' },
+  publisher: { '@type': 'Organization', name: 'Workshop Girl', url: 'https://workshopgirl.com/' },
+  mainEntityOfPage: canonical,
+};
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://workshopgirl.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Sport', item: 'https://workshopgirl.com/sport/' },
+    { '@type': 'ListItem', position: 3, name: title, item: canonical },
+  ],
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content="Sport" /><meta property="article:published_time" content={published} />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+      :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --orange:#e58445; --line:#ded8d0; --soft:#fffaf4; } * { box-sizing:border-box; } html { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; } body { margin:0; min-width:0; } a { color:inherit; }
+      .shell { min-height:100vh; overflow:hidden; position:relative; } .shell::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:.2; background-image:radial-gradient(#b8afa4 .7px,transparent .7px); background-size:18px 18px; mask-image:linear-gradient(to bottom,black,transparent 70%); }
+      main { margin:0 auto; max-width:1120px; padding:7vh 5vw 11vh; position:relative; z-index:1; } .back { color:var(--muted); font-size:.9rem; text-decoration:none; } .back:hover { color:var(--pink); } .eyebrow { color:var(--pink); font-size:.78rem; font-weight:700; letter-spacing:.14em; margin-top:46px; text-transform:uppercase; } h1,h2 { font-family:'Space Grotesk',sans-serif; letter-spacing:-.065em; } h1 { font-size:clamp(3rem,7vw,6.2rem); line-height:.94; margin:20px 0 24px; max-width:950px; } .dek { color:var(--muted); font-size:clamp(1.08rem,2vw,1.25rem); line-height:1.7; margin:0; max-width:720px; } .byline { border-bottom:1px solid var(--line); color:var(--muted); font-size:.86rem; margin:26px 0 36px; padding-bottom:20px; }
+      .story { margin:0 auto; max-width:1000px; } figure { margin:0; } figure img { display:block; height:auto; width:100%; } figcaption { color:var(--muted); font-size:.86rem; line-height:1.5; margin-top:11px; } .story-figure { margin:48px 0 0; } .story-copy { max-width:740px; } .story h2 { font-size:clamp(2rem,4.5vw,3.5rem); line-height:1; margin:26px 0 12px; } .story p { color:var(--muted); font-size:1.06rem; line-height:1.75; margin:0 0 18px; } .quote { background:var(--soft); border-left:4px solid var(--pink); font-family:'Space Grotesk',sans-serif; font-size:clamp(1.5rem,3vw,2.2rem); font-weight:600; letter-spacing:-.04em; line-height:1.2; margin:48px 0 0; padding:24px 28px; }
+      .related { border-top:1px solid var(--line); margin-top:54px; padding-top:24px; } .related a { color:var(--pink); font-weight:700; } :focus-visible { outline:3px solid var(--pink); outline-offset:4px; }
+      @media(max-width:700px) { main { padding:6vh 7vw 9vh; } .eyebrow { margin-top:36px; } h1 { font-size:clamp(2.8rem,13vw,5rem); } .story p { font-size:1rem; } .story-figure { margin-top:34px; } .quote { padding:20px 22px; } }
+    </style>
+  </head>
+  <body><div class="shell"><SiteHeader current="sport" /><main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a class="back" href="/sport/">← Sport</a></nav>
+    <div class="eyebrow">Sport · Indoor climbing</div><h1>{title}</h1>
+    <p class="dek">Today the workshop has walls — very tall ones. I stepped away from the workbench to see what happens when the next step is a handhold.</p>
+    <div class="byline">Published September 23, 2026 · Workshop Girl</div>
+    <ShareButton title={title} canonical={canonical} label="Share this activity" idSuffix="rock-climbing" />
+    <article class="story">
+      <figure class="story-figure"><img src="/images/sport/rock-climbing/workshopgirl-rock-climbing-get-ready.webp" alt="Workshop Girl checking her climbing harness before an indoor climbing session" width="1672" height="941" fetchpriority="high" /><figcaption>Before the first hold: a little preparation, a lot of looking up.</figcaption></figure>
+      <div class="story-copy"><h2>Get Ready</h2><p>Shoes on, harness checked, chalk ready. From the floor, the wall looked like a puzzle I could solve by simply reaching up. Standing beneath it made that first move feel much bigger. Confidence starts before the climb, with taking a breath and being ready to try.</p></div>
+
+      <figure class="story-figure"><img src="/images/sport/rock-climbing/workshopgirl-indoor-rock-climbing.webp" alt="Workshop Girl climbing an indoor wall while a belayer manages the rope below" width="1672" height="941" loading="lazy" /><figcaption>One hold, then a pause to find the next.</figcaption></figure>
+      <div class="story-copy"><h2>Climb</h2><p>Up close, every hold asks for a small decision. Reach, shift, steady. I expected the climb to be all about pulling, but balance and patience had just as much to say. When I got stuck, looking around for another path was part of the fun.</p></div>
+
+      <figure class="story-figure"><img src="/images/sport/rock-climbing/workshopgirl-after-rock-climbing.webp" alt="Workshop Girl taking a seated rest after climbing and checking chalk on her hands" width="1672" height="941" loading="lazy" /><figcaption>A breather, chalky hands, and the question every good first try leaves behind.</figcaption></figure>
+      <div class="story-copy"><h2>One More Route?</h2><p>Back on the bench, I checked my chalky hands and replayed the tricky parts. I didn’t need to have it all figured out to enjoy the climb. I just needed to be curious enough to give it a go—and now I’m already wondering what another route might feel like.</p></div>
+      <blockquote class="quote">You don’t have to know the route before you start. Find the next hold, and keep climbing.</blockquote>
+      <div class="related"><strong>More from Workshop Girl:</strong> <a href="/sport/">Explore all sport activities</a> · <a href="/diary/">Read the workshop diary</a></div>
+    </article>
+  </main><SiteFooter /></div></body>
+</html>

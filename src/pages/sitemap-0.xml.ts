@@ -7,6 +7,8 @@ export function GET() {
     'https://workshopgirl.com/about/',
     'https://workshopgirl.com/projects/',
     'https://workshopgirl.com/projects/bringing-an-old-motorcycle-back-to-life/',
+    'https://workshopgirl.com/sport/',
+    'https://workshopgirl.com/sport/indoor-rock-climbing/',
     'https://workshopgirl.com/tutorials/engine-air-filter/',
     'https://workshopgirl.com/tutorials/how-to-replace-a-car-battery/',
     'https://workshopgirl.com/tutorials/how-to-change-spark-plugs/',
