@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'How to Use a Jigsaw: A Beginner’s Guide',
+    slug: '/tutorials/how-to-use-a-jigsaw/',
+    category: 'Tools / Woodworking / Power Tools',
+    description: 'Learn how to choose a jigsaw blade, secure your workpiece, follow a curved cutting line, and avoid common beginner mistakes.',
+    image: '/images/tutorials/jigsaw/workshopgirl-cutting-plywood-with-jigsaw.webp',
+    imageAlt: 'Workshop Girl guiding a cordless jigsaw through a curved plywood cut.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'How to Use a Circular Saw: A Beginner’s Guide',
     slug: '/tutorials/how-to-use-a-circular-saw',
     category: 'Tools / Woodworking / Power Tools',

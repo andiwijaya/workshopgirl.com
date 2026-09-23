@@ -56,15 +56,29 @@ const statusId = idSuffix ? `share-status-${idSuffix}` : 'share-status';
       shareStatus.textContent = message;
       statusTimeout = window.setTimeout(() => { shareStatus.textContent = ''; }, 2400);
     };
+    const copyCanonical = async () => {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(canonical);
+        return true;
+      }
+      const fallback = document.createElement('textarea');
+      fallback.value = canonical;
+      fallback.setAttribute('readonly', '');
+      fallback.style.position = 'fixed';
+      fallback.style.opacity = '0';
+      document.body.append(fallback);
+      fallback.select();
+      let copied = false;
+      try { copied = document.execCommand('copy'); } finally { fallback.remove(); }
+      return copied;
+    };
     shareButton?.addEventListener('click', async () => {
       try {
         if (navigator.share) {
           await navigator.share({ title, text: title, url: canonical });
           setStatus('Thanks for sharing.');
-        } else if (navigator.clipboard) {
-          await navigator.clipboard.writeText(canonical);
-          setStatus('Link copied.');
-        } else setStatus(canonical);
+        } else if (await copyCanonical()) setStatus('Copied!');
+        else setStatus(canonical);
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') return;
         setStatus(canonical);
@@ -72,9 +86,8 @@ const statusId = idSuffix ? `share-status-${idSuffix}` : 'share-status';
     });
     copyButton?.addEventListener('click', async () => {
       try {
-        if (!navigator.clipboard) throw new Error('Clipboard unavailable');
-        await navigator.clipboard.writeText(canonical);
-        setStatus('Link copied.');
+        if (await copyCanonical()) setStatus('Copied!');
+        else setStatus(canonical);
       } catch (error) {
         setStatus(canonical);
       }
