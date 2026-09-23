@@ -1,0 +1,116 @@
+---
+import ShareButton from '../../components/ShareButton.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+
+const title = 'Angle Grinder Basics: Cutting Disc vs Grinding Wheel vs Flap Disc';
+const seoTitle = `${title} | WorkshopGirl`;
+const description = 'Learn what cutting discs, grinding wheels, and flap discs do, how to choose the right angle grinder accessory, and the essential safety checks for beginners.';
+const canonical = 'https://workshopgirl.com/tutorials/angle-grinder-basics';
+const hero = 'https://workshopgirl.com/images/tutorials/angle-grinder-basics/angle-grinder-accessory-basics.png';
+const schema = {
+  '@context': 'https://schema.org', '@type': 'Article', headline: title,
+  description, url: canonical, mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }, image: hero,
+  datePublished: '2026-09-23', dateModified: '2026-09-23',
+  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
+  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: 'Tools / Metalworking'
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content="Tools / Metalworking" /><meta property="article:published_time" content="2026-09-23" />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+      :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
+      * { box-sizing:border-box; } html { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; } body { margin:0; min-width:0; } a { color:inherit; }
+      .shell { min-height:100vh; overflow:hidden; position:relative; } .shell::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:.22; background-image:radial-gradient(#b8afa4 .7px,transparent .7px); background-size:18px 18px; mask-image:linear-gradient(to bottom,black,transparent 70%); }
+      main { margin:0 auto; max-width:1080px; padding:9vh 5vw 12vh; position:relative; z-index:1; } .back { color:var(--muted); font-size:.9rem; text-decoration:none; } .back:hover { color:var(--pink); } .eyebrow { color:var(--pink); font-size:.78rem; font-weight:700; letter-spacing:.14em; margin-top:54px; text-transform:uppercase; }
+      h1,h2,h3 { font-family:'Space Grotesk',sans-serif; letter-spacing:-.045em; } h1 { font-size:clamp(2.8rem,5.5vw,5rem); line-height:.98; margin:20px 0 26px; max-width:940px; } .dek { color:var(--muted); font-size:1.18rem; line-height:1.7; max-width:800px; } .byline { border-bottom:1px solid var(--line); color:var(--muted); font-size:.86rem; margin:30px 0 26px; padding-bottom:22px; }
+      figure { margin:0; } figure img { aspect-ratio:1672/941; display:block; height:auto; object-fit:contain; width:100%; } .hero { margin:34px auto 54px; max-width:980px; } figcaption { color:var(--muted); font-size:.9rem; line-height:1.55; margin-top:12px; }
+      article { font-size:1.06rem; line-height:1.78; margin:0 auto; max-width:820px; } article p { margin:0 0 1.35em; } article h2 { font-size:clamp(2rem,4vw,3.1rem); line-height:1.04; margin:2.35em 0 .65em; } article h3 { font-size:1.35rem; line-height:1.16; margin:0 0 .5em; } article ul,article ol { margin:0 0 1.5em; padding-left:1.35em; } article li { margin:.38em 0; padding-left:.2em; } article a { color:#a91d56; font-weight:600; text-decoration-thickness:1px; text-underline-offset:3px; }
+      .quick,.callout,.safety,.note { background:var(--soft); border:1px solid var(--line); border-left:4px solid var(--pink); margin:30px 0 38px; padding:23px; } .quick h2,.callout h3,.safety h2,.note h3 { margin:0 0 9px; } .quick p:last-child,.callout p:last-child,.safety p:last-child,.note p:last-child { margin-bottom:0; } .safety { background:#171717; border:0; border-left:5px solid var(--pink); color:#fff; } .safety h2 { color:#fff; font-size:1.6rem; } .safety p,.safety li { color:#f4eaf0; } .safety ul { margin:10px 0 0; }
+      .table-scroll { border:1px solid var(--line); margin:24px 0 34px; max-width:100%; overflow-x:auto; overscroll-behavior-inline:contain; } table { border-collapse:collapse; min-width:700px; width:100%; } caption { background:#fffaf4; color:var(--muted); font-size:.9rem; padding:12px; text-align:left; } th,td { border-bottom:1px solid var(--line); padding:13px 14px; text-align:left; vertical-align:top; } thead { background:#171717; color:white; } th { font-size:.87rem; line-height:1.4; } td { background:#fffdf9; font-size:.9rem; line-height:1.5; } tbody tr:last-child td { border-bottom:0; } td:first-child { color:#a91d56; font-weight:700; }
+      .checklist { background:#fffdf9; border:1px solid var(--line); list-style:none; margin:20px 0 30px; padding:10px 20px; } .checklist li { border-bottom:1px solid var(--line); margin:0; padding:10px 0 10px 30px; position:relative; } .checklist li:last-child { border:0; } .checklist li::before { border:1px solid #a91d56; content:''; height:15px; left:2px; position:absolute; top:15px; width:15px; }
+      .decision-grid { display:grid; gap:14px; grid-template-columns:repeat(3,minmax(0,1fr)); margin:22px 0 30px; } .decision-card { background:#fffdf9; border:1px solid var(--line); min-width:0; padding:19px; } .decision-card h3 { color:#a91d56; font-size:1.12rem; margin:0 0 8px; } .decision-card p { color:var(--muted); font-size:.96rem; line-height:1.55; margin:0; }
+      .related,.share-end,.sources { border-top:1px solid var(--line); margin-top:50px; padding-top:24px; } .related-grid { display:grid; gap:14px; grid-template-columns:repeat(2,minmax(0,1fr)); margin-top:18px; } .related-card { background:#fffdf9; border:1px solid var(--line); display:block; min-width:0; padding:18px; text-decoration:none; } .related-card strong { color:var(--ink); display:block; font-family:'Space Grotesk',sans-serif; font-size:1.08rem; line-height:1.25; margin-bottom:8px; } .related-card span { color:var(--muted); font-size:.92rem; line-height:1.5; } .related-card:hover strong,.related-card:focus-visible strong { color:#a91d56; } .share-end h2 { margin-top:0; } .sources li { overflow-wrap:anywhere; } :focus-visible { outline:3px solid var(--pink); outline-offset:4px; }
+      @media(max-width:800px) { .decision-grid,.related-grid { grid-template-columns:1fr; } }
+      @media(max-width:700px) { main { padding:7vh 6vw 10vh; } .eyebrow { margin-top:40px; } h1 { font-size:clamp(2.25rem,9vw,3.6rem); } .dek { font-size:1.08rem; } article { font-size:1rem; } .hero { margin:28px 0 42px; } .quick,.callout,.safety,.note { padding:19px; } .share-end { margin-top:42px; } figcaption { font-size:.9rem; } }
+      @media(max-width:350px) { main { padding-left:18px; padding-right:18px; } }
+    </style>
+  </head>
+  <body><div class="shell"><SiteHeader current="tutorials" /><main>
+    <a class="back" href="/tutorials/">← Back to tutorials</a><div class="eyebrow">Tutorials / Tools / Metalworking</div><h1>{title}</h1>
+    <p class="dek">Several round accessories can fit an angle grinder, but they are not interchangeable. A thin cutting disc, a thicker grinding wheel, and a flap disc are built to meet the work in different ways. As a first mental model, think <strong>CUT, REMOVE, FINISH</strong>—then check the exact accessory instructions, because designs and applications vary.</p>
+    <div class="byline">Published September 23, 2026 · Workshop Girl</div><ShareButton title={title} canonical={canonical} label="Share this article" idSuffix="intro" />
+    <figure class="hero"><img src="/images/tutorials/angle-grinder-basics/angle-grinder-accessory-basics.png" alt="WorkshopGirl comparing an angle grinder with a cutting disc, grinding wheel, and flap disc" width="1672" height="941" fetchpriority="high" /><figcaption>One grinder can accept very different accessories. The right choice depends on the tool, wheel, material, and operation.</figcaption></figure>
+
+    <article>
+      <aside class="quick"><h2>The quick comparison</h2><p><strong>Cutting disc: CUT.</strong> A compatible thin cut-off wheel cuts with its outer edge. <strong>Grinding wheel: REMOVE.</strong> A compatible thicker wheel removes material using the contact area it was designed for. <strong>Flap disc: FINISH.</strong> Overlapping abrasive flaps can blend, smooth, or prepare a surface. These are beginner shorthand, not universal classifications.</p></aside>
+
+      <h2>First, what is an angle grinder?</h2>
+      <p>An angle grinder is a handheld power tool that spins an accessory around a spindle. It is useful for jobs such as cutting, grinding, and surface preparation, but the tool is only half the setup. The accessory determines how it contacts the work and what material it is meant to work on.</p>
+      <p>An accessory fitting the spindle does <strong>not</strong> prove it is safe or suitable. Before mounting anything, check the grinder manual and the accessory label for compatible material and operation, diameter, spindle or mounting interface, maximum RPM, and required guard. The grinder’s maximum no-load speed must not exceed the accessory’s maximum rated speed. Do not guess a universal RPM: it varies by model and wheel size.</p>
+
+      <h2>Cutting disc: make a cut with the edge</h2>
+      <p>A cut-off disc is comparatively thin. On a compatible grinder and suitable material, it is designed to cut using its <strong>periphery—the outer edge</strong>. Think of cutting steel bar or trimming appropriate metal stock, but the specific wheel must be rated for that material and the grinder. A disc for metal is not automatically suitable for masonry, and vice versa.</p>
+      <p>A thin cutting wheel is not a general-purpose grinding wheel. Do not press its flat side against the work to remove a burr or grind a face: thin wheels are not designed for that side-loading and may break. If a cut leaves material to dress, stop, let the wheel come to rest, and choose an appropriate grinding or finishing accessory with its matching guard.</p>
+
+      <h2>Grinding wheel: remove material with the designed surface</h2>
+      <p>A grinding wheel is usually thicker and more rigid than a cut-off disc. Appropriate wheel designs can remove material, dress rough metal, work down a compatible weld area, or shape a suitable metal surface. Which face or edge is intended for contact depends on the wheel’s shape and instructions; “thicker” alone does not tell you how to use it.</p>
+      <p>Match the wheel, guard, grinder, and operation, and use the contact angle specified by the manufacturer. Let the abrasive do the work with controlled pressure. Pushing harder is not a shortcut to a better or safer result: it can make control harder and place extra stress on the tool or accessory.</p>
+
+      <h2>Flap disc: blend and refine the surface</h2>
+      <p>A flap disc has overlapping abrasive flaps arranged around its face. Rather than one solid bonded abrasive body, many abrasive layers meet the surface progressively. Depending on its abrasive material, backing, grit, and rated application, a flap disc can help blend, smooth, prepare a surface, or remove a smaller amount of material.</p>
+      <p>Flap discs come in different abrasive types and grits. Coarser and finer choices trade stock removal against surface refinement, but there is no universally correct grit. Follow the disc maker’s guidance for material and working angle, and use light, controlled pressure. Forcing the grinder harder does not replace choosing the right abrasive.</p>
+      <figure><img src="/images/tutorials/angle-grinder-basics/disc-wheel-flap-disc-comparison.png" alt="WorkshopGirl comparing a thin cutting disc, a thick grinding wheel, and a layered flap disc" width="1672" height="941" loading="lazy" /><figcaption>Similar diameter, very different construction. A thin cut-off disc, rigid grinding wheel, and layered flap disc are designed for different jobs.</figcaption></figure>
+
+      <h2>Compare the three accessories</h2>
+      <p>Use the labels as a starting point. The wheel profile and manufacturer instructions decide the permitted contact area and application.</p>
+      <div class="table-scroll" role="region" aria-label="Scrollable comparison of grinder accessories" tabindex="0"><table><caption>Angle grinder accessory comparison. Scroll within this table on a narrow screen.</caption><thead><tr><th scope="col">Accessory</th><th scope="col">Construction</th><th scope="col">Primary purpose</th><th scope="col">Typical contact</th><th scope="col">Mental model</th></tr></thead><tbody>
+        <tr><td>Cutting disc</td><td>Thin bonded abrasive wheel</td><td>Cutting compatible material</td><td>Outer edge / periphery</td><td>CUT</td></tr>
+        <tr><td>Grinding wheel</td><td>Thicker, rigid abrasive wheel</td><td>Grinding and material removal</td><td>Surface specified for that wheel design</td><td>REMOVE</td></tr>
+        <tr><td>Flap disc</td><td>Overlapping abrasive flaps</td><td>Blending, smoothing, surface preparation</td><td>Abrasive flap face at the maker’s specified angle</td><td>FINISH</td></tr>
+      </tbody></table></div>
+
+      <aside class="callout"><h3>The big beginner mistake</h3><p><strong>“It fits” is not the same as “it is right for this job.”</strong> Never side-grind with a thin cut-off disc. Do not assume an abrasive suits every material, exceed its rated speed, remove a required guard for easier access, or use a disc that is cracked, chipped, damp, dropped, or otherwise questionable.</p></aside>
+
+      <h2>Before you switch it on</h2>
+      <p>Work through this check every time you change an accessory or move to a new task. The manual for your grinder and the accessory’s own instructions take priority; exact requirements differ by tool and application.</p>
+      <ul class="checklist">
+        <li>Confirm the accessory is rated for the material and the operation—not just the grinder brand.</li>
+        <li>Check diameter, bore or mounting interface, and the accessory’s maximum RPM against the grinder’s speed.</li>
+        <li>Inspect the accessory for cracks, chips, damage, contamination, or signs of poor storage. If unsure, do not use it.</li>
+        <li>Install the correct guard and set it between you and the working accessory as the grinder manual directs. Never remove a required guard.</li>
+        <li>Fit the side handle when supplied or required, and use it as directed to maintain control.</li>
+        <li>Clamp the workpiece securely in a suitable vise or fixture; do not hold small stock in your hand near a rotating wheel.</li>
+        <li>Stand in a stable position, plan where sparks and debris will travel, and keep them away from people and flammable materials.</li>
+        <li>Wear suitable eye protection; add a face shield where the task calls for it. Use hearing protection and respiratory protection when the task or material requires them, plus any other PPE specified for the tool, abrasive, or work.</li>
+        <li>Wear suitable close-fitting clothing; tie back long hair and keep it clear of the rotating accessory. PPE does not replace a guard or sound technique.</li>
+        <li>Use both hands on the intended grips during operation where the tool is designed for two-handed control. Let the accessory stop safely before setting the grinder down.</li>
+      </ul>
+      <p>Before mounting an abrasive wheel, consult its instructions for the required inspection and handling procedure. Some bonded wheels have specific checks; do not assume every abrasive accessory is inspected the same way.</p>
+
+      <h2>Why a flap disc feels different in use</h2>
+      <p>The overlapping flaps contact the surface progressively, which can make a flap disc feel suited to blending a transition or refining a rough area. Results still depend on grit, abrasive type, material, grinder speed, and the working angle specified for that disc. Start with a small test area on securely held scrap when appropriate, keep the guard in place, and use measured pressure rather than leaning into the tool.</p>
+      <figure><img src="/images/tutorials/angle-grinder-basics/flap-disc-grinding-steel-safely.png" alt="WorkshopGirl using a guarded angle grinder and flap disc with both hands on steel secured in a bench vise" width="1672" height="941" loading="lazy" /><figcaption>A flap disc in a finishing operation: secure the workpiece, control the grinder with both hands, and keep the guard and appropriate PPE in place. Always follow the instructions for your own tool and disc.</figcaption></figure>
+
+      <h2>Which one should a beginner choose?</h2>
+      <div class="decision-grid"><section class="decision-card"><h3>Need to cut?</h3><p>Choose a cut-off disc explicitly rated for the material, grinder size, speed, and required guard. Use its edge for cutting only.</p></section><section class="decision-card"><h3>Need to remove more material?</h3><p>Look for a grinding wheel approved for the material and task. Match its design to the grinder, guard, and contact method in its instructions.</p></section><section class="decision-card"><h3>Need to blend or smooth?</h3><p>A compatible flap disc may fit the job. Select abrasive type and grit for the material and finish you want, following the maker’s guidance.</p></section></div>
+      <p>There is no one accessory every beginner should buy first. Start from the job, then verify material compatibility, size, mounting, speed, and guarding. If those details do not match or are unclear, pause and check with the tool or abrasive manufacturer rather than improvising.</p>
+
+      <aside class="safety"><h2>WorkshopGirl safety rule</h2><p>Match the accessory to the material and operation. Match its speed and mounting to the grinder. Keep the required guard installed. Secure the work and maintain control. If a disc, setup, or instruction is uncertain, stop before powering on.</p></aside>
+
+      <h2>Keep learning</h2>
+      <div class="related-grid"><a class="related-card" href="/tutorials/types-of-clamps-explained/"><strong>Types of Clamps Explained</strong><span>Learn how to choose and use clamps to hold workshop pieces securely.</span></a><a class="related-card" href="/tutorials/how-to-use-a-cordless-drill/"><strong>How to Use a Cordless Drill</strong><span>Get familiar with tool controls, setup, and practical workshop habits.</span></a></div>
+
+      <section class="sources" aria-labelledby="sources-title"><h2 id="sources-title">Further safety reading</h2><p>For the exact wheel and guard requirements, always use the instructions supplied for your grinder and accessory. These references explain general abrasive-wheel safety:</p><ul><li><a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.243" target="_blank" rel="noopener noreferrer">OSHA: portable powered-tool guarding and abrasive-wheel inspection</a></li><li><a href="https://www.nortonabrasives.com/en-us/resources/expertise/safety-cutting-vs-grinding" target="_blank" rel="noopener noreferrer">Norton Abrasives: cutting versus grinding wheel safety</a></li><li><a href="https://www.nortonabrasives.com/en-us/resources/expertise/angle-grinder-safety-basics" target="_blank" rel="noopener noreferrer">Norton Abrasives: angle grinder safety basics</a></li></ul></section>
+
+      <section class="share-end"><h2>Found this useful?</h2><p>Share this guide with someone choosing their first grinder accessories.</p><ShareButton title={title} canonical={canonical} label="Share this article" idSuffix="end" /></section>
+    </article>
+  </main><SiteFooter /></div></body>
+</html>

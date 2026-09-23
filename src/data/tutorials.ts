@@ -10,6 +10,15 @@ export type TutorialSummary = {
 
 export const tutorials: TutorialSummary[] = [
   {
+    title: 'Angle Grinder Basics: Cutting Disc vs Grinding Wheel vs Flap Disc',
+    slug: '/tutorials/angle-grinder-basics',
+    category: 'Tools / Metalworking',
+    description: 'Learn what cutting discs, grinding wheels, and flap discs do, how to choose the right angle grinder accessory, and the essential safety checks for beginners.',
+    image: '/images/tutorials/angle-grinder-basics/angle-grinder-accessory-basics.png',
+    imageAlt: 'WorkshopGirl comparing an angle grinder with a cutting disc, grinding wheel, and flap disc.',
+    published: 'September 23, 2026',
+  },
+  {
     title: 'How to Use a Multimeter: Voltage, Resistance & Continuity for Beginners',
     slug: '/tutorials/how-to-use-a-multimeter',
     category: 'Electrical / Tools',

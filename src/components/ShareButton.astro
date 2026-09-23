@@ -15,17 +15,17 @@ const statusId = idSuffix ? `share-status-${idSuffix}` : 'share-status';
 ---
 <div class="share-row" data-canonical={canonical} data-title={title}>
   <button class="share-button" type="button" id={shareButtonId}>{label}</button>
-  <a href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on WhatsApp">WhatsApp</a>
-  <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on Facebook">Facebook</a>
-  <a href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on X">X</a>
-  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`} target="_blank" rel="noopener" aria-label="Share on LinkedIn">LinkedIn</a>
+  <a href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">WhatsApp</a>
+  <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a>
+  <a href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on X">X</a>
+  <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">LinkedIn</a>
   <button class="copy-button" type="button" id={copyButtonId}>Copy Link</button>
   <span class="share-status" id={statusId} role="status" aria-live="polite"></span>
 </div>
 
 <style>
   .share-row { align-items:center; display:flex; flex-wrap:wrap; gap:8px; margin:-28px 0 54px; }
-  .share-button,.copy-button,.share-row a { border:1px solid #171717; cursor:pointer; font:600 .82rem 'DM Sans',sans-serif; padding:10px 12px; text-decoration:none; }
+  .share-button,.copy-button,.share-row a { align-items:center; border:1px solid #171717; cursor:pointer; display:inline-flex; font:600 .82rem 'DM Sans',sans-serif; justify-content:center; min-height:44px; padding:10px 12px; text-decoration:none; }
   .share-button { background:#e53b7d; border-color:#e53b7d; color:#fff; }
   .copy-button,.share-row a { background:transparent; color:#171717; }
   .share-button:hover,.share-button:focus-visible,.copy-button:hover,.copy-button:focus-visible,.share-row a:hover,.share-row a:focus-visible { background:#171717; color:#fff; }
