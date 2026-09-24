@@ -89,16 +89,16 @@ const latestProject = projects[0];
       .from-workshop-heading { align-items:end; display:flex; justify-content:space-between; gap:24px; margin-bottom:24px; }
       .from-workshop-heading h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.6rem); letter-spacing:-.06em; line-height:1; margin:8px 0 0; }
       .from-workshop-heading p { color:var(--muted); margin:0 0 5px; }
-      .diary-card { background:#fffaf4; border:1px solid var(--line); display:grid; grid-template-columns:minmax(300px,1.12fr) 1fr; }
-      .diary-card img { display:block; height:100%; min-height:320px; object-fit:cover; width:100%; }
+      .diary-card { background:#fffaf4; border:1px solid var(--line); display:block; }
+      .diary-card img { aspect-ratio:16/9; display:block; height:auto; object-fit:contain; width:100%; }
       .diary-card-copy { align-self:center; padding:clamp(26px,5vw,68px); }
       .diary-card h3 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.4rem); letter-spacing:-.06em; line-height:1; margin:14px 0; }
       .diary-card p { color:var(--muted); font-size:1.05rem; line-height:1.65; }
       .diary-card a { background:var(--ink); color:#fff; display:inline-block; font-weight:700; margin-top:14px; padding:13px 18px; text-decoration:none; }
       .diary-card a:hover, .diary-card a:focus-visible { background:var(--pink); }
       .project-feature { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:64px 5vw 96px; position:relative; z-index:1; }
-      .project-card { background:#fffaf4; border:1px solid var(--line); display:grid; grid-template-columns:minmax(300px,1.3fr) 1fr; }
-      .project-card img { display:block; height:100%; min-height:330px; object-fit:cover; width:100%; }
+      .project-card { background:#fffaf4; border:1px solid var(--line); display:block; }
+      .project-card img { aspect-ratio:16/9; display:block; height:auto; object-fit:contain; width:100%; }
       .project-card-copy { align-self:center; padding:clamp(26px,5vw,68px); }
       .project-card h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.5rem); letter-spacing:-.06em; line-height:1; margin:14px 0; }
       .project-card p { color:var(--muted); font-size:1.05rem; line-height:1.65; }
