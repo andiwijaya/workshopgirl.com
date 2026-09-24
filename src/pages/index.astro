@@ -9,8 +9,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 const title = 'Workshop Girl — Build. Fix. Learn.';
 const description = 'Follow Workshop Girl as she builds, fixes, explores and learns through practical projects, workshop skills and new adventures.';
 const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
-const featuredTutorial = tutorials[0];
-const previousTutorial = tutorials[1];
+const latestTutorials = tutorials.slice(0, 2);
 const latestDiary = diaryEntries[0];
 const latestProject = projects[0];
 ---
@@ -71,16 +70,18 @@ const latestProject = projects[0];
       .note { bottom:8%; color:var(--muted); font-family:'Space Grotesk',sans-serif; font-size:.86rem; position:absolute; right:7%; transform:rotate(-7deg); }
       .note span { color:var(--pink); font-size:1.4rem; }
       .featured { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:32px 5vw 72px; position:relative; z-index:1; }
-      .featured-inner { align-items:center; background:#fffaf4; border:1px solid var(--line); display:grid; grid-template-columns:190px 1fr auto; gap:24px; padding:16px; }
-      .featured img { display:block; height:128px; object-fit:cover; width:190px; }
+      .featured-heading { margin-bottom:24px; }
+      .featured-heading h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.2rem); letter-spacing:-.06em; line-height:1; margin:8px 0 0; }
+      .featured-grid { display:grid; gap:22px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .featured-card { background:#fffaf4; border:1px solid var(--line); min-width:0; }
+      .featured-card img { aspect-ratio:16/9; display:block; height:auto; object-fit:cover; width:100%; }
+      .featured-card-copy { padding:clamp(20px,3vw,34px); }
       .featured-label { color:var(--pink); font-size:.74rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
-      .featured h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.2rem,2vw,1.65rem); letter-spacing:-.04em; margin:7px 0; }
+      .featured-card h3 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.35rem,2.2vw,2rem); letter-spacing:-.045em; line-height:1.08; margin:9px 0 12px; }
       .featured p { color:var(--muted); line-height:1.5; margin:0; max-width:560px; }
-      .featured a { background:var(--ink); color:#fff; display:inline-block; font-size:.9rem; font-weight:700; padding:12px 16px; text-decoration:none; white-space:nowrap; }
-      .featured a:hover, .featured a:focus-visible { background:var(--pink); }
-      .featured-next { color:var(--muted); font-size:.9rem; margin:18px 0 0; text-align:right; }
-      .featured-next a { background:none; color:var(--ink); padding:0; text-decoration:underline; white-space:normal; }
-      .featured-next a:hover, .featured-next a:focus-visible { background:none; color:var(--pink); }
+      .featured-date { color:var(--muted); font-size:.83rem; margin-top:13px; }
+      .featured-cta { background:var(--ink); color:#fff; display:inline-block; font-size:.9rem; font-weight:700; margin-top:17px; padding:12px 16px; text-decoration:none; }
+      .featured-cta:hover, .featured-cta:focus-visible { background:var(--pink); }
       .from-workshop { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:64px 5vw 96px; position:relative; z-index:1; }
       .from-workshop-heading { align-items:end; display:flex; justify-content:space-between; gap:24px; margin-bottom:24px; }
       .from-workshop-heading h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.6rem); letter-spacing:-.06em; line-height:1; margin:8px 0 0; }
@@ -120,11 +121,10 @@ const latestProject = projects[0];
         .portrait img { max-height:none; width:100%; }
         .note { bottom:9%; right:2%; }
         .featured { padding:28px 7vw 56px; }
-        .featured-inner { display:block; padding:14px; }
-        .featured img { height:auto; width:100%; }
-        .featured h2 { font-size:1.7rem; line-height:1.05; }
+        .featured-grid { grid-template-columns:minmax(0,1fr); }
+        .featured-card-copy { padding:22px; }
+        .featured-card h3 { font-size:1.7rem; line-height:1.05; }
         .featured p { font-size:.98rem; }
-        .featured a { margin-top:18px; }
         .from-workshop { padding:34px 7vw 64px; }
         .from-workshop-heading { display:block; }
         .from-workshop-heading p { margin-top:12px; }
@@ -162,16 +162,19 @@ const latestProject = projects[0];
         </figure>
       </main>
       <section class="featured" aria-labelledby="featured-title">
-        <div class="featured-inner">
-          <img src={featuredTutorial.image} alt={featuredTutorial.imageAlt} width="1672" height="941" loading="lazy" />
-          <div>
-            <div class="featured-label">Latest tutorial · {featuredTutorial.category}</div>
-            <h2 id="featured-title">{featuredTutorial.title}</h2>
-            <p>{featuredTutorial.description}</p>
-          </div>
-          <a href={featuredTutorial.slug}>Read tutorial</a>
+        <div class="featured-heading"><div class="featured-label">Workshop skills, fresh from the bench</div><h2 id="featured-title">Latest tutorials.</h2></div>
+        <div class="featured-grid">
+          {latestTutorials.map((tutorial) => <article class="featured-card">
+            <img src={tutorial.image} alt={tutorial.imageAlt} width="1672" height="941" loading="lazy" />
+            <div class="featured-card-copy">
+              <div class="featured-label">{tutorial.category}</div>
+              <h3>{tutorial.title}</h3>
+              <p>{tutorial.description}</p>
+              <div class="featured-date">{tutorial.published}</div>
+              <a class="featured-cta" href={tutorial.slug}>Read tutorial</a>
+            </div>
+          </article>)}
         </div>
-        <p class="featured-next">Next workshop skill: <a href={previousTutorial.slug}>{previousTutorial.title}</a></p>
       </section>
       <section class="latest-activity" aria-labelledby="latest-activity-title">
         <div class="from-workshop-heading"><div><div class="featured-label">A little beyond the workshop</div><h2 id="latest-activity-title">Latest from Workshop Girl.</h2></div><p>New skills aren't only learned at a workbench.</p></div>
