@@ -2,6 +2,7 @@
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import EngineAnalyzer from '../../../components/engine-analyzer/EngineAnalyzer.astro';
+import ToolShare from '../../../components/ToolShare.astro';
 import '../../../styles/sound-analyzer.css';
 const title = 'Engine Sound Analyzer — Live Spectrum, Harmonics & RPM References | WorkshopGirl';
 const description = 'Inspect engine sound live in your browser. View frequencies, harmonics, optional RPM and firing references, and before/after snapshots without recording.';
@@ -14,7 +15,7 @@ const canonical = 'https://workshopgirl.com/tools/engine-sound-analyzer/';
   <meta property="og:image" content="https://workshopgirl.com/images/workshop-girl/workshop-girl-hero.png" /><meta name="twitter:card" content="summary" /><link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head><body class="engine-page">
   <a class="skip-link" href="#main">Skip to engine sound analyzer</a><SiteHeader current="tools" />
-  <main id="main" tabindex="-1"><div class="hero"><a class="eyebrow" href="/tools/">WorkshopGirl / Digital workbench</a><h1>Engine Sound <span>Analyzer.</span></h1><p>Listen live. Inspect the frequencies. See what changed.</p><span class="privacy-note">No recording required · local audio processing · observations, not fault diagnosis</span></div>
+  <main id="main" tabindex="-1"><div class="hero"><a class="eyebrow" href="/tools/">WorkshopGirl / Digital workbench</a><h1>Engine Sound <span>Analyzer.</span></h1><p>Listen live. Inspect the frequencies. See what changed.</p><div class="hero-actions"><span class="privacy-note">No recording required · local audio processing · observations, not fault diagnosis</span><ToolShare title="WorkshopGirl Engine Sound Analyzer" description={description} canonical={canonical} /></div></div>
     <EngineAnalyzer />
     <section class="guide" aria-labelledby="engine-guide"><span class="eyebrow">Measure with context</span><h2 id="engine-guide">A reference is a starting point.</h2>
       <h3>Start with live sound</h3><p>Start the microphone and inspect the waveform, spectrum and spectrogram immediately. Capture A and B without recording or stopping. Optional recording and audio files use the same DSP core as the <a href="/tools/sound-analyzer/">General Sound Analyzer</a>.</p>

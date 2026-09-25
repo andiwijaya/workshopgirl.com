@@ -85,6 +85,80 @@ th,td { text-align:left; padding:12px 8px; border-bottom:1px solid var(--line); 
 .export-controls { margin-top:20px; }
 .validation-workbench { border:1px solid var(--line); background:var(--soft); padding:24px; }
 .validation-workbench select { margin-bottom:16px; }
+
+/* Analyzer tool pages: keep the main path visible and tuck optional detail away. */
+.hero-actions { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.tool-share { display:flex; align-items:center; gap:10px; min-height:46px; }
+.share-tool-button { min-height:44px; padding:10px 15px; border-color:var(--pink); color:var(--pink); }
+.share-tool-button:hover:not(:disabled) { background:#f8e7ed; }
+.tool-share-status { color:var(--muted); font-size:.86rem; }
+.input-panel { padding:clamp(18px,2.5vw,28px); }
+.input-panel>div:first-child>p { max-width:42rem; }
+.input-panel .file-note { margin:9px 0; }
+.controls #stop-analysis:disabled { display:none; }
+#analyzer-status { margin:16px 0 8px; padding:12px 14px; background:#f2eee8; border-top:0; border-left:3px solid #8c857d; }
+.workbench[data-state="requesting"] #analyzer-status,
+.workbench[data-state="loading"] #analyzer-status { border-left-color:#9b630e; }
+.workbench[data-state="live"] #analyzer-status { background:#f8e7ed; border-left-color:var(--pink); }
+.recording-details { margin-top:10px; }
+.record-controls { margin:8px 0; }
+.recording-details>p { margin:8px 0; }
+.technical-details { margin-top:8px; }
+.technical-details p { max-width:72ch; }
+.engine-settings,.engine-observations { margin-top:14px; }
+details.engine-settings { padding:0; }
+.engine-settings>summary { padding:16px 18px; }
+.engine-settings>summary span { display:block; color:var(--muted); font-size:.86rem; font-weight:400; margin-top:4px; }
+.engine-settings-content { padding:0 18px 18px; }
+.engine-page .engine-toolbar { display:none; }
+.chart, .chart canvas { min-width:0; max-width:100%; }
+
+@media(max-width:700px) {
+  main { padding:18px 16px 48px; }
+  .hero { margin-bottom:18px; }
+  .hero p { font-size:1rem; margin:12px 0; }
+  h1 { margin:12px 0; }
+  .hero-actions { align-items:flex-start; gap:10px; }
+  .privacy-note { max-width:100%; }
+  .tool-share { width:100%; }
+  .tool-share-status { min-height:1.35em; }
+  .input-panel,.comparison,.readouts { padding:16px 14px; }
+  .input-panel>div:first-child>p { margin:8px 0 14px; }
+  .controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .controls>button,.controls>.file-button { width:100%; min-width:0; min-height:50px; padding:10px 8px; font-size:.88rem; line-height:1.25; }
+  .controls #stop-analysis:not(:disabled) { grid-column:1/-1; }
+  .measurement-heading { margin:26px 0 14px; }
+  .metrics>div { padding:12px 14px; }
+  .chart-grid,.readouts { gap:12px; }
+  .chart { padding:14px 8px 8px; }
+  canvas { height:205px; }
+  .wide canvas { height:220px; }
+  .comparison { margin-top:20px; }
+  .engine-settings,.engine-observations { padding:0; }
+  .engine-settings-content { padding:0 14px 14px; }
+  .engine-settings>summary { padding:14px; }
+  .engine-page { padding-bottom:calc(100px + env(safe-area-inset-bottom)); }
+  .engine-page .controls #start-mic,
+  .engine-page .controls #stop-analysis { display:none; }
+  .engine-page .engine-toolbar { position:fixed; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; bottom:calc(8px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:10; width:min(440px,calc(100% - 24px)); padding:6px; background:var(--soft); border:1px solid var(--line); box-shadow:0 4px 24px #17171724; border-radius:6px; }
+  .engine-toolbar button { min-width:0; min-height:48px; padding:9px 5px; font-size:.84rem; line-height:1.2; }
+  .engine-toolbar button:disabled { display:none; }
+  .engine-toolbar:not(:has(#engine-capture-a:not(:disabled))) #engine-live-toggle { grid-column:1/-1; }
+}
+
+@media(max-width:360px) {
+  main { padding-right:12px; padding-left:12px; }
+  .input-panel,.comparison,.readouts { padding-right:12px; padding-left:12px; }
+  .controls>button,.controls>.file-button { font-size:.84rem; }
+  .chart figcaption span { font-size:.72rem; }
+}
+
+@media(max-height:520px) and (orientation:landscape) {
+  main { padding-top:14px; }
+  .hero { margin-bottom:14px; }
+  h1 { font-size:clamp(2.4rem,6vw,3.6rem); }
+  .engine-page { padding-bottom:calc(86px + env(safe-area-inset-bottom)); }
+}
 @media(max-width:700px) { .measurement-fields,.validation-checks { grid-template-columns:1fr; } .validation-workbench { padding:18px 12px; } }
 .engine-settings,.engine-observations { border:1px solid var(--line); background:var(--soft); padding:clamp(18px,3vw,30px); margin-top:20px; }
 .engine-settings h2 { font-size:1.55rem; }

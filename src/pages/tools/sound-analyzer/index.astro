@@ -2,6 +2,7 @@
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import Analyzer from '../../../components/sound-analyzer/Analyzer.astro';
+import ToolShare from '../../../components/ToolShare.astro';
 import '../../../styles/sound-analyzer.css';
 const title = 'Sound Analyzer — Waveform, Spectrum & Spectrogram | WorkshopGirl';
 const description = 'Analyze live microphone sound or local audio files in your browser. Explore waveforms, frequency peaks, spectrograms and before/after comparisons with WorkshopGirl.';
@@ -16,7 +17,7 @@ const canonical = 'https://workshopgirl.com/tools/sound-analyzer/';
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head><body>
   <a class="skip-link" href="#main">Skip to sound analyzer</a><SiteHeader current="tools" />
-  <main id="main" tabindex="-1"><div class="hero"><a href="/tools/" class="eyebrow">The digital workbench</a><h1>Sound <span>Analyzer.</span></h1><p>Measure a sound. Find its frequencies. Compare what changed.</p><span class="privacy-note">Local audio processing · no audio uploads · no account needed</span></div>
+  <main id="main" tabindex="-1"><div class="hero"><a href="/tools/" class="eyebrow">The digital workbench</a><h1>Sound <span>Analyzer.</span></h1><p>Measure a sound. Find its frequencies. Compare what changed.</p><div class="hero-actions"><span class="privacy-note">Local audio processing · no audio uploads · no account needed</span><ToolShare title="WorkshopGirl Sound Analyzer" description={description} canonical={canonical} /></div></div>
     <Analyzer />
     <section class="guide" aria-labelledby="guide-title"><span class="eyebrow">Read the signal</span><h2 id="guide-title">A little context goes a long way.</h2>
       <h3>Waveform: how the signal moves</h3><p>The waveform shows digital amplitude over time. Live input shows the latest short window; a file shows the entire clip. Flat sections are quiet. Peaks near ±1 can indicate clipping.</p>

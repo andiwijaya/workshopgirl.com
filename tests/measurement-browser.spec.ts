@@ -5,6 +5,10 @@ import { validateMeasurementExport } from '../src/lib/measurement/export';
 
 const engine = '/tools/engine-sound-analyzer/', reference = '/tools/dsp-validation/';
 async function audioAvailable(page: Page) { await page.goto(engine); test.skip(!await page.evaluate(() => !!window.AudioContext), 'Windows WebKit has no AudioContext; physical audio remains untested.'); }
+async function startEngine(page: Page) {
+  const toolbarButton = page.locator('#engine-live-toggle');
+  if (await toolbarButton.isVisible()) await toolbarButton.click(); else await page.locator('#start-mic').click();
+}
 async function resourceProbe(page: Page) {
   await page.addInitScript(() => {
     const state = { workers: 0, terminated: 0, created: 0, revoked: 0, hold: false };
@@ -26,11 +30,11 @@ test('V3 live quality, bounded repeats, contextual A/B and local JSON export wit
   await audioAvailable(page); await syntheticMicrophone(page); await resourceProbe(page);
   await page.addInitScript(() => Object.defineProperty(window, 'MediaRecorder', { value: undefined }));
   const errors: string[] = [], posts: string[] = []; page.on('pageerror', e => errors.push(e.message)); page.on('request', r => { if (r.method() !== 'GET') posts.push(r.url()); });
-  await page.goto(engine); await page.locator('#engine-rpm').fill('1800');
+  await page.goto(engine); await page.locator('.engine-settings > summary').click(); await page.locator('#engine-rpm').fill('1800');
   await page.getByText('Engine & harmonic references', { exact: true }).click(); await page.locator('#harmonic-hz').fill('440');
   await page.getByText('Measurement notes, repeatability & export', { exact: true }).click();
   await page.locator('#measurement-label').fill('Warm idle'); await page.locator('#measurement-notes').fill('Same position <script>test</script>');
-  await page.locator('#start-mic').click(); await expect(page.locator('#measurement-quality-summary')).toContainText('No flagged observations', { timeout: 10000 });
+  await startEngine(page); await expect(page.locator('#measurement-quality-summary')).toContainText('No flagged observations', { timeout: 10000 });
   await page.locator('#save-a').click();
   for (let i = 0; i < 6; i++) { await page.waitForTimeout(220); await page.locator('#capture-repeat').click(); }
   await expect(page.locator('#repeatability-status')).toContainText('6/6'); await expect(page.locator('#capture-repeat')).toBeDisabled();
@@ -63,7 +67,7 @@ test('V3 silence/file metadata and invalid references remain honest on export', 
   await expect(page.locator('#repeatability-status')).toContainText('LOW SIGNAL');
   const pending = page.waitForEvent('download'); await page.locator('#export-measurements').click(); const data = JSON.parse(await readFile((await (await pending).path())!, 'utf8'));
   expect(data.measurements[0].spectrum.rmsDbFS).toBeNull(); expect(data.measurements[0].durationSeconds).toBe(1); expect(data.measurements[0].quality.stabilityAvailable).toBe(false);
-  await page.locator('#engine-rpm').fill('-1'); await expect(page.locator('#capture-repeat')).toBeDisabled();
+  await page.locator('.engine-settings > summary').click(); await page.locator('#engine-rpm').fill('-1'); await expect(page.locator('#capture-repeat')).toBeDisabled();
 });
 
 test('Reference validation runs all known cases locally and exports actual checks', async ({ page, request }, info) => {

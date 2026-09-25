@@ -3,8 +3,9 @@ import Analyzer from '../sound-analyzer/Analyzer.astro';
 import MeasurementPanel from './MeasurementPanel.astro';
 ---
 <Analyzer mode="engine">
-  <section slot="configuration" class="engine-settings" aria-labelledby="engine-settings-heading">
-    <h2 id="engine-settings-heading">Add a reference. If you have one.</h2>
+  <details slot="configuration" class="engine-settings">
+    <summary>Optional engine references <span>RPM, cylinder count &amp; harmonics</span></summary>
+    <div class="engine-settings-content">
     <p class="small">Live analysis works with every field blank. Manual RPM is a reference, not synchronized order tracking.</p>
     <div class="reference-input"><label for="engine-rpm">RPM <span>(optional)</span></label><input id="engine-rpm" type="number" inputmode="decimal" min="0" max="30000" step="any" placeholder="e.g. 1800" /></div>
     <details><summary>Engine &amp; harmonic references</summary><div class="engine-fields">
@@ -16,7 +17,8 @@ import MeasurementPanel from './MeasurementPanel.astro';
     <p id="rpm-reference-summary">No RPM reference. General frequency analysis remains available.</p>
     <ul id="engine-markers" class="reference-list" aria-label="Calculated frequency markers"></ul>
     <p class="small">Firing reference assumes a conventional evenly firing engine. Uneven firing, cylinder deactivation and unusual operating modes can differ. References outside the plot range are listed but not drawn.</p>
-  </section>
+    </div>
+  </details>
   <section slot="analysis" class="engine-observations" aria-label="Engine signal observations">
     <MeasurementPanel />
     <p id="capture-quality" class="small">Microphone off. No recording is needed for live measurement.</p>

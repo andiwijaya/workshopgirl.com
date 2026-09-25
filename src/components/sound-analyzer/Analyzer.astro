@@ -8,16 +8,16 @@ const engine = mode === 'engine';
   <div class="input-panel">
     <div><span class="eyebrow">01 / Choose your sound</span><h2>Listen closer.</h2><p>Your microphone or an audio file. Everything is processed here, in your browser.</p></div>
     <div class="controls">
-      <button id="start-mic" type="button" class="primary">{engine ? 'Start live analysis' : 'Analyze live sound'}</button>
+      <button id="start-mic" type="button" class="primary">Start live</button>
       <label class="file-button" for="audio-file">Open audio file<input id="audio-file" type="file" accept="audio/*,.wav,.mp3,.m4a,.ogg,.webm,.flac" /></label>
       <button id="stop-analysis" type="button" disabled>Stop</button>
     </div>
-    <p class="small">Files: up to 60 seconds / 20 MB. Stereo files: channel 1 is analyzed; playback retains both channels.</p>
+    <p class="small file-note">Files up to 60 seconds / 20 MB. Stereo analysis uses channel 1; playback keeps both channels.</p>
     <p id="analyzer-status" role="status" aria-live="polite">Ready. Your microphone is off.</p>
     <p id="analyzer-error" role="alert" hidden></p>
-    <div class="record-controls"><button id="record-audio" type="button" disabled>Record clip</button><span id="recording-status" class="small">Optional recording · up to 55 seconds</span></div>
+    <details class="recording-details"><summary>Optional recording</summary><div class="record-controls"><button id="record-audio" type="button" disabled>Record clip</button><span id="recording-status" class="small">Available while live · up to 55 seconds</span></div><p class="small">Recording is optional and stays in this browser. Download a clip if you want to keep it.</p></details>
     <div id="playback-panel" hidden><label for="audio-playback">Clip playback</label><audio id="audio-playback" controls preload="metadata"></audio><div class="controls"><a id="download-audio" class="text-link" download="workshopgirl-recording.webm">Download clip</a><button id="clear-audio" type="button">Clear clip</button></div><p class="small">Playback does not move the charts: imported and recorded clips show a whole-clip analysis.</p></div>
-    <details><summary>Measurement settings</summary><label for="fft-size">FFT size</label><select id="fft-size"><option value="2048">2048 · faster response</option><option value="4096" selected={!engine}>4096 · balanced</option><option value="8192" selected={engine}>8192 · finer frequency bins</option></select><p class="small">Hann window · no spectral smoothing · DC removed. Larger windows separate nearby tones better but cover more time. Change settings before starting a new measurement.</p></details>
+    <details class="technical-details"><summary>Measurement settings &amp; microphone details</summary><label for="fft-size">FFT size</label><select id="fft-size"><option value="2048">2048 · faster response</option><option value="4096" selected={!engine}>4096 · balanced</option><option value="8192" selected={engine}>8192 · finer frequency bins</option></select><p class="small">Hann window · no spectral smoothing · DC removed. Larger windows separate nearby tones better but cover more time. Change settings before starting a new measurement.</p><p id="analyzer-technical-note" class="small">Audio is processed locally in this browser. Microphone hardware or browser processing can affect measurements.</p></details>
   </div>
   <slot name="configuration" />
   <div class="measurement-heading"><div><span class="eyebrow">02 / Measure &amp; understand</span><h2>The sound, made visible.</h2></div><span id="source-label" class="source-tag">No source</span></div>

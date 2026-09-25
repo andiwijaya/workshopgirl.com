@@ -1,0 +1,63 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+}
+
+const { title, description, canonical } = Astro.props;
+---
+<div class="tool-share" data-title={title} data-description={description} data-canonical={canonical}>
+  <button class="share-tool-button" type="button">Share tool</button>
+  <span class="tool-share-status" role="status" aria-live="polite"></span>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.tool-share:not([data-ready])').forEach(container => {
+    container.dataset.ready = 'true';
+    const button = container.querySelector<HTMLButtonElement>('.share-tool-button');
+    const status = container.querySelector<HTMLElement>('.tool-share-status');
+    if (!button || !status) return;
+
+    const copyLink = async () => {
+      const url = container.dataset.canonical ?? window.location.href;
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch {
+        const input = document.createElement('textarea');
+        input.value = url;
+        input.setAttribute('readonly', '');
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        document.body.append(input);
+        input.select();
+        const copied = document.execCommand('copy');
+        input.remove();
+        if (!copied) throw new Error('Clipboard unavailable');
+      }
+      status.textContent = 'Link copied';
+    };
+
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      status.textContent = '';
+      try {
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: container.dataset.title, text: container.dataset.description, url: container.dataset.canonical });
+            status.textContent = 'Share sheet opened';
+          } catch (error) {
+            if (error instanceof DOMException && error.name === 'AbortError') return;
+            await copyLink();
+          }
+        } else {
+          await copyLink();
+        }
+      } catch {
+        status.textContent = 'Could not copy the link. You can copy it from the address bar.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+</script>

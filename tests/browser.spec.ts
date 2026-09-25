@@ -76,6 +76,7 @@ test('Live PCM, stop cleanup, restart, recording and recorded-file analysis', as
   await page.locator('#save-a').click();
   await page.locator('#start-mic').click();
   await expect(page.locator('#analyzer-status')).toContainText('Live');
+  await page.getByText('Optional recording', { exact: true }).click();
   await page.locator('#record-audio').click();
   await expect(page.locator('#recording-status')).toContainText('● Recording');
   await expect.poll(() => page.locator('#spectrogram-chart').evaluate((canvas: HTMLCanvasElement) => canvas.width)).toBeGreaterThan(0);
@@ -168,12 +169,17 @@ test('Responsive empty state, keyboard controls and reduced motion', async ({ pa
   await expect(page.getByRole('link', { name: 'Skip to sound analyzer' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/#main$/);
-  await page.getByText('Measurement settings', { exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Share tool' })).toBeVisible();
+  await expect(page.locator('#start-mic')).toBeVisible();
+  await expect(page.locator('#stop-analysis')).toBeHidden();
+  await page.getByText('Measurement settings & microphone details', { exact: true }).click();
   await expect(page.locator('#fft-size')).toBeVisible();
   await page.locator('#fft-size').selectOption('8192');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('empty-state.png'), fullPage: true });
   await page.setViewportSize({ width: 320, height: 700 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.setViewportSize({ width: 844, height: 390 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -187,4 +193,26 @@ test('Missing audio APIs report a readable error without breaking the page', asy
   await page.locator('#audio-file').setInputFiles({ name: 'tone.wav', mimeType: 'audio/wav', buffer: wav() });
   await expect(page.locator('#analyzer-error')).toContainText('decoding is unavailable');
   await expect(page.locator('#start-mic')).toBeEnabled();
+});
+
+test('Share tool sends only public page details and falls back to copying the canonical URL', async ({ page }) => {
+  await page.addInitScript(() => {
+    const state: { shared?: ShareData; copied?: string } = {};
+    Object.assign(window, { shareTest: state });
+    Object.defineProperty(navigator, 'share', { configurable: true, value: async (data: ShareData) => { state.shared = data; } });
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (text: string) => { state.copied = text; } } });
+  });
+  await page.goto('/tools/sound-analyzer/');
+  await page.getByRole('button', { name: 'Share tool' }).click();
+  await expect(page.locator('.tool-share-status')).toHaveText('Share sheet opened');
+  expect(await page.evaluate(() => (window as unknown as { shareTest: { shared: ShareData } }).shareTest.shared)).toEqual({
+    title: 'WorkshopGirl Sound Analyzer',
+    text: 'Analyze live microphone sound or local audio files in your browser. Explore waveforms, frequency peaks, spectrograms and before/after comparisons with WorkshopGirl.',
+    url: 'https://workshopgirl.com/tools/sound-analyzer/',
+  });
+
+  await page.evaluate(() => Object.defineProperty(navigator, 'share', { configurable: true, value: undefined }));
+  await page.getByRole('button', { name: 'Share tool' }).click();
+  await expect(page.locator('.tool-share-status')).toHaveText('Link copied');
+  expect(await page.evaluate(() => (window as unknown as { shareTest: { copied: string } }).shareTest.copied)).toBe('https://workshopgirl.com/tools/sound-analyzer/');
 });

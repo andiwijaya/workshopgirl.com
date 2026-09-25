@@ -28,11 +28,13 @@ export function mountAnalyzer<T extends Snapshot = Snapshot>(root: HTMLElement, 
   let label = '', source: Snapshot['source'] = 'live frame', a: T | undefined, b: T | undefined;
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const status = (text: string) => { el('analyzer-status').textContent = text; };
+  const technical = (text: string) => { el('analyzer-technical-note').textContent = text; };
   const error = (text = '') => { el('analyzer-error').textContent = text; el('analyzer-error').hidden = !text; };
   const listen = (target: EventTarget, type: string, handler: EventListener) => target.addEventListener(type, handler, { signal: events.signal });
 
   function syncControls() {
     const busy = phase !== 'idle';
+    root.dataset.state = phase;
     start.disabled = busy; file.disabled = busy; settings.disabled = busy || !!result;
     stop.disabled = !busy; record.disabled = phase !== 'live' || !globalThis.MediaRecorder;
     record.textContent = recorder.active ? 'Finish recording' : 'Record clip';
@@ -121,7 +123,7 @@ export function mountAnalyzer<T extends Snapshot = Snapshot>(root: HTMLElement, 
   async function startLive() {
     recorder.dispose();
     clearClip(); resetMeasurement(); error(); phase = 'requesting'; syncControls();
-    status('Waiting for microphone permission. Use Stop to cancel.');
+    status('Waiting for microphone permission · Stop to cancel.');
     const token = ++generation;
     try {
       await microphone.start(Number(settings.value), () => stopActivity('Microphone input ended or was suspended. Start again to reconnect.'));
@@ -130,7 +132,8 @@ export function mountAnalyzer<T extends Snapshot = Snapshot>(root: HTMLElement, 
       phase = 'live'; source = 'live frame'; label = 'Microphone frame'; syncControls(); el('source-label').textContent = 'Live microphone';
       const trackSettings = microphone.stream?.getAudioTracks()[0]?.getSettings();
       const processing = trackSettings?.echoCancellation || trackSettings?.noiseSuppression || trackSettings?.autoGainControl;
-      status(`Live · microphone on. ${processing ? 'Device signal processing is active and can alter measurements.' : 'Unprocessed input requested; hardware processing may still apply.'}`);
+      technical(processing ? 'Device signal processing is active and can alter measurements.' : 'Unprocessed input was requested; hardware processing may still apply.');
+      status('Live · microphone on.');
       el('waveform-caption').textContent = 'Latest frame · digital amplitude / time';
       if (extension.continuous) {
         let lastText = -Infinity, lastDraw = -Infinity, changed = false;
@@ -145,7 +148,8 @@ export function mountAnalyzer<T extends Snapshot = Snapshot>(root: HTMLElement, 
         }, (mode, reason) => {
           if (token !== generation) return;
           columns = []; times = [];
-          status(`Live · microphone on · ${mode === 'worklet' ? 'sample-clock capture' : 'sampled fallback'}. ${reason ?? ''} ${processing ? 'Device signal processing is active.' : 'Unprocessed input requested; hardware processing may still apply.'}`);
+          technical(`Capture: ${mode === 'worklet' ? 'sample-clock capture' : 'sampled fallback'}.${reason ? ` ${reason}` : ''} ${processing ? 'Device signal processing is active and can alter measurements.' : 'Unprocessed input was requested; hardware processing may still apply.'}`);
+          status('Live · microphone on.');
         });
         const render = (now: number) => {
           if (token !== generation || phase !== 'live') return;
