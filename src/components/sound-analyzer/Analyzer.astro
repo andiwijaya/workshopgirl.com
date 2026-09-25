@@ -1,9 +1,14 @@
-<section class="workbench" id="sound-analyzer" aria-label="Sound analyzer controls">
+---
+interface Props { mode?: 'general' | 'engine' }
+const { mode = 'general' } = Astro.props;
+const engine = mode === 'engine';
+---
+<section class="workbench" id="sound-analyzer" data-mode={mode} aria-label="Sound analyzer controls">
   <noscript><p class="notice">Enable JavaScript to analyze audio in your browser.</p></noscript>
   <div class="input-panel">
     <div><span class="eyebrow">01 / Choose your sound</span><h2>Listen closer.</h2><p>Your microphone or an audio file. Everything is processed here, in your browser.</p></div>
     <div class="controls">
-      <button id="start-mic" type="button" class="primary">Analyze live sound</button>
+      <button id="start-mic" type="button" class="primary">{engine ? 'Start live analysis' : 'Analyze live sound'}</button>
       <label class="file-button" for="audio-file">Open audio file<input id="audio-file" type="file" accept="audio/*,.wav,.mp3,.m4a,.ogg,.webm,.flac" /></label>
       <button id="stop-analysis" type="button" disabled>Stop</button>
     </div>
@@ -12,8 +17,9 @@
     <p id="analyzer-error" role="alert" hidden></p>
     <div class="record-controls"><button id="record-audio" type="button" disabled>Record clip</button><span id="recording-status" class="small">Optional recording · up to 55 seconds</span></div>
     <div id="playback-panel" hidden><label for="audio-playback">Clip playback</label><audio id="audio-playback" controls preload="metadata"></audio><div class="controls"><a id="download-audio" class="text-link" download="workshopgirl-recording.webm">Download clip</a><button id="clear-audio" type="button">Clear clip</button></div><p class="small">Playback does not move the charts: imported and recorded clips show a whole-clip analysis.</p></div>
-    <details><summary>Measurement settings</summary><label for="fft-size">FFT size</label><select id="fft-size"><option value="2048">2048 · faster response</option><option value="4096" selected>4096 · balanced</option><option value="8192">8192 · finer frequency bins</option></select><p class="small">Hann window · no spectral smoothing · DC removed. Larger windows separate nearby tones better but cover more time. Change settings before starting a new measurement.</p></details>
+    <details><summary>Measurement settings</summary><label for="fft-size">FFT size</label><select id="fft-size"><option value="2048">2048 · faster response</option><option value="4096" selected={!engine}>4096 · balanced</option><option value="8192" selected={engine}>8192 · finer frequency bins</option></select><p class="small">Hann window · no spectral smoothing · DC removed. Larger windows separate nearby tones better but cover more time. Change settings before starting a new measurement.</p></details>
   </div>
+  <slot name="configuration" />
   <div class="measurement-heading"><div><span class="eyebrow">02 / Measure &amp; understand</span><h2>The sound, made visible.</h2></div><span id="source-label" class="source-tag">No source</span></div>
   <div class="metrics" aria-label="Current measurements">
     <div><span>Strongest spectral peak</span><strong id="dominant-frequency">—</strong><small>Not necessarily the fundamental</small></div>
@@ -24,13 +30,17 @@
   <div class="chart-grid">
     <figure class="chart"><figcaption><h3>Waveform</h3><span id="waveform-caption">Digital amplitude / time</span></figcaption><canvas id="waveform-chart" role="img" aria-label="Waveform: digital amplitude versus time. Numerical RMS level is provided above."></canvas></figure>
     <figure class="chart"><figcaption><h3>Frequency spectrum</h3><span>Tonal dBFS / frequency (Hz, log scale)</span></figcaption><canvas id="spectrum-chart" role="img" aria-label="Frequency spectrum. Significant peaks and band energy are listed below."></canvas></figure>
-    <figure class="chart wide"><figcaption><h3>Spectrogram</h3><span>Frequency (Hz, log scale) / elapsed time</span></figcaption><canvas id="spectrogram-chart" role="img" aria-label="Spectrogram showing how frequency content changes over time; brightness represents tonal level."></canvas><div class="legend"><span>Quiet −100 dBFS</span><span class="color-scale" aria-hidden="true"></span><span>0 dBFS</span></div><p class="small">Live view uses sampled frames, not continuous recording. File view includes every analysis frame. Dark areas are quieter; bright bands show stronger frequencies.</p></figure>
+    <figure class="chart wide"><figcaption><h3>Spectrogram</h3><span>Frequency (Hz, log scale) / {engine ? 'audio-clock time' : 'elapsed time'}</span></figcaption><canvas id="spectrogram-chart" role="img" aria-label="Spectrogram showing how frequency content changes over time; brightness represents tonal level."></canvas><div class="legend"><span>Quiet −100 dBFS</span><span class="color-scale" aria-hidden="true"></span><span>0 dBFS</span></div><p class="small">{engine ? 'Sample-clock frames when supported; sampled fallback is labeled. Skipped frames interrupt history. Plot range: 5 Hz to Nyquist. ' : 'Live view uses sampled frames, not continuous recording. '}File view includes every analysis frame. Dark areas are quieter; bright bands show stronger frequencies.</p></figure>
   </div>
+  <slot name="analysis" />
   <div class="readouts"><section><h3>Significant peaks</h3><p class="small">Up to six separated peaks above a conservative relative threshold. These are spectral features, not a diagnosis.</p><ol id="peak-list"><li>No measurement yet.</li></ol></section><section><h3>Frequency-band energy</h3><p class="small">Share of total AC spectral power. Bands below 20 Hz or above 20 kHz are excluded, so values may total less than 100%.</p><ul id="band-list"><li>No measurement yet.</li></ul></section></div>
-  <section class="comparison"><span class="eyebrow">03 / Compare</span><h2>Before. After. Side by side.</h2><p>Capture a stopped live frame or a whole-file average into A and B. Use the same microphone, position, gain, FFT settings and operating conditions.</p><div class="controls"><button id="save-a" type="button" disabled>Save result as A</button><button id="save-b" type="button" disabled>Save result as B</button><button id="clear-comparison" type="button" disabled>Clear A/B</button></div><p id="comparison-summary" role="status">No snapshots saved. Snapshots stay in this tab and are lost on reload.</p><div id="comparison-results" hidden><p class="small"><span class="key-a">Pink: A</span> · <span class="key-b">Blue: B</span> · tonal dBFS / Hz (log scale)</p><canvas id="comparison-chart" role="img" aria-label="Overlaid spectra of snapshots A and B. Differences are also listed in the comparison table."></canvas><div class="table-scroll"><table><caption>A/B measurement comparison</caption><thead><tr><th scope="col">Measurement</th><th scope="col">A</th><th scope="col">B</th></tr></thead><tbody id="comparison-table"></tbody></table></div></div></section>
+  <section class="comparison"><span class="eyebrow">03 / Compare</span><h2>Before. After. Side by side.</h2><p>{engine ? 'Capture a measurement while live, without recording or stopping. ' : 'Capture a stopped live frame or a whole-file average into A and B. '}Use the same microphone, position, gain, FFT settings and operating conditions.</p><div class="controls"><button id="save-a" type="button" disabled>Save result as A</button><button id="save-b" type="button" disabled>Save result as B</button><button id="clear-comparison" type="button" disabled>Clear A/B</button></div><p id="comparison-summary" role="status">No snapshots saved. Snapshots stay in this tab and are lost on reload.</p><slot name="comparison" /><div id="comparison-results" hidden><p class="small"><span class="key-a">Pink: A</span> · <span class="key-b">Blue: B</span> · tonal dBFS / Hz (log scale)</p><canvas id="comparison-chart" role="img" aria-label="Overlaid spectra of snapshots A and B. Differences are also listed in the comparison table."></canvas><div class="table-scroll"><table><caption>A/B measurement comparison</caption><thead><tr><th scope="col">Measurement</th><th scope="col">A</th><th scope="col">B</th></tr></thead><tbody id="comparison-table"></tbody></table></div></div></section>
+  <slot name="toolbar" />
 </section>
 <script>
   import { mountAnalyzer } from './controller';
   const root = document.querySelector<HTMLElement>('#sound-analyzer');
-  if (root) mountAnalyzer(root);
+  if (root?.dataset.mode === 'engine') {
+    void import('../engine-analyzer/controller').then(({ mountEngineAnalyzer }) => mountEngineAnalyzer(root));
+  } else if (root) mountAnalyzer(root);
 </script>

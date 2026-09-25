@@ -73,6 +73,26 @@ th,td { text-align:left; padding:12px 8px; border-bottom:1px solid var(--line); 
 .tool-card { display:block; padding:28px; margin:32px 0; border:1px solid var(--line); background:var(--soft); text-decoration:none; max-width:720px; }
 .tool-card strong { color:var(--pink); }
 [hidden] { display:none!important; }
+.engine-page { padding-bottom:95px; }
+.engine-settings,.engine-observations { border:1px solid var(--line); background:var(--soft); padding:clamp(18px,3vw,30px); margin-top:20px; }
+.engine-settings h2 { font-size:1.55rem; }
+.engine-settings label { display:block; font-size:.9rem; margin-bottom:7px; font-weight:600; }
+.engine-settings label span { color:var(--muted); font-weight:400; }
+.engine-settings input { background:var(--paper); border:1px solid var(--line); border-radius:3px; padding:11px; min-height:46px; width:100%; min-width:0; font:inherit; color:var(--ink); }
+.engine-settings input[aria-invalid=true] { border-color:#a21d37; }
+.reference-input { max-width:300px; }
+.engine-fields { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.engine-fields select { width:100%; }
+.reference-list { display:flex; flex-wrap:wrap; gap:8px 20px; list-style:none; padding:0; font-size:.84rem; font-variant-numeric:tabular-nums; }
+.reference-list li { border-left:3px solid #9b630e; padding:5px 9px; }
+.engine-analysis-grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:26px; }
+.engine-analysis-grid section { min-width:0; }
+#persistent-peaks { padding-left:20px; font-size:.88rem; line-height:1.7; }
+#persistent-peaks li { padding-bottom:10px; }
+#engine-comparison-table { table-layout:fixed; }
+.engine-toolbar { position:fixed; bottom:12px; left:50%; transform:translateX(-50%); z-index:10; width:min(540px,calc(100% - 24px)); display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:8px; background:var(--soft); border:1px solid var(--line); padding:8px; box-shadow:0 4px 24px #17171724; border-radius:6px; }
+.engine-toolbar button { padding:12px 6px; min-height:48px; font-size:.86rem; }
+@media(max-width:700px) { .engine-fields,.engine-analysis-grid { grid-template-columns:1fr; } .engine-settings,.engine-observations { padding:18px 12px; } .engine-analysis-grid { gap:28px; } #harmonic-table { font-size:.78rem; } .engine-toolbar { bottom:max(8px,env(safe-area-inset-bottom)); } }
 @media(max-width:700px) {
   main { padding:22px 6vw 60px; }
   .chart-grid,.readouts { grid-template-columns:1fr; }

@@ -33,16 +33,17 @@ export function drawWaveform(canvas: HTMLCanvasElement, waveform?: AnalysisResul
   c.stroke();
 }
 
-export function drawSpectrum(canvas: HTMLCanvasElement, spectra: Spectrum[] = []): void {
+export interface SpectrumMarker { frequency: number; label: string; color?: string }
+export function drawSpectrum(canvas: HTMLCanvasElement, spectra: Spectrum[] = [], markers: SpectrumMarker[] = [], minimumFrequency = 20): void {
   const { context: c, left, right, top, bottom } = surface(canvas);
   const maxFrequency = spectra.length ? Math.max(...spectra.map(s => s.sampleRate / 2)) : 24000;
-  const x = (hz: number) => left + Math.log(hz / 20) / Math.log(maxFrequency / 20) * (right - left);
+  const x = (hz: number) => left + Math.log(hz / minimumFrequency) / Math.log(maxFrequency / minimumFrequency) * (right - left);
   const y = (db: number) => bottom - Math.max(0, Math.min(100, db + 100)) / 100 * (bottom - top);
   for (const db of [-100, -75, -50, -25, 0]) {
     c.strokeStyle = GRID; c.beginPath(); c.moveTo(left, y(db)); c.lineTo(right, y(db)); c.stroke();
     c.fillStyle = INK; c.fillText(String(db), 7, y(db) + 4);
   }
-  for (const hz of frequencyTicks(maxFrequency)) {
+  for (const hz of (minimumFrequency < 20 ? [minimumFrequency, 100, 1000, maxFrequency] : frequencyTicks(maxFrequency))) {
     c.textAlign = hz === maxFrequency ? 'right' : 'center'; c.fillText(frequencyLabel(hz), x(hz), bottom + 23);
   }
   c.textAlign = 'left';
@@ -51,15 +52,23 @@ export function drawSpectrum(canvas: HTMLCanvasElement, spectra: Spectrum[] = []
     let started = false;
     for (let bin = 1; bin < spectrum.db.length; bin++) {
       const hz = bin * spectrum.resolution;
-      if (hz < 20) continue;
+      if (hz < minimumFrequency) continue;
       if (!started) { c.moveTo(x(hz), y(spectrum.db[bin])); started = true; }
       else c.lineTo(x(hz), y(spectrum.db[bin]));
     }
     c.stroke();
   });
+  let lastLabelX = -Infinity;
+  for (const marker of markers.filter(m => m.frequency >= minimumFrequency && m.frequency <= maxFrequency).sort((a, b) => a.frequency - b.frequency)) {
+    const position = x(marker.frequency);
+    c.strokeStyle = marker.color ?? '#e9bb6d'; c.lineWidth = 1; c.setLineDash([3, 4]);
+    c.beginPath(); c.moveTo(position, top); c.lineTo(position, bottom); c.stroke(); c.setLineDash([]);
+    // All marker values also appear in HTML; suppress crowded Canvas labels on a phone.
+    if (position - lastLabelX > 60 && position < right - 45) { c.fillStyle = marker.color ?? '#e9bb6d'; c.fillText(marker.label, position + 3, top + 12); lastLabelX = position; }
+  }
 }
 
-export function drawSpectrogram(canvas: HTMLCanvasElement, columns: Float32Array[] = [], times: number[] = [], sampleRate = 48000, fftSize = 4096): void {
+export function drawSpectrogram(canvas: HTMLCanvasElement, columns: Float32Array[] = [], times: number[] = [], sampleRate = 48000, fftSize = 4096, minimumFrequency = 20, columnSeconds?: number): void {
   const { context: c, left, right, top, bottom } = surface(canvas);
   const maxFrequency = sampleRate / 2;
   if (columns.length) {
@@ -67,8 +76,8 @@ export function drawSpectrogram(canvas: HTMLCanvasElement, columns: Float32Array
     const rc = raster.getContext('2d')!;
     const pixels = rc.createImageData(raster.width, raster.height);
     for (let row = 0; row < raster.height; row++) {
-      const low = 20 * (maxFrequency / 20) ** (1 - (row + 1) / raster.height);
-      const high = 20 * (maxFrequency / 20) ** (1 - row / raster.height);
+      const low = minimumFrequency * (maxFrequency / minimumFrequency) ** (1 - (row + 1) / raster.height);
+      const high = minimumFrequency * (maxFrequency / minimumFrequency) ** (1 - row / raster.height);
       const first = Math.max(1, Math.floor(low * fftSize / sampleRate));
       const last = Math.min(fftSize / 2, Math.max(first, Math.ceil(high * fftSize / sampleRate)));
       for (let col = 0; col < columns.length; col++) {
@@ -83,11 +92,19 @@ export function drawSpectrogram(canvas: HTMLCanvasElement, columns: Float32Array
       }
     }
     rc.putImageData(pixels, 0, 0); c.imageSmoothingEnabled = false;
-    c.drawImage(raster, left, top, right - left, bottom - top);
+    if (columnSeconds && times.length === columns.length) {
+      // Place live frames on their capture timeline; missing frames stay blank at their actual duration.
+      const start = times[0] - columnSeconds / 2;
+      const span = Math.max(columnSeconds, times.at(-1)! + columnSeconds / 2 - start);
+      for (let col = 0; col < columns.length; col++) {
+        const position = left + (times[col] - columnSeconds / 2 - start) / span * (right - left);
+        c.drawImage(raster, col, 0, 1, raster.height, position, top, columnSeconds / span * (right - left), bottom - top);
+      }
+    } else c.drawImage(raster, left, top, right - left, bottom - top);
   }
   c.fillStyle = INK;
   for (const hz of [100, 1000, 10000].filter(hz => hz < maxFrequency)) {
-    const y = bottom - Math.log(hz / 20) / Math.log(maxFrequency / 20) * (bottom - top);
+    const y = bottom - Math.log(hz / minimumFrequency) / Math.log(maxFrequency / minimumFrequency) * (bottom - top);
     c.fillText(frequencyLabel(hz), 5, y + 4);
   }
   c.fillText(`${(times[0] ?? 0).toFixed(1)} s`, left, bottom + 23);

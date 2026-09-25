@@ -5,6 +5,9 @@ export class Microphone {
   private source: MediaStreamAudioSourceNode | null = null;
   private generation = 0;
 
+  connectTap(node: AudioNode): void { this.source?.connect(node); }
+  disconnectTap(node: AudioNode): void { try { this.source?.disconnect(node); } catch { /* Already disconnected during stop. */ } }
+
   async start(fftSize: number, onEnded: () => void): Promise<void> {
     const generation = ++this.generation;
     if (!globalThis.isSecureContext) throw new Error('Microphone access requires HTTPS or localhost. You can still open an audio file.');

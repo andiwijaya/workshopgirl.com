@@ -42,7 +42,7 @@ export function analyzeAudio(samples: Float32Array, sampleRate: number, fftSize 
   mean /= samples.length;
   for (const value of samples) squares += (value - mean) ** 2;
   return {
-    spectrum: summarize(Float64Array.from(amplitudeSquared, Math.sqrt), power, sampleRate, fftSize, Math.sqrt(squares / samples.length), peak),
+    spectrum: { ...summarize(Float64Array.from(amplitudeSquared, Math.sqrt), power, sampleRate, fftSize, Math.sqrt(squares / samples.length), peak), windowSamples: Math.min(samples.length, fftSize) },
     duration: samples.length / sampleRate, frameCount: frames, waveform: waveformEnvelope(samples),
     spectrogram: { times: times.map((time, i) => time / counts[i]), columns: columns.map((column, i) => Float32Array.from(column, value => Math.max(-160, 10 * Math.log10(Math.max(1e-16, value / counts[i]))))) },
   };

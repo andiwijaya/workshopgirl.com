@@ -6,8 +6,10 @@ import { decodeAudio, validateFile } from '../../lib/audio/decode.ts';
 import { AudioRecorder } from '../../lib/audio/recording.ts';
 import { drawWaveform, drawSpectrum, drawSpectrogram } from './charts.ts';
 import { updateMeasurements, updateComparison } from './readouts.ts';
+import { LiveCapture } from '../../lib/audio/live-capture.ts';
+import type { AnalyzerExtension } from './extension.ts';
 
-export function mountAnalyzer(root: HTMLElement): void {
+export function mountAnalyzer<T extends Snapshot = Snapshot>(root: HTMLElement, extension: AnalyzerExtension<T> = {}): { refresh: () => void } {
   const el = <T extends HTMLElement>(id: string) => root.querySelector<T>(`#${id}`)!;
   const start = el<HTMLButtonElement>('start-mic'), stop = el<HTMLButtonElement>('stop-analysis');
   const file = el<HTMLInputElement>('audio-file'), settings = el<HTMLSelectElement>('fft-size');
@@ -15,13 +17,15 @@ export function mountAnalyzer(root: HTMLElement): void {
   const waveformCanvas = el<HTMLCanvasElement>('waveform-chart'), spectrumCanvas = el<HTMLCanvasElement>('spectrum-chart');
   const spectrogramCanvas = el<HTMLCanvasElement>('spectrogram-chart'), comparisonCanvas = el<HTMLCanvasElement>('comparison-chart');
   const microphone = new Microphone(), recorder = new AudioRecorder(), events = new AbortController();
+  const liveCapture = new LiveCapture();
   let phase: 'idle' | 'requesting' | 'live' | 'loading' = 'idle';
   let spectrum: Spectrum | undefined, result: AnalysisResult | undefined;
   let waveform: AnalysisResult['waveform'] | undefined, duration = 0;
   let columns: Float32Array[] = [], times: number[] = [];
+  let columnSeconds: number | undefined;
   let worker: Worker | undefined, generation = 0, raf = 0, disposed = false, objectUrl: string | undefined;
   let decodeAbort: AbortController | undefined;
-  let label = '', source: Snapshot['source'] = 'live frame', a: Snapshot | undefined, b: Snapshot | undefined;
+  let label = '', source: Snapshot['source'] = 'live frame', a: T | undefined, b: T | undefined;
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const status = (text: string) => { el('analyzer-status').textContent = text; };
   const error = (text = '') => { el('analyzer-error').textContent = text; el('analyzer-error').hidden = !text; };
@@ -32,17 +36,18 @@ export function mountAnalyzer(root: HTMLElement): void {
     start.disabled = busy; file.disabled = busy; settings.disabled = busy || !!result;
     stop.disabled = !busy; record.disabled = phase !== 'live' || !globalThis.MediaRecorder;
     record.textContent = recorder.active ? 'Finish recording' : 'Record clip';
-    el<HTMLButtonElement>('save-a').disabled = busy || !spectrum;
-    el<HTMLButtonElement>('save-b').disabled = busy || !spectrum;
+    const captureDisabled = !spectrum || (busy && !(phase === 'live' && extension.liveSnapshots)) || extension.canCapture?.() === false;
+    el<HTMLButtonElement>('save-a').disabled = captureDisabled;
+    el<HTMLButtonElement>('save-b').disabled = captureDisabled;
     el<HTMLButtonElement>('clear-comparison').disabled = !a && !b;
     el<HTMLButtonElement>('clear-audio').disabled = busy;
   }
 
   function draw() {
     drawWaveform(waveformCanvas, waveform, duration);
-    drawSpectrum(spectrumCanvas, spectrum ? [spectrum] : []);
-    drawSpectrogram(spectrogramCanvas, columns, times, spectrum?.sampleRate, spectrum?.fftSize);
-    if (a && b) drawSpectrum(comparisonCanvas, [a.spectrum, b.spectrum]);
+    drawSpectrum(spectrumCanvas, spectrum ? [spectrum] : [], extension.markers?.(), extension.minimumFrequency);
+    drawSpectrogram(spectrogramCanvas, columns, times, spectrum?.sampleRate, spectrum?.fftSize, extension.minimumFrequency, columnSeconds);
+    if (a && b) drawSpectrum(comparisonCanvas, [a.spectrum, b.spectrum], [], extension.minimumFrequency);
   }
 
   function clearClip() {
@@ -54,7 +59,8 @@ export function mountAnalyzer(root: HTMLElement): void {
   }
 
   function resetMeasurement() {
-    spectrum = undefined; result = undefined; waveform = undefined; duration = 0; columns = []; times = [];
+    extension.reset?.();
+    spectrum = undefined; result = undefined; waveform = undefined; duration = 0; columns = []; times = []; columnSeconds = undefined;
     el('dominant-frequency').textContent = '—'; el('rms-level').textContent = '—'; el('frequency-resolution').textContent = '—';
     el('sample-details').textContent = 'Actual decoded / device sample rate';
     el('peak-list').replaceChildren(); el('band-list').replaceChildren(); el('measurement-note').textContent = 'Waiting for audio.';
@@ -63,6 +69,7 @@ export function mountAnalyzer(root: HTMLElement): void {
 
   function stopActivity(message = 'Stopped. Your microphone is off. The last measurement is retained.') {
     generation++; cancelAnimationFrame(raf); worker?.terminate(); worker = undefined;
+    liveCapture.stop();
     decodeAbort?.abort(); decodeAbort = undefined;
     recorder.stop(); microphone.stop(); phase = 'idle'; syncControls(); status(message);
   }
@@ -94,6 +101,7 @@ export function mountAnalyzer(root: HTMLElement): void {
         if (data.type === 'error') { fail(data.message); return; }
         if (data.type === 'progress') { status(`Analyzing locally… ${Math.round(data.progress * 100)}%`); return; }
         result = data.result; spectrum = result.spectrum; waveform = result.waveform; duration = result.duration;
+        extension.measurement?.(spectrum, { mode: 'file', clock: 'file', clockId: crypto.randomUUID(), timeSeconds: duration, frameStart: null, sequence: 0, droppedFrames: 0, discontinuities: 0 }); extension.render?.();
         columns = result.spectrogram.columns; times = result.spectrogram.times;
         worker?.terminate(); worker = undefined; phase = 'idle';
         updateMeasurements(root, spectrum); syncControls(); draw();
@@ -117,12 +125,36 @@ export function mountAnalyzer(root: HTMLElement): void {
       await microphone.start(Number(settings.value), () => stopActivity('Microphone input ended or was suspended. Start again to reconnect.'));
       if (token !== generation || disposed || !microphone.analyser || !microphone.context) return;
       const analyser = microphone.analyser, context = microphone.context;
-      const engine = new DspEngine(context.sampleRate, analyser.fftSize), samples = new Float32Array(analyser.fftSize);
       phase = 'live'; source = 'live frame'; label = 'Microphone frame'; syncControls(); el('source-label').textContent = 'Live microphone';
       const trackSettings = microphone.stream?.getAudioTracks()[0]?.getSettings();
       const processing = trackSettings?.echoCancellation || trackSettings?.noiseSuppression || trackSettings?.autoGainControl;
       status(`Live · microphone on. ${processing ? 'Device signal processing is active and can alter measurements.' : 'Unprocessed input requested; hardware processing may still apply.'}`);
       el('waveform-caption').textContent = 'Latest frame · digital amplitude / time';
+      if (extension.continuous) {
+        let lastText = -Infinity, lastDraw = -Infinity, changed = false;
+        await liveCapture.start(microphone, analyser.fftSize, measurement => {
+          if (token !== generation || phase !== 'live') return;
+          const firstMeasurement = !spectrum;
+          spectrum = measurement.spectrum; waveform = measurement.waveform; duration = spectrum.fftSize / spectrum.sampleRate;
+          columnSeconds = measurement.metadata.mode === 'worklet' ? duration / 2 : 0.1;
+          columns.push(spectrum.db); times.push(measurement.metadata.timeSeconds);
+          while (columns.length > 180) { columns.shift(); times.shift(); }
+          extension.measurement?.(spectrum, measurement.metadata); changed = true; if (firstMeasurement) syncControls();
+        }, (mode, reason) => {
+          if (token !== generation) return;
+          columns = []; times = [];
+          status(`Live · microphone on · ${mode === 'worklet' ? 'sample-clock capture' : 'sampled fallback'}. ${reason ?? ''} ${processing ? 'Device signal processing is active.' : 'Unprocessed input requested; hardware processing may still apply.'}`);
+        });
+        const render = (now: number) => {
+          if (token !== generation || phase !== 'live') return;
+          if (changed && now - lastDraw >= (reducedMotion.matches ? 250 : 100)) { draw(); lastDraw = now; changed = false; }
+          if (spectrum && now - lastText >= 500) { updateMeasurements(root, spectrum); extension.render?.(); lastText = now; }
+          raf = requestAnimationFrame(render);
+        };
+        if (token === generation && phase === 'live') raf = requestAnimationFrame(render);
+        return;
+      }
+      const engine = new DspEngine(context.sampleRate, analyser.fftSize), samples = new Float32Array(analyser.fftSize);
       let lastFrame = -Infinity, lastText = -Infinity; const began = performance.now();
       function tick(now: number) {
         if (phase !== 'live' || token !== generation) return;
@@ -165,13 +197,14 @@ export function mountAnalyzer(root: HTMLElement): void {
   listen(el('clear-audio'), 'click', () => { clearClip(); resetMeasurement(); syncControls(); status('Clip cleared. Your microphone is off.'); });
   for (const slot of ['a', 'b'] as const) {
     listen(el(`save-${slot}`), 'click', () => {
-      if (!spectrum || phase !== 'idle') return;
-      const snapshot: Snapshot = { label, source, capturedAt: new Date().toISOString(), spectrum: structuredClone(spectrum) };
+      if (!spectrum || (phase !== 'idle' && !(phase === 'live' && extension.liveSnapshots)) || extension.canCapture?.() === false) return;
+      const base: Snapshot = { label, source, capturedAt: new Date().toISOString(), spectrum: structuredClone(spectrum) };
+      const snapshot = extension.capture ? extension.capture(base) : base as T;
       if (slot === 'a') a = snapshot; else b = snapshot;
-      updateComparison(root, a, b); syncControls(); draw();
+      updateComparison(root, a, b); extension.compare?.(a, b); syncControls(); draw();
     });
   }
-  listen(el('clear-comparison'), 'click', () => { a = undefined; b = undefined; updateComparison(root); syncControls(); });
+  listen(el('clear-comparison'), 'click', () => { a = undefined; b = undefined; updateComparison(root); extension.compare?.(); syncControls(); });
   listen(document, 'visibilitychange', () => {
     if (document.hidden) {
       playback.pause();
@@ -186,4 +219,5 @@ export function mountAnalyzer(root: HTMLElement): void {
   const observer = new ResizeObserver(() => draw()); observer.observe(root);
   if (!globalThis.MediaRecorder) el('recording-status').textContent = 'Recording is unsupported here. Live analysis and file import are still available.';
   draw(); syncControls();
+  return { refresh: () => { extension.render?.(); syncControls(); draw(); } };
 }

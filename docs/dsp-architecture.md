@@ -1,5 +1,7 @@
 # WorkshopGirl DSP Engine V1
 
+This document preserves the V1 mathematical and acquisition baseline. V2 adds a separate Engine Analyzer, generic harmonics/peak tracking and bounded sample-clock capture; see [DSP Engine V2 architecture](dsp-v2-architecture.md). The General Sound Analyzer continues to use the V1 live workflow described here.
+
 ## Boundaries
 
 `src/lib/dsp/` is pure TypeScript with no browser, DOM, Astro or third-party DSP dependencies. It accepts normalized floating-point PCM and the **actual analysis sample rate**. Browser acquisition/decoding/recording lives in `src/lib/audio/`. `src/components/sound-analyzer/` owns UI state, rendering and interactions. Future domain tools should import the DSP contracts and functions, then supply their own workflows and interpretation; they must not fork the FFT.

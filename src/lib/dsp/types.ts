@@ -5,6 +5,8 @@ export interface Spectrum {
   sampleRate: number;
   fftSize: number;
   resolution: number;
+  /** Actual Hann support; may be smaller than fftSize for a zero-padded short clip. */
+  windowSamples?: number;
   amplitude: Float64Array;
   power: Float64Array;
   db: Float32Array;

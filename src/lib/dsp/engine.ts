@@ -51,6 +51,6 @@ export class DspEngine {
       amplitude[k] = factor * Math.sqrt(magnitudeSquared) / this.windowSum;
       power[k] = factor * magnitudeSquared / (this.fftSize * this.windowEnergy);
     }
-    return summarize(amplitude, power, this.sampleRate, this.fftSize, Math.sqrt(squares / n), samplePeak);
+    return { ...summarize(amplitude, power, this.sampleRate, this.fftSize, Math.sqrt(squares / n), samplePeak), windowSamples: n };
   }
 }

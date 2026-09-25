@@ -1,0 +1,27 @@
+---
+import Analyzer from '../sound-analyzer/Analyzer.astro';
+---
+<Analyzer mode="engine">
+  <section slot="configuration" class="engine-settings" aria-labelledby="engine-settings-heading">
+    <h2 id="engine-settings-heading">Add a reference. If you have one.</h2>
+    <p class="small">Live analysis works with every field blank. Manual RPM is a reference, not synchronized order tracking.</p>
+    <div class="reference-input"><label for="engine-rpm">RPM <span>(optional)</span></label><input id="engine-rpm" type="number" inputmode="decimal" min="0" max="30000" step="any" placeholder="e.g. 1800" /></div>
+    <details><summary>Engine &amp; harmonic references</summary><div class="engine-fields">
+      <div><label for="engine-cylinders">Cylinder count (optional)</label><input id="engine-cylinders" type="number" inputmode="numeric" min="1" max="64" step="1" placeholder="e.g. 4" /></div>
+      <div><label for="engine-cycle">Engine cycle (optional)</label><select id="engine-cycle"><option value="">Unspecified</option><option value="4">4-stroke</option><option value="2">2-stroke</option></select></div>
+      <div><label for="harmonic-hz">Harmonic reference, Hz (optional)</label><input id="harmonic-hz" type="number" inputmode="decimal" min="1" max="20000" step="any" placeholder="e.g. 100" /></div>
+    </div><p class="small">Harmonics use your Hz reference, otherwise the firing reference, shaft reference, or strongest peak—in that order. The strongest peak is not necessarily the fundamental.</p></details>
+    <p id="engine-input-error" class="notice" role="alert" hidden></p>
+    <p id="rpm-reference-summary">No RPM reference. General frequency analysis remains available.</p>
+    <ul id="engine-markers" class="reference-list" aria-label="Calculated frequency markers"></ul>
+    <p class="small">Firing reference assumes a conventional evenly firing engine. Uneven firing, cylinder deactivation and unusual operating modes can differ. References outside the plot range are listed but not drawn.</p>
+  </section>
+  <section slot="analysis" class="engine-observations" aria-label="Engine signal observations">
+    <p id="capture-quality" class="small">Microphone off. No recording is needed for live measurement.</p>
+    <div class="engine-analysis-grid"><section><h3>Harmonic structure</h3><p id="harmonic-summary">Start analysis to inspect harmonics.</p><p class="small">Relative levels use the strongest matched harmonic as 0 dB. Matching a reference does not identify the source of a sound.</p>
+      <div class="table-scroll"><table><caption>Reference harmonics, 1×–5×</caption><thead><tr><th scope="col">Harmonic / target</th><th scope="col">Found</th><th scope="col">Level / relative</th></tr></thead><tbody id="harmonic-table"></tbody></table></div>
+    </section><section><h3>Persistent components</h3><p class="small">Repeated spectral peaks, observed over time. Movement is the change since first seen; persistence is not diagnostic confidence.</p><ul id="persistent-peaks"><li>Waiting for live measurements.</li></ul></section></div>
+  </section>
+  <div slot="comparison" id="engine-comparison" hidden><p id="engine-comparison-warning" class="notice" role="status"></p><p id="engine-comparison-summary"></p><div class="table-scroll"><table><caption>Engine snapshot context and harmonic changes</caption><thead><tr><th scope="col">Context</th><th scope="col">A</th><th scope="col">B / change</th></tr></thead><tbody id="engine-comparison-table"></tbody></table></div></div>
+  <div slot="toolbar" class="engine-toolbar" aria-label="Live measurement controls"><button id="engine-live-toggle" type="button" class="primary">Start live</button><button id="engine-capture-a" type="button" disabled>Capture A</button><button id="engine-capture-b" type="button" disabled>Capture B</button></div>
+</Analyzer>

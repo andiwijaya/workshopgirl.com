@@ -7,7 +7,7 @@ export const BANDS = [
   { label: 'High', low: 2000, high: 20000 },
 ] as const;
 
-export function findPeaks(db: Float32Array, sampleRate: number, fftSize: number, rms: number): Peak[] {
+export function findPeaks(db: Float32Array, sampleRate: number, fftSize: number, rms: number, limit = 6): Peak[] {
   if (rms < 1e-5) return [];
   const sorted = Array.from(db.subarray(1)).sort((a, b) => a - b);
   const threshold = Math.max(-90, sorted[Math.floor(sorted.length / 2)] + 12, sorted[sorted.length - 1] - 50);
@@ -20,7 +20,7 @@ export function findPeaks(db: Float32Array, sampleRate: number, fftSize: number,
     candidates.push({ frequency: (k + offset) * sampleRate / fftSize, dbFS: db[k] - 0.25 * (db[k - 1] - db[k + 1]) * offset, bin: k });
   }
   return candidates.sort((a, b) => b.dbFS - a.dbFS)
-    .filter((peak, index, all) => !all.slice(0, index).some(other => Math.abs(other.bin - peak.bin) < 3)).slice(0, 6);
+    .filter((peak, index, all) => !all.slice(0, index).some(other => Math.abs(other.bin - peak.bin) < 3)).slice(0, limit);
 }
 
 export function bandEnergy(power: Float64Array, sampleRate: number, fftSize: number): BandEnergy[] {

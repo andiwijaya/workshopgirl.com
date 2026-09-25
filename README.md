@@ -67,3 +67,13 @@ npm run test:browser
 ```
 
 Browser tests use the production build and manage a preview server on localhost port 4379. Chromium tests cover audio with deterministic synthetic MediaStreams. Windows Playwright WebKit lacks Web Audio, so audio scenarios are explicitly skipped there; its layout, navigation and unsupported-API paths are still tested. Physical iOS/Android microphone and recording checks remain necessary before claiming device certification.
+
+## DSP Engine V2 / Engine Sound Analyzer V1
+
+Open `/tools/engine-sound-analyzer/` for live waveform, spectrum, spectrogram, 1×–5× harmonics, persistent peaks, optional manual RPM/firing references and live A/B snapshots. Recording is optional. Continuous PCM uses an AudioWorklet and DSP worker with bounded buffers; a labeled sampled fallback handles unavailable or failed capture. Manual RPM is not synchronized order tracking. The General Sound Analyzer remains available separately.
+
+- Generic math: `src/lib/dsp/`; engine rules: `src/lib/domains/engine/`
+- Future timestamped RPM source contract: `src/lib/domains/rpm-stream.ts` (no transport or synchronization implemented)
+- [V2 architecture and limits](docs/dsp-v2-architecture.md)
+- [V2 implementation and verification report](docs/dsp-v2-implementation-report.md)
+- Reproduce synthetic CPU benchmarks with `npm run benchmark:dsp` (Node 24; not a physical-phone benchmark).
