@@ -1,0 +1,25 @@
+---
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import { REFERENCE_CASES } from '../../../lib/validation/reference.ts';
+import '../../../styles/sound-analyzer.css';
+const title = 'DSP Validation Workbench — Known Signals | WorkshopGirl';
+const description = 'Engineering checks for known digital reference signals. Validate DSP outputs locally, then follow a separate physical-device measurement protocol.';
+const canonical = 'https://workshopgirl.com/tools/dsp-validation/';
+---
+<!doctype html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" /><link rel="icon" type="image/svg+xml" href="/favicon.svg" /></head>
+<body><a class="skip-link" href="#main">Skip to validation</a><SiteHeader current="tools" /><main id="main"><div class="hero"><a class="eyebrow" href="/tools/engine-sound-analyzer/">Engine Analyzer / Advanced engineering</a><h1>Known input.<br /><span>Measured output.</span></h1><p>DSP software checks using deterministic digital signals. No microphone permission, playback or audio upload.</p></div>
+  <section class="validation-workbench" id="reference-validation" aria-labelledby="reference-heading"><h2 id="reference-heading">Reference validation</h2><p>One second of generated PCM passes through the shared offline DSP worker path. Results compare measured frequencies, amplitudes and RMS with documented targets. This checks software, not your microphone or physical device.</p>
+    <noscript><p class="notice">Enable JavaScript to run the local validation worker.</p></noscript>
+    <label for="reference-case">Known signal</label><select id="reference-case">{REFERENCE_CASES.map(name => <option selected={name === '440 Hz'}>{name}</option>)}</select>
+    <label for="reference-rate">Generated sample rate</label><select id="reference-rate"><option value="44100">44,100 Hz</option><option value="48000" selected>48,000 Hz</option><option value="96000">96,000 Hz</option></select>
+    <p class="small">FFT: 8192 · periodic Hann · 50% overlap · one-sided amplitude/power conventions. Noise uses seed 17. “Amplitude ×2” compares a 0.4-amplitude 440 Hz sine with a 0.2-amplitude baseline; expected RMS change is +6.0206 dB.</p>
+    <div class="controls"><button id="run-reference" class="primary" type="button">Run known signal</button><button id="cancel-reference" type="button" disabled>Cancel</button><button id="export-reference" type="button" disabled>Export validation JSON</button></div>
+    <p id="reference-status" role="status">Ready. No microphone is used.</p><ul id="reference-results"></ul>
+  </section>
+  <section class="guide"><h2>Then test the actual device.</h2><p>No physical-device testing is implied by a software PASS. Use the <a href="/tools/engine-sound-analyzer/">Engine Sound Analyzer</a> and its collapsed “Physical-device validation log” to record actual results and export capture evidence.</p>
+    <ol><li>Choose Android Chrome, iOS Safari, desktop Chromium or another browser in the manual log. Note the test conditions without serial numbers or personal identifiers.</li><li>Start the microphone. Record actual sample rate, acquisition mode, processing settings, dropped frames and discontinuities shown by the analyzer.</li><li>Observe the microphone indicator when stopping, hiding the tab and leaving the page. Return and restart; record interruptions or permission issues.</li><li>At a safe stationary position, collect at least three separated snapshots with unchanged distance, RPM/load and input setup. Inspect level differences, spectral-shape overlap and context warnings.</li><li>Run for ten minutes, checking responsiveness, heat and frame counters at intervals. Log the actual tested duration; an unchecked item stays “Not tested.”</li><li>Use an external known timing reference if measuring end-to-end latency. Browser output base latency is not microphone-to-display latency. Describe the method and uncertainty in notes.</li><li>Export the measurements and log locally. Repeat on each physical device/browser combination before making compatibility claims.</li></ol>
+    <p>Keep phones, hands and cables clear of moving or hot machinery. Digital dBFS is not calibrated acoustic SPL. Measurement consistency is not engine health.</p>
+    <p><a href="/tools/sound-analyzer/">General Sound Analyzer</a> · <a href="/tools/">All tools</a></p>
+  </section>
+</main><SiteFooter /><script>import { mountReferenceValidation } from '../../../components/validation/controller'; mountReferenceValidation(document.querySelector<HTMLElement>('#reference-validation')!);</script></body></html>

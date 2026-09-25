@@ -1,5 +1,6 @@
 ---
 import Analyzer from '../sound-analyzer/Analyzer.astro';
+import MeasurementPanel from './MeasurementPanel.astro';
 ---
 <Analyzer mode="engine">
   <section slot="configuration" class="engine-settings" aria-labelledby="engine-settings-heading">
@@ -17,11 +18,12 @@ import Analyzer from '../sound-analyzer/Analyzer.astro';
     <p class="small">Firing reference assumes a conventional evenly firing engine. Uneven firing, cylinder deactivation and unusual operating modes can differ. References outside the plot range are listed but not drawn.</p>
   </section>
   <section slot="analysis" class="engine-observations" aria-label="Engine signal observations">
+    <MeasurementPanel />
     <p id="capture-quality" class="small">Microphone off. No recording is needed for live measurement.</p>
     <div class="engine-analysis-grid"><section><h3>Harmonic structure</h3><p id="harmonic-summary">Start analysis to inspect harmonics.</p><p class="small">Relative levels use the strongest matched harmonic as 0 dB. Matching a reference does not identify the source of a sound.</p>
       <div class="table-scroll"><table><caption>Reference harmonics, 1×–5×</caption><thead><tr><th scope="col">Harmonic / target</th><th scope="col">Found</th><th scope="col">Level / relative</th></tr></thead><tbody id="harmonic-table"></tbody></table></div>
     </section><section><h3>Persistent components</h3><p class="small">Repeated spectral peaks, observed over time. Movement is the change since first seen; persistence is not diagnostic confidence.</p><ul id="persistent-peaks"><li>Waiting for live measurements.</li></ul></section></div>
   </section>
-  <div slot="comparison" id="engine-comparison" hidden><p id="engine-comparison-warning" class="notice" role="status"></p><p id="engine-comparison-summary"></p><div class="table-scroll"><table><caption>Engine snapshot context and harmonic changes</caption><thead><tr><th scope="col">Context</th><th scope="col">A</th><th scope="col">B / change</th></tr></thead><tbody id="engine-comparison-table"></tbody></table></div></div>
+  <div slot="comparison" id="engine-comparison" hidden><p id="engine-comparison-warning" class="notice" role="status"></p><p id="engine-comparison-summary"></p><section id="comparison-quality" hidden><h3>Comparison quality</h3><p id="comparison-quality-status" role="status"></p><ul id="comparison-quality-pairs"></ul></section><div class="table-scroll"><table><caption>Engine snapshot context and harmonic changes</caption><thead><tr><th scope="col">Context</th><th scope="col">A</th><th scope="col">B / change</th></tr></thead><tbody id="engine-comparison-table"></tbody></table></div></div>
   <div slot="toolbar" class="engine-toolbar" aria-label="Live measurement controls"><button id="engine-live-toggle" type="button" class="primary">Start live</button><button id="engine-capture-a" type="button" disabled>Capture A</button><button id="engine-capture-b" type="button" disabled>Capture B</button></div>
 </Analyzer>

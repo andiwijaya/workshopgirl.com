@@ -74,6 +74,18 @@ th,td { text-align:left; padding:12px 8px; border-bottom:1px solid var(--line); 
 .tool-card strong { color:var(--pink); }
 [hidden] { display:none!important; }
 .engine-page { padding-bottom:95px; }
+.measurement-quality { border-bottom:1px solid var(--line); padding-bottom:24px; margin-bottom:24px; }
+.measurement-quality input,.measurement-quality textarea,.validation-workbench textarea { width:100%; min-width:0; padding:10px; font:inherit; border:1px solid var(--line); background:var(--paper); color:var(--ink); }
+.measurement-quality label,.validation-workbench label { display:block; font-size:.9rem; margin:14px 0 8px; }
+.measurement-quality input { min-height:46px; }
+.measurement-fields,.validation-checks { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.validation-checks select { display:block; width:100%; margin-top:8px; }
+.measurement-quality li,#comparison-quality li { overflow-wrap:anywhere; padding-bottom:8px; line-height:1.6; font-size:.88rem; }
+.measurement-quality h3 { margin-top:20px; }
+.export-controls { margin-top:20px; }
+.validation-workbench { border:1px solid var(--line); background:var(--soft); padding:24px; }
+.validation-workbench select { margin-bottom:16px; }
+@media(max-width:700px) { .measurement-fields,.validation-checks { grid-template-columns:1fr; } .validation-workbench { padding:18px 12px; } }
 .engine-settings,.engine-observations { border:1px solid var(--line); background:var(--soft); padding:clamp(18px,3vw,30px); margin-top:20px; }
 .engine-settings h2 { font-size:1.55rem; }
 .engine-settings label { display:block; font-size:.9rem; margin-bottom:7px; font-weight:600; }

@@ -68,10 +68,12 @@ export function mountAnalyzer<T extends Snapshot = Snapshot>(root: HTMLElement, 
   }
 
   function stopActivity(message = 'Stopped. Your microphone is off. The last measurement is retained.') {
+    const wasLive = phase === 'live';
     generation++; cancelAnimationFrame(raf); worker?.terminate(); worker = undefined;
     liveCapture.stop();
     decodeAbort?.abort(); decodeAbort = undefined;
     recorder.stop(); microphone.stop(); phase = 'idle'; syncControls(); status(message);
+    if (wasLive) extension.stopped?.(message);
   }
 
   async function importClip(blob: Blob, name: string) {
@@ -101,7 +103,7 @@ export function mountAnalyzer<T extends Snapshot = Snapshot>(root: HTMLElement, 
         if (data.type === 'error') { fail(data.message); return; }
         if (data.type === 'progress') { status(`Analyzing locally… ${Math.round(data.progress * 100)}%`); return; }
         result = data.result; spectrum = result.spectrum; waveform = result.waveform; duration = result.duration;
-        extension.measurement?.(spectrum, { mode: 'file', clock: 'file', clockId: crypto.randomUUID(), timeSeconds: duration, frameStart: null, sequence: 0, droppedFrames: 0, discontinuities: 0 }); extension.render?.();
+        extension.measurement?.(spectrum, { mode: 'file', clock: 'file', clockId: crypto.randomUUID(), timeSeconds: duration, durationSeconds: duration, frameStart: null, sequence: 0, droppedFrames: 0, discontinuities: 0 }); extension.render?.();
         columns = result.spectrogram.columns; times = result.spectrogram.times;
         worker?.terminate(); worker = undefined; phase = 'idle';
         updateMeasurements(root, spectrum); syncControls(); draw();

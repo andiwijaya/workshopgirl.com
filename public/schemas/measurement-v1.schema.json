@@ -1,0 +1,730 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://workshopgirl.com/schemas/measurement-v1.schema.json",
+  "title": "WorkshopGirl measurement export version 1",
+  "description": "Generated measurement JSON. No raw audio. See docs/dsp-v3-architecture.md for formulas and scope. Runtime validation additionally checks grid-dependent array lengths.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "engineVersion",
+    "createdAt",
+    "conventions",
+    "measurements",
+    "comparisons",
+    "deviceValidation"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://workshopgirl.com/schemas/measurement-v1.schema.json"
+    },
+    "schemaVersion": {
+      "const": "workshopgirl.measurement/1"
+    },
+    "engineVersion": {
+      "const": "3"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "conventions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshot",
+        "spectrum",
+        "silence",
+        "similarity"
+      ],
+      "properties": {
+        "snapshot": {
+          "type": "string"
+        },
+        "spectrum": {
+          "type": "string"
+        },
+        "silence": {
+          "type": "string"
+        },
+        "similarity": {
+          "type": "string"
+        }
+      }
+    },
+    "measurements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/measurement"
+      },
+      "minItems": 1,
+      "maxItems": 9
+    },
+    "comparisons": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ab",
+        "repeatability"
+      ],
+      "properties": {
+        "ab": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/comparison"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repeatability": {
+          "$ref": "#/definitions/comparison"
+        }
+      }
+    },
+    "deviceValidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "browserFamily",
+        "observations",
+        "checks"
+      ],
+      "properties": {
+        "browserFamily": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "observations": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "result"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "result": {
+                "enum": [
+                  "Not tested",
+                  "Passed",
+                  "Issue observed",
+                  "Not applicable"
+                ]
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      }
+    }
+  },
+  "definitions": {
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "notes",
+        "source",
+        "capturedAt",
+        "durationSeconds",
+        "quality",
+        "acquisition",
+        "spectrum",
+        "domain"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "source": {
+          "enum": [
+            "live frame",
+            "file average"
+          ]
+        },
+        "capturedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "durationSeconds": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 60
+        },
+        "quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy",
+            "sessionSpanSeconds",
+            "recentSpanSeconds",
+            "coverageSeconds",
+            "frameCount",
+            "recentFrameCount",
+            "clippedFrames",
+            "lowSignalFrames",
+            "droppedFrames",
+            "discontinuities",
+            "rmsRangeDb",
+            "dominantRangeHz",
+            "flatness",
+            "effectiveResolutionHz",
+            "stabilityAvailable",
+            "issues",
+            "endedReason"
+          ],
+          "properties": {
+            "policy": {
+              "const": "quality-v1"
+            },
+            "sessionSpanSeconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "recentSpanSeconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "coverageSeconds": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "frameCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "recentFrameCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 512
+            },
+            "clippedFrames": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "lowSignalFrames": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "droppedFrames": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "discontinuities": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "rmsRangeDb": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "dominantRangeHz": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "flatness": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "effectiveResolutionHz": {
+              "type": "number",
+              "minimum": 0
+            },
+            "stabilityAvailable": {
+              "type": "boolean"
+            },
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "maxItems": 16
+            },
+            "endedReason": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "acquisition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "clock",
+            "clockId",
+            "timeSeconds",
+            "frameStart",
+            "sequence",
+            "droppedFrames",
+            "discontinuities",
+            "browserEvidence"
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "worklet",
+                "sampled",
+                "file"
+              ]
+            },
+            "clock": {
+              "enum": [
+                "audio-context",
+                "file"
+              ]
+            },
+            "clockId": {
+              "type": "string"
+            },
+            "timeSeconds": {
+              "type": "number"
+            },
+            "frameStart": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "droppedFrames": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "discontinuities": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "browserEvidence": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "audioWorkletAvailable",
+                    "processing",
+                    "outputBaseLatencySeconds"
+                  ],
+                  "properties": {
+                    "audioWorkletAvailable": {
+                      "type": "boolean"
+                    },
+                    "processing": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "autoGainControl",
+                        "noiseSuppression",
+                        "echoCancellation"
+                      ],
+                      "properties": {
+                        "autoGainControl": {
+                          "anyOf": [
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "noiseSuppression": {
+                          "anyOf": [
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "echoCancellation": {
+                          "anyOf": [
+                            {
+                              "type": "boolean"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "outputBaseLatencySeconds": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "minimum": 0
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "spectrum": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sampleRate",
+            "fftSize",
+            "windowSamples",
+            "rms",
+            "rmsDbFS",
+            "samplePeak",
+            "power",
+            "tonalDbFS",
+            "peaks",
+            "bands"
+          ],
+          "properties": {
+            "sampleRate": {
+              "type": "number",
+              "minimum": 8000,
+              "maximum": 384000
+            },
+            "fftSize": {
+              "enum": [
+                256,
+                512,
+                1024,
+                2048,
+                4096,
+                8192,
+                16384,
+                32768
+              ]
+            },
+            "windowSamples": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 32768
+            },
+            "rms": {
+              "type": "number",
+              "minimum": 0
+            },
+            "rmsDbFS": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "samplePeak": {
+              "type": "number",
+              "minimum": 0
+            },
+            "power": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "minimum": 0
+              },
+              "minItems": 129,
+              "maxItems": 16385
+            },
+            "tonalDbFS": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 129,
+              "maxItems": 16385
+            },
+            "peaks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "frequency",
+                  "dbFS",
+                  "bin"
+                ],
+                "properties": {
+                  "frequency": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "dbFS": {
+                    "type": "number"
+                  },
+                  "bin": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              },
+              "minItems": 0,
+              "maxItems": 6
+            },
+            "bands": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "low",
+                  "high",
+                  "power",
+                  "percent"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "low": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "high": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "power": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "percent": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 100.001
+                  }
+                }
+              },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          }
+        },
+        "domain": {
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "status",
+        "reasons",
+        "pairs"
+      ],
+      "properties": {
+        "policy": {
+          "const": "repeatability-v1"
+        },
+        "status": {
+          "enum": [
+            "GOOD MATCH",
+            "CONDITIONS DIFFER",
+            "LOW SIGNAL",
+            "INSUFFICIENT DATA",
+            "REVIEW QUALITY",
+            "SIGNALS DIFFER",
+            "CONTEXT UNVERIFIED"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 0,
+          "maxItems": 30
+        },
+        "pairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "a",
+              "b",
+              "similarity",
+              "rmsDeltaDb",
+              "peakDeltaHz",
+              "bandMaxDeltaPoints",
+              "harmonicMaxDeltaDb",
+              "reasons"
+            ],
+            "properties": {
+              "a": {
+                "type": "string"
+              },
+              "b": {
+                "type": "string"
+              },
+              "similarity": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "rmsDeltaDb": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "peakDeltaHz": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "bandMaxDeltaPoints": {
+                "type": "number",
+                "minimum": 0
+              },
+              "harmonicMaxDeltaDb": {
+                "anyOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 0,
+                "maxItems": 30
+              }
+            }
+          },
+          "minItems": 0,
+          "maxItems": 15
+        }
+      }
+    }
+  }
+}

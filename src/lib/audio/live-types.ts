@@ -9,6 +9,8 @@ export interface CaptureMetadata {
   sequence: number;
   droppedFrames: number;
   discontinuities: number;
+  durationSeconds?: number;
+  browserEvidence?: { audioWorkletAvailable: boolean; processing: { autoGainControl: boolean | null; noiseSuppression: boolean | null; echoCancellation: boolean | null }; outputBaseLatencySeconds: number | null };
 }
 export interface PcmFrame { samples: Float32Array; frameStart: number; sequence: number; droppedFrames: number; discontinuities: number }
 export interface LiveMeasurement { spectrum: Spectrum; waveform: AnalysisResult['waveform']; metadata: CaptureMetadata }

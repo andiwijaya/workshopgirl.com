@@ -1,0 +1,24 @@
+<section class="measurement-quality" aria-labelledby="quality-heading">
+  <h3 id="quality-heading">Measurement quality</h3>
+  <p id="measurement-quality-summary">Start analysis to collect quality observations.</p>
+  <ul id="measurement-quality-issues"></ul>
+  <p class="small">Quality describes the signal and capture, not machine health. A live snapshot is one FFT window; stability describes up to three preceding seconds.</p>
+  <details><summary>Measurement notes, repeatability &amp; export</summary>
+    <div class="measurement-fields"><label for="measurement-label">Measurement label (optional)<input id="measurement-label" maxlength="80" placeholder="e.g. Warm idle, position 1" /></label><label for="measurement-notes">Notes (optional)<textarea id="measurement-notes" maxlength="1000" rows="3" placeholder="Position, distance, load, wind, microphone setup"></textarea></label></div>
+    <h3>Repeat the same condition</h3><p class="small">Keep position, distance, RPM, load and gain consistent. Wait for stable observations, then collect 2–6 separate snapshots. Avoid overlapping FFT windows. A high spectral-shape match does not establish machine health.</p>
+    <div class="controls"><button id="capture-repeat" type="button" disabled>Capture repeat</button><button id="clear-repeats" type="button" disabled>Clear repeats</button></div>
+    <p id="repeatability-status" role="status">INSUFFICIENT DATA · Capture at least two separate measurements.</p><ol id="repeat-snapshots"></ol><details><summary>Pair-by-pair measurement differences</summary><ul id="repeatability-pairs"></ul></details>
+    <details><summary>How comparison quality works</summary><p class="small">Shape overlap runs from 0 (disjoint retained power) to 1 (identical normalized spectral shape). Gain is removed from this metric; RMS differences remain separate. Only matching frequency grids and window support are compared. A heuristic good match needs overlap ≥ 0.95, RMS difference ≤ 1.5 dB, band shares within 5 percentage points, stable quality observations and compatible context. Unknown conditions remain unverified. These are engineering screening thresholds, not validated diagnostic limits.</p></details>
+    <details><summary>Physical-device validation log</summary>
+      <p class="small">Manual engineering log; nothing here claims a device has already been tested. Perform microphone tests from a safe stationary position. Do not enter serial numbers, names or other personal information.</p>
+      <label for="validation-browser">Browser under test</label><select id="validation-browser"><option value="Unspecified">Unspecified</option><option>Android Chrome</option><option>iOS Safari</option><option>Desktop Chromium</option><option>Other browser</option></select>
+      <p id="browser-evidence" class="small">Browser capture evidence appears after microphone start. No device identifiers are collected.</p>
+      <div class="validation-checks">
+        {['Permission, Start/Stop and microphone indicator', 'Background interruption, return and restart', 'Ten-minute session: gaps, heat and responsiveness', 'Microphone processing effects observed', 'Repeated position/RPM/load measurements'].map((name, index) => <label for={`device-check-${index}`}>{name}<select id={`device-check-${index}`} data-check-name={name}><option>Not tested</option><option>Passed</option><option>Issue observed</option><option>Not applicable</option></select></label>)}
+      </div>
+      <label for="validation-notes">Observed results / interruptions / latency method<textarea id="validation-notes" maxlength="2000" rows="4" placeholder="Record actual duration, browser version if useful, interruptions and observed issues. End-to-end microphone latency needs an external reference."></textarea></label>
+      <p class="small">Reported base latency concerns output buffering, not microphone-to-display latency. See the <a href="/tools/dsp-validation/">known-signal validation workbench</a> for software-only checks.</p>
+    </details>
+    <div class="controls export-controls"><button id="export-measurements" type="button" disabled>Export measurements JSON</button></div><p id="measurement-export-status" role="status" class="small">Exports current measurement, A/B, repeats and your validation notes. No raw audio. Data remains local; reload clears this tab’s measurements.</p>
+  </details>
+</section>

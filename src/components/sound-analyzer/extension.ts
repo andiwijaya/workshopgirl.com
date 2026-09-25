@@ -10,6 +10,7 @@ export interface AnalyzerExtension<T extends Snapshot = Snapshot> {
   measurement?: (spectrum: Spectrum, metadata: CaptureMetadata) => void;
   render?: () => void;
   reset?: () => void;
+  stopped?: (reason: string) => void;
   capture?: (base: Snapshot) => T;
   compare?: (a?: T, b?: T) => void;
   canCapture?: () => boolean;

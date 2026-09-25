@@ -18,6 +18,11 @@ export class LiveCapture {
     this.stop(); this.microphone = microphone;
     const token = this.generation, context = microphone.context!;
     const clockId = crypto.randomUUID();
+    const settings = microphone.stream?.getAudioTracks()[0]?.getSettings();
+    const browserEvidence = { audioWorkletAvailable: !!context.audioWorklet && !!globalThis.AudioWorkletNode,
+      processing: { autoGainControl: settings?.autoGainControl ?? null, noiseSuppression: settings?.noiseSuppression ?? null, echoCancellation: settings?.echoCancellation ?? null },
+      outputBaseLatencySeconds: Number.isFinite(context.baseLatency) ? context.baseLatency : null };
+    const deliver = (measurement: LiveMeasurement) => receive({ ...measurement, metadata: { ...measurement.metadata, browserEvidence } });
     const current = () => token === this.generation && microphone.context === context;
     const fallback = (reason: string) => {
       if (!current()) return;
@@ -28,7 +33,7 @@ export class LiveCapture {
       this.timer = setInterval(() => {
         if (!current() || context.state !== 'running') return;
         analyser.getFloatTimeDomainData(samples);
-        receive({ spectrum: engine.analyze(samples), waveform: waveformEnvelope(samples), metadata: { mode: 'sampled', clock: 'audio-context', clockId, frameStart: null, timeSeconds: context.currentTime - fftSize / (2 * context.sampleRate), sequence: sequence++, droppedFrames: 0, discontinuities: 0 } });
+        deliver({ spectrum: engine.analyze(samples), waveform: waveformEnvelope(samples), metadata: { mode: 'sampled', clock: 'audio-context', clockId, frameStart: null, timeSeconds: context.currentTime - fftSize / (2 * context.sampleRate), sequence: sequence++, droppedFrames: 0, discontinuities: 0 } });
       }, 100);
       modeChanged('sampled', reason);
     };
@@ -62,7 +67,7 @@ export class LiveCapture {
       this.worker!.onmessage = ({ data }: MessageEvent<LiveWorkerResponse>) => {
         if (!active()) return;
         if (data.type === 'error') { fallback(data.message); return; }
-        if (data.type === 'measurement') { lastReceived = performance.now(); receive(data.measurement); node.port.postMessage('ack'); }
+        if (data.type === 'measurement') { lastReceived = performance.now(); deliver(data.measurement); node.port.postMessage('ack'); }
       };
       this.timer = setInterval(() => { if (active() && performance.now() - lastReceived > 2000) fallback('Continuous capture stalled.'); }, 500);
       modeChanged('worklet');

@@ -77,3 +77,15 @@ Open `/tools/engine-sound-analyzer/` for live waveform, spectrum, spectrogram, 1
 - [V2 architecture and limits](docs/dsp-v2-architecture.md)
 - [V2 implementation and verification report](docs/dsp-v2-implementation-report.md)
 - Reproduce synthetic CPU benchmarks with `npm run benchmark:dsp` (Node 24; not a physical-phone benchmark).
+
+## DSP Engine V3 / Measurement and validation
+
+Engine Analyzer now includes evidence-based quality observations, labeled/annotated snapshots, up to six repeat measurements, A/B comparison quality, normalized spectral-power overlap and local versioned JSON export. Advanced controls stay collapsed. The software-only validation workbench is `/tools/dsp-validation/`; it requests no microphone access and plays no sound.
+
+- [V3 architecture, metric mathematics and thresholds](docs/dsp-v3-architecture.md)
+- [V3 implementation report](docs/dsp-v3-implementation-report.md)
+- [Physical-device protocol — not yet executed](docs/device-validation.md)
+- [Measurement export JSON Schema](public/schemas/measurement-v1.schema.json)
+- Run `npm run benchmark:v3` for incremental quality/similarity/repeatability/export and complete frame CPU benchmarks.
+
+No diagnosis, calibrated SPL, physical-phone certification or synchronized RPM is implied. Export excludes raw audio and device identifiers; measurements remain in tab memory until explicitly downloaded. No import is implemented.
