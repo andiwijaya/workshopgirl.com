@@ -24,6 +24,8 @@ export default [
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
+      // TypeScript checks names against the correct DOM/Node libraries.
+      'no-undef': 'off',
     },
   },
 ];

@@ -1,6 +1,8 @@
 export function GET() {
   const urls = [
     'https://workshopgirl.com/',
+    'https://workshopgirl.com/tools/',
+    'https://workshopgirl.com/tools/sound-analyzer/',
     'https://workshopgirl.com/tutorials/',
     'https://workshopgirl.com/diary/',
     'https://workshopgirl.com/diary/the-first-bolt-i-couldnt-remove/',

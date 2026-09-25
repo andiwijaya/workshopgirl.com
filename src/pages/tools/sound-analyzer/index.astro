@@ -1,0 +1,31 @@
+---
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import Analyzer from '../../../components/sound-analyzer/Analyzer.astro';
+import '../../../styles/sound-analyzer.css';
+const title = 'Sound Analyzer — Waveform, Spectrum & Spectrogram | WorkshopGirl';
+const description = 'Analyze live microphone sound or local audio files in your browser. Explore waveforms, frequency peaks, spectrograms and before/after comparisons with WorkshopGirl.';
+const canonical = 'https://workshopgirl.com/tools/sound-analyzer/';
+---
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
+  <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" />
+  <meta property="og:image" content="https://workshopgirl.com/images/workshop-girl/workshop-girl-hero.png" /><meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head><body>
+  <a class="skip-link" href="#main">Skip to sound analyzer</a><SiteHeader current="tools" />
+  <main id="main" tabindex="-1"><div class="hero"><a href="/tools/" class="eyebrow">The digital workbench</a><h1>Sound <span>Analyzer.</span></h1><p>Measure a sound. Find its frequencies. Compare what changed.</p><span class="privacy-note">Local audio processing · no audio uploads · no account needed</span></div>
+    <Analyzer />
+    <section class="guide" aria-labelledby="guide-title"><span class="eyebrow">Read the signal</span><h2 id="guide-title">A little context goes a long way.</h2>
+      <h3>Waveform: how the signal moves</h3><p>The waveform shows digital amplitude over time. Live input shows the latest short window; a file shows the entire clip. Flat sections are quiet. Peaks near ±1 can indicate clipping.</p>
+      <h3>Spectrum: what frequencies are present</h3><p>The spectrum separates the sound into frequency bins. The strongest peak is not always the fundamental tone or a machine’s rotation rate. Closely spaced tones may blend together; larger FFT sizes help separate them. Peak estimates can fall between bins, but that does not create extra resolving power.</p>
+      <h3>Spectrogram: what changes over time</h3><p>Time runs left to right, frequency rises from bottom to top. A steady tone makes a horizontal band. A changing tone bends. Short impacts spread across frequencies. File spectra average power over the clip; a brief event may be clearer in the spectrogram than in the average.</p>
+      <h3>Digital level is not sound pressure</h3><p>Levels use dBFS, referenced to digital sample amplitude 1. A full-scale sine has about −3.01 dBFS RMS and 0 tonal dBFS at its frequency. This is not a calibrated dB SPL meter. Microphone response, automatic gain, placement and browser resampling affect the result.</p>
+      <h3>Useful measurements, honest limits</h3><p>This tool measures signal levels and frequency content. It cannot establish whether a bearing, engine, compressor or appliance is healthy. Use the same recording conditions for comparisons. Keep your phone and yourself clear of moving, hot or live parts.</p>
+      <h3>Your sound stays here</h3><p>Audio is decoded and analyzed locally. This page includes no analytics or audio upload service. Recording formats depend on your browser. Snapshots are held in memory only; use Download clip to keep a recording. Clear clip or leave this page to release it.</p>
+      <p>Continue exploring with <a href="/tutorials/">WorkshopGirl’s practical tutorials</a> or return to the <a href="/tools/">digital workbench</a>.</p>
+    </section>
+  </main><SiteFooter />
+</body></html>

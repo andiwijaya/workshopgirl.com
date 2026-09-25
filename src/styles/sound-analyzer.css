@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+:root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#b92460; --line:#ded8d0; --soft:#fffaf4; }
+* { box-sizing:border-box; }
+html { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; }
+body { margin:0; min-width:320px; }
+a { color:inherit; text-underline-offset:4px; }
+:focus-visible { outline:3px solid var(--pink); outline-offset:4px; }
+.skip-link { position:absolute; top:-100px; left:16px; z-index:10; background:var(--soft); padding:12px; }
+.skip-link:focus { top:12px; }
+main { max-width:1180px; padding:32px 5vw 80px; margin:auto; }
+.eyebrow { color:var(--pink); font-size:.76rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+h1,h2,h3 { font-family:'Space Grotesk',sans-serif; letter-spacing:-.045em; }
+h1 { font-size:clamp(2.7rem,7vw,5.2rem); line-height:1; margin:16px 0; }
+h1 span { color:var(--pink); }
+h2 { font-size:clamp(1.7rem,3vw,2.4rem); margin:10px 0; line-height:1.1; }
+h3 { font-size:1.15rem; margin:0 0 10px; }
+p { line-height:1.65; color:var(--muted); }
+.hero { max-width:760px; margin-bottom:32px; }
+.hero p { font-size:1.08rem; }
+.privacy-note { display:inline-block; font-size:.82rem; border-left:3px solid var(--pink); padding-left:12px; }
+.input-panel,.comparison,.readouts { background:var(--soft); border:1px solid var(--line); padding:clamp(18px,3vw,30px); }
+.input-panel p { margin:12px 0; }
+.controls,.record-controls { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+button,.file-button { min-height:46px; border:1px solid var(--ink); background:transparent; color:var(--ink); padding:12px 17px; font:600 .92rem 'DM Sans',sans-serif; cursor:pointer; border-radius:3px; }
+button:hover:not(:disabled),.file-button:hover { background:#eee7df; }
+button.primary { background:var(--ink); color:white; }
+button.primary:hover:not(:disabled) { background:var(--pink); }
+button:disabled { opacity:.48; cursor:not-allowed; }
+.file-button { position:relative; overflow:hidden; }
+.file-button input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+.file-button:focus-within { outline:3px solid var(--pink); outline-offset:4px; }
+.file-button:has(input:disabled) { opacity:.48; cursor:not-allowed; }
+.small,small { color:var(--muted); font-size:.83rem; line-height:1.6; }
+#analyzer-status { font-weight:600; color:var(--ink); border-top:1px solid var(--line); padding-top:14px; }
+#analyzer-error,.notice { border-left:3px solid #a21d37; color:#8e1630; background:#fce8e8; padding:12px 16px; }
+.record-controls { margin:12px 0; }
+#playback-panel { border-top:1px solid var(--line); margin-top:18px; padding-top:18px; }
+audio { display:block; width:100%; margin:10px 0; }
+details { border-top:1px solid var(--line); padding-top:14px; margin-top:18px; }
+summary { cursor:pointer; padding:8px 0; font-weight:600; }
+details label { display:block; margin:12px 0 6px; }
+select { max-width:100%; min-height:44px; padding:8px; font:inherit; background:var(--paper); color:var(--ink); border:1px solid var(--line); }
+.measurement-heading { display:flex; justify-content:space-between; align-items:center; gap:16px; margin:38px 0 20px; }
+.source-tag { font-size:.8rem; background:#eae4db; padding:8px 12px; overflow-wrap:anywhere; max-width:42%; }
+.metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border:1px solid var(--line); background:var(--soft); }
+.metrics>div { padding:20px; }
+.metrics>div+div { border-left:1px solid var(--line); }
+.metrics span,.metrics small { display:block; font-size:.8rem; }
+.metrics strong { display:block; font:600 clamp(1.5rem,3vw,2.25rem) 'Space Grotesk',sans-serif; margin:10px 0; }
+.chart-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.chart { margin:0; min-width:0; background:#191e25; color:#f2f1f0; padding:18px 14px 10px; border-radius:4px; }
+.chart figcaption { padding:0 6px 8px; }
+.chart figcaption span { color:#c6c9ce; font-size:.78rem; }
+.chart h3 { margin-bottom:4px; }
+.chart .small { color:#c6c9ce; margin:10px 6px; }
+.chart.wide { grid-column:1/-1; }
+canvas { display:block; width:100%; height:220px; }
+.wide canvas { height:260px; }
+.legend { display:flex; align-items:center; justify-content:center; gap:12px; font-size:.75rem; padding-top:5px; }
+.color-scale { width:120px; height:9px; background:linear-gradient(to right,#191e25,#8c4c89,#ffd725); }
+.readouts { display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:16px; }
+.readouts ol,.readouts ul { padding-left:22px; font-variant-numeric:tabular-nums; font-size:.9rem; }
+.readouts li { padding:5px 0; }
+.comparison { margin-top:32px; }
+.comparison canvas { border-radius:4px; }
+.key-a { color:#ae2057; font-weight:700; }.key-b { color:#086879; font-weight:700; }
+.table-scroll { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.85rem; margin-top:16px; }
+caption { text-align:left; font-weight:700; padding-bottom:10px; }
+th,td { text-align:left; padding:12px 8px; border-bottom:1px solid var(--line); overflow-wrap:anywhere; }
+.guide { margin-top:50px; max-width:850px; }
+.guide h3 { margin-top:24px; }
+.tool-card { display:block; padding:28px; margin:32px 0; border:1px solid var(--line); background:var(--soft); text-decoration:none; max-width:720px; }
+.tool-card strong { color:var(--pink); }
+[hidden] { display:none!important; }
+@media(max-width:700px) {
+  main { padding:22px 6vw 60px; }
+  .chart-grid,.readouts { grid-template-columns:1fr; }
+  .metrics { grid-template-columns:1fr; }
+  .metrics>div { padding:15px 18px; }.metrics>div+div { border-left:0; border-top:1px solid var(--line); }
+  .metrics strong { margin:5px 0; }
+  .controls { gap:10px; }.controls>button,.controls>.file-button { flex:1 1 130px; text-align:center; }
+  .measurement-heading { align-items:flex-start; flex-direction:column; }.source-tag { max-width:100%; }
+  .chart { padding:16px 8px 10px; }canvas { height:215px; }.wide canvas { height:235px; }
+  .comparison { padding:18px 12px; }.legend { gap:8px; }.color-scale { width:70px; }
+}
