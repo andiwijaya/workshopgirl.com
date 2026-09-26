@@ -4,6 +4,7 @@ export function GET() {
     'https://workshopgirl.com/tools/',
     'https://workshopgirl.com/tools/sound-analyzer/',
     'https://workshopgirl.com/tools/engine-sound-analyzer/',
+    'https://workshopgirl.com/tools/speaker-sound-analyzer/',
     'https://workshopgirl.com/tools/dsp-validation/',
     'https://workshopgirl.com/tutorials/',
     'https://workshopgirl.com/diary/',

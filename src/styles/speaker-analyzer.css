@@ -1,0 +1,36 @@
+.speaker-page { max-width:1280px; }
+.speaker-page .hero { max-width:790px; }
+.speaker-listen { padding:22px 0; border-top:1px solid var(--line); }
+.speaker-listen p { margin:12px 0 0; min-height:1.65em; }
+.speaker-stage { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:18px; }
+.speaker-visual { background:#202324; color:#fffaf4; padding:clamp(18px,3vw,30px); border-radius:5px; min-width:0; }
+.speaker-visual .eyebrow { color:#f38db3; }
+.speaker-chart-heading h2 { font-size:clamp(1.6rem,3vw,2.5rem); margin:12px 0 22px; }
+#speaker-spectrum { display:block; width:100%; height:200px; background:transparent; }
+.speaker-axis { display:flex; justify-content:space-between; gap:8px; font-size:.7rem; margin-top:12px; color:#d7d9d9; }
+.speaker-axis span { white-space:nowrap; }
+.speaker-visual p { color:#c6caca; font-size:.78rem; margin:14px 0 0; }
+.speaker-profile-card { min-width:0; border:1px solid var(--line); border-top:4px solid var(--pink); background:var(--soft); padding:clamp(18px,3vw,30px); display:flex; flex-direction:column; }
+.speaker-profile-card h2 { font-size:1.35rem; letter-spacing:-.04em; }
+#speaker-profile { color:var(--pink); font:600 clamp(1.75rem,3vw,2.7rem)/1.12 'Space Grotesk',sans-serif; letter-spacing:-.045em; margin:22px 0 14px; min-height:2.24em; overflow-wrap:break-word; }
+#speaker-summary { font-size:.86rem; font-variant-numeric:tabular-nums; }
+.speaker-profile-card label { font-size:.78rem; margin-top:auto; padding-top:18px; }
+#speaker-progress { width:100%; height:8px; margin:12px 0; accent-color:var(--pink); }
+#speaker-duration { font-size:.8rem; margin:0; font-variant-numeric:tabular-nums; }
+.speaker-meter-heading { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:10px; margin:30px 0 14px; }
+.speaker-meter-heading h2 { font-size:1.35rem; }
+.speaker-meter-heading span { color:var(--muted); font-size:.78rem; }
+.speaker-meters { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.speaker-meter { border:1px solid var(--line); background:var(--soft); padding:20px; border-top:3px solid var(--meter-color); min-width:0; }
+.speaker-meter-bass { --meter-color:#b92460; }.speaker-meter-mid { --meter-color:#90620d; }.speaker-meter-treble { --meter-color:#246e60; }
+.speaker-meter>div { display:flex; justify-content:space-between; gap:10px; align-items:baseline; }
+.speaker-meter h3 { margin:0; font-size:1.4rem; }.speaker-meter strong { color:var(--meter-color); font-size:1.25rem; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.speaker-meter p { margin:10px 0; font-size:.82rem; }.speaker-meter meter { width:100%; height:18px; accent-color:var(--meter-color); }
+.speaker-meter meter::-webkit-meter-optimum-value { background:var(--meter-color); }.speaker-meter meter::-moz-meter-bar { background:var(--meter-color); }
+#speaker-observation { min-height:3.3em; margin-bottom:4px; }#speaker-capture-note { margin-top:0; min-height:1.65em; }
+.speaker-guide { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.6fr); gap:40px; border-top:1px solid var(--line); margin-top:28px; padding-top:36px; }
+.speaker-guide p:first-child { margin-top:0; }.speaker-guide .tool-share { margin-top:24px; }
+.speaker-page summary { min-height:44px; padding:12px 0; cursor:pointer; font-weight:600; }.speaker-links { margin-top:35px; font-size:.9rem; }
+@media(max-width:760px) { .speaker-stage,.speaker-guide { grid-template-columns:1fr; }.speaker-guide { gap:18px; }.speaker-profile-card label { margin-top:0; }#speaker-profile { min-height:0; }.speaker-meters { gap:10px; }.speaker-meter { padding:15px 10px; }.speaker-meter>div { display:block; }.speaker-meter strong { display:block; margin-top:10px; } }
+@media(max-width:420px) { .speaker-meters { grid-template-columns:1fr; }.speaker-meter>div { display:flex; }.speaker-meter strong { margin-top:0; }.speaker-meter { padding:15px 18px; }.speaker-axis { font-size:.64rem; }.speaker-visual { padding:18px 14px; }#speaker-spectrum { height:160px; } }
+@media(prefers-reduced-motion:reduce) { .speaker-page * { scroll-behavior:auto; transition:none !important; animation:none !important; } }

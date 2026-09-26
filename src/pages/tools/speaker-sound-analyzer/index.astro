@@ -1,0 +1,37 @@
+---
+import SiteHeader from '../../../components/SiteHeader.astro';
+import SiteFooter from '../../../components/SiteFooter.astro';
+import ToolShare from '../../../components/ToolShare.astro';
+import '../../../styles/sound-analyzer.css';
+import '../../../styles/speaker-analyzer.css';
+const title = 'Speaker Sound Analyzer | WorkshopGirl';
+const description = 'Play music. See its frequency balance. Explore bass, mid and treble in sound captured by your microphone, locally in your browser.';
+const canonical = 'https://workshopgirl.com/tools/speaker-sound-analyzer/';
+---
+<!doctype html><html lang="en"><head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
+  <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" />
+  <meta property="og:image" content="https://workshopgirl.com/images/workshop-girl/workshop-girl-hero.png" /><meta name="twitter:card" content="summary" /><link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head><body>
+  <a class="skip-link" href="#main">Skip to speaker analyzer</a><SiteHeader current="tools" />
+  <main id="main" class="speaker-page" tabindex="-1">
+    <div class="hero"><a class="eyebrow" href="/tools/">The digital workbench / Sound</a><h1>Play music.<br /><span>See its balance.</span></h1><p>Meet the bass, mid and treble in the sound around you. Put on something you love and let your microphone listen.</p><span class="privacy-note">Speaker Sound Analyzer · local listening · no recording</span></div>
+    <section id="speaker-analyzer" aria-label="Speaker Sound Analyzer">
+      <div class="speaker-listen"><div class="controls"><button id="speaker-start" class="primary" type="button">Start Listening</button><button id="speaker-stop" type="button" disabled>Stop Listening</button></div><p id="speaker-status" role="status">Ready. Your microphone is off.</p></div>
+      <noscript><p>Enable JavaScript to listen and analyze sound locally.</p></noscript>
+      <div class="speaker-stage"><section class="speaker-visual" aria-labelledby="speaker-live-heading"><div class="speaker-chart-heading"><span class="eyebrow">Live frequency balance</span><h2 id="speaker-live-heading">A little closer<br />to the sound.</h2></div>
+        <canvas id="speaker-spectrum" role="img" aria-label="Live frequency spectrum. The Bass, Mid and Treble meters below provide a text summary."></canvas>
+        <div class="speaker-axis" aria-hidden="true"><span>20 Hz</span><span>Bass → Mid → Treble</span><span id="speaker-upper-label">20k Hz</span></div>
+        <p id="speaker-range">Frequencies captured by your microphone · 20 Hz–20 kHz</p>
+      </section>
+      <section class="speaker-profile-card" aria-labelledby="speaker-profile-heading"><span class="eyebrow">The listening session</span><h2 id="speaker-profile-heading">Captured Sound Profile</h2><p id="speaker-profile" aria-live="polite">Ready to listen</p><p id="speaker-summary">Your session balance will appear here.</p><label for="speaker-progress">Building from active audio</label><progress id="speaker-progress" max="10" value="0"></progress><p id="speaker-duration">0.0 seconds of valid active audio · at least 10 seconds needed</p><p class="small">The profile combines your listening session. It keeps updating until you stop.</p></section></div>
+      <div class="speaker-meter-heading"><h2>Relative Captured Energy</h2><span>Live listening balance</span></div>
+      <div class="speaker-meters">{['Bass', 'Mid', 'Treble'].map((name, i) => <section class={`speaker-meter speaker-meter-${name.toLowerCase()}`} aria-label={`${name} balance`}><div><h3>{name}</h3><strong id={`speaker-${name.toLowerCase()}-value`}>—</strong></div><p id={i === 2 ? 'speaker-treble-range' : undefined}>{['20–250 Hz', '250 Hz–4 kHz', '4–20 kHz'][i]}</p><meter id={`speaker-${name.toLowerCase()}-meter`} aria-label={`${name} relative captured energy`} min="0" max="100" value="0"></meter></section>)}</div>
+      <p id="speaker-observation">Play music nearby, then start listening.</p><p id="speaker-capture-note" class="small"></p>
+    </section>
+    <section class="speaker-guide" aria-labelledby="speaker-guide-heading"><div><span class="eyebrow">Good to know</span><h2 id="speaker-guide-heading">Your sound.<br />Your surroundings.</h2></div><div><p>Keep your microphone in one place and listen at a comfortable volume. Give it at least 10 seconds of active sound; silence and clearly overloaded input do not build the profile.</p><p>Results describe sound captured by this microphone and environment. They are not laboratory speaker frequency-response measurements, a speaker rating or a calibration.</p><details><summary>What does “Balanced” mean?</summary><p>We average power density on a logarithmic frequency scale so wider bands do not win just by having more frequency bins. If one session band is at least 3 dB above the next strongest, it is dominant. Otherwise, we call the captured balance “Balanced.” This is a simple listening guide, not a certification or a claim of a flat speaker response.</p><p>Percentages describe the normalized captured balance, not the proportions of the original song. Music, microphone response, room acoustics, distance and browser processing all influence the result.</p></details><p>Audio and measurements stay in this tab. Nothing is uploaded or recorded. Stop or leave the page to release the microphone. Starting again clears the previous session.</p><ToolShare title={title} description={description} canonical={canonical} /><p class="small">Share a link to this tool. Your listening results are never included.</p></div></section>
+    <p class="speaker-links">Want the technical view? <a href="/tools/sound-analyzer/">Open General Sound Analyzer</a> · <a href="/tools/">All tools</a></p>
+  </main><SiteFooter />
+  <script>import { mountSpeaker } from '../../../components/speaker-analyzer/controller'; mountSpeaker(document.querySelector<HTMLElement>('#speaker-analyzer')!);</script>
+</body></html>
