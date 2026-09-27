@@ -1,17 +1,45 @@
 import type { OperationalStatus, WorkshopJob } from './model.ts';
 
-/** QC must pass before a job can be offered for pickup or marked complete. */
+/** QC readiness includes a valid, finished Work Order and resolved road-test state. */
 export function qcPassed(job: WorkshopJob): boolean {
   const qc = job.qc;
-  return Boolean(qc && qc.finalStatus === 'Ready for handover' && qc.checks.length > 0
+  return Boolean(validWorkOrder(job) && qc && qc.roadTest !== 'Not completed' && qc.finalStatus === 'Ready for handover' && qc.checks.length > 0
     && qc.checks.every(check => check.result === 'Pass' || check.result === 'Not applicable')
-    && qc.unresolvedIssues.length === 0);
+    && qc.unresolvedIssues.every(issue => issue.status === 'Customer deferred' && issue.issue.trim() && (issue.deferralReason ?? issue.recommendation).trim()));
 }
+
+export function validWorkOrder(job: WorkshopJob): boolean {
+  const wo = job.workOrder;
+  if (!wo || wo.status !== 'Complete') return false;
+  const rows = wo.actualWork;
+  if (rows.some(row => row.status !== 'Complete' && row.status !== 'Cancelled')) return false;
+  if (wo.noRepairAcknowledged) return Boolean(wo.noRepairReason?.trim()) && rows.every(row => row.status === 'Cancelled' || !row.name.trim());
+  return rows.some(row => row.status === 'Complete' && row.name.trim());
+}
+
+export function estimateApprovalPending(job: WorkshopJob): boolean {
+  const inspection=job.inspection;
+  if(!inspection)return false;
+  const required=inspection.recommendedJobs.filter(item=>item.name.trim());
+  if(!required.length)return false;
+  const current=(inspection.revision??1)===(inspection.approvedRevision??0)&&Boolean(inspection.approvedAt&&inspection.approvedBy?.trim());
+  return !current||required.some(item=>!item.approved||!item.approvedAt||!item.approvedBy?.trim());
+}
+
+/** The sole operational completion rule used by persistence, queue and history. */
+export function canCompleteWorkshopJob(job: WorkshopJob): boolean {
+  const qc = job.qc;
+  return Boolean(validWorkOrder(job) && qcPassed(job) && qc
+    && qc.handoverRecipient.trim() && qc.handoverStaff.trim() && isCalendarDate(qc.handoverDate) && isClockTime(qc.handoverTime));
+}
+
+function isCalendarDate(value:string):boolean{return /^\d{4}-\d{2}-\d{2}$/.test(value)&&!Number.isNaN(Date.parse(`${value}T00:00:00Z`))&&new Date(`${value}T00:00:00Z`).toISOString().slice(0,10)===value;}
+function isClockTime(value:string):boolean{const match=/^(\d{2}):(\d{2})$/.exec(value);return Boolean(match&&Number(match[1])<24&&Number(match[2])<60);}
 
 /** Derive the workflow state from the Phase 1 job fields, without a second queue record. */
 export function workflowStatus(job: WorkshopJob): Exclude<OperationalStatus, 'Waiting Parts'> {
   if (job.workOrder?.status === 'Cancelled') return 'Cancelled';
-  if (job.status === 'completed') return qcPassed(job) ? 'Completed' : 'QC';
+  if (job.status === 'completed') return canCompleteWorkshopJob({ ...job, status: 'qc' }) || legacyCompletedRecord(job) ? 'Completed' : 'QC';
   if (qcPassed(job)) return 'Ready for Pickup';
   if (job.qc || job.status === 'qc') return 'QC';
   if (job.workOrder) {
@@ -21,9 +49,18 @@ export function workflowStatus(job: WorkshopJob): Exclude<OperationalStatus, 'Wa
   if (job.inspection) {
     const items = job.inspection.checklist.flatMap(group => group.items);
     const inspectionComplete = items.length > 0 && items.every(item => item.status !== 'Not checked');
-    return inspectionComplete ? 'Waiting Approval' : 'Inspection';
+    if (!inspectionComplete) return 'Inspection';
+    if (estimateApprovalPending(job)) return 'Waiting Approval';
+    return 'Inspection';
   }
   return 'Intake';
+}
+
+/** Preserve the historical projection of jobs closed before Phase 2D's stricter gate. */
+function legacyCompletedRecord(job: WorkshopJob): boolean {
+  const qc=job.qc;
+  return Boolean(qc&&qc.finalStatus==='Ready for handover'&&qc.checks.length>0
+    &&qc.checks.every(check=>check.result==='Pass'||check.result==='Not applicable')&&qc.unresolvedIssues.length===0);
 }
 
 export function operationalStatus(job: WorkshopJob): OperationalStatus {
@@ -42,9 +79,15 @@ export function canSetWaitingParts(job: WorkshopJob): boolean {
 export function nextWorkflowRoute(job: WorkshopJob): string {
   const status = workflowStatus(job);
   if (status === 'Cancelled') return '/tools/workshop/work-order/';
-  if (status === 'Intake' || status === 'Inspection') return '/tools/workshop/inspection-estimate/';
+  if (status === 'Intake') return '/tools/workshop/inspection-estimate/';
+  if (status === 'Inspection') {
+    const items=job.inspection?.checklist.flatMap(group=>group.items)??[];
+    const complete=items.length>0&&items.every(item=>item.status!=='Not checked');
+    if(complete)return '/tools/workshop/work-order/';
+    return '/tools/workshop/inspection-estimate/';
+  }
   if (status === 'Waiting Approval') {
-    const needsApproval = job.inspection?.recommendedJobs.some(item => item.name.trim() && !item.approved);
+    const needsApproval = estimateApprovalPending(job);
     if (needsApproval) return '/tools/workshop/inspection-estimate/';
   }
   if (status === 'Waiting Approval' || status === 'Work In Progress') return '/tools/workshop/work-order/';

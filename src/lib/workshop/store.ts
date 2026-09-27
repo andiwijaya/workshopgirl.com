@@ -1,5 +1,5 @@
 import type { Customer, Intake, NextService, Vehicle, VehicleType, WarrantyClaim, WorkshopJob, WorkshopStore, WorkshopWarranty } from './model.ts';
-import { canSetWaitingParts, operationalStatus, qcPassed, transitionReason } from './queue.ts';
+import { canCompleteWorkshopJob, canSetWaitingParts, estimateApprovalPending, operationalStatus, transitionReason, validWorkOrder } from './queue.ts';
 
 export const STORAGE_KEY = 'workshopgirl.workshop.operations.v1';
 export const STORE_VERSION = 1 as const;
@@ -53,9 +53,9 @@ export function saveStore(store: WorkshopStore, storage: StorageLike): { ok: boo
 }
 
 export function createJob(store: WorkshopStore, input: {
-  customer: Omit<Customer, 'id'>; vehicle: Omit<Vehicle, 'id'>; intake: Intake; existingVehicleId?: string;
+  customer: Omit<Customer, 'id'>; vehicle: Omit<Vehicle, 'id'>; intake: Intake; existingVehicleId?: string; existingCustomerId?: string;
 }, idFactory: (prefix: string) => string = makeId, now = new Date()): WorkshopJob {
-  const customer: Customer = { id: idFactory('customer'), ...input.customer };
+  const customer: Customer = (input.existingCustomerId && store.customers.find(x=>x.id===input.existingCustomerId)) || { id: idFactory('customer'), ...input.customer };
   const existing=input.existingVehicleId?store.vehicles.find(x=>x.id===input.existingVehicleId):undefined;
   const vehicle: Vehicle = existing??{ id: idFactory('vehicle'), ...input.vehicle };
   if(existing){const readings=[existing.odometer,input.vehicle.odometer].filter((x):x is number=>x!==null);const latest=readings.length?Math.max(...readings):null;Object.assign(existing,input.vehicle,{id:existing.id,odometer:latest});}
@@ -64,7 +64,7 @@ export function createJob(store: WorkshopStore, input: {
     vehicleId: vehicle.id, intake: structuredClone(input.intake), createdAt: now.toISOString(), updatedAt: now.toISOString(),
     operations: { waitingParts: false, history: [{ status: 'Intake', at: now.toISOString(), reason: 'Job created' }] },
   };
-  store.customers.push(customer); if(!existing)store.vehicles.push(vehicle); store.jobs.push(job);
+  if(!store.customers.some(x=>x.id===customer.id))store.customers.push(customer); if(!existing)store.vehicles.push(vehicle); store.jobs.push(job);
   return job;
 }
 
@@ -74,13 +74,20 @@ export function updateJob(store: WorkshopStore, id: string, patch: Partial<Pick<
   if (job.status === 'completed') return null;
   if (job.workOrder?.status === 'Cancelled') return null;
   const candidate = { ...job, ...structuredClone(patch) };
+  if (patch.workOrder && !candidate.inspection) return null;
+  if (patch.inspection && job.inspection && estimateScope(job.inspection) !== estimateScope(patch.inspection)) {
+    candidate.inspection = { ...candidate.inspection!, revision: (job.inspection.revision ?? 1) + 1, approvedRevision: undefined, approvedAt: undefined, approvedBy: undefined,
+      recommendedJobs: candidate.inspection!.recommendedJobs.map(item => ({ ...item, approved: false, approvedAt: undefined, approvedBy: undefined })) };
+  }
   if (candidate.workOrder?.status === 'Cancelled' && (patch.status === 'qc' || patch.status === 'completed' || patch.qc)) return null;
-  if (patch.status === 'completed' && !qcPassed(candidate)) return null;
+  if (patch.status === 'completed' && !canCompleteWorkshopJob(candidate)) return null;
+  if (patch.workOrder && estimateApprovalPending(candidate)) return null;
+  if (patch.workOrder?.status === 'Complete' && !validWorkOrder({ ...candidate, workOrder: patch.workOrder })) return null;
   ensureOperations(job);
   const previousStatus = operationalStatus(job);
   if (patch.status) job.status = patch.status;
   if (patch.intake) job.intake = structuredClone(patch.intake);
-  if (patch.inspection) job.inspection = structuredClone(patch.inspection);
+  if (patch.inspection) job.inspection = structuredClone(candidate.inspection!);
   if (patch.workOrder) job.workOrder = structuredClone(patch.workOrder);
   if (patch.qc) job.qc = structuredClone(patch.qc);
   if (patch.serviceOdometer !== undefined) job.serviceOdometer = patch.serviceOdometer;
@@ -89,18 +96,35 @@ export function updateJob(store: WorkshopStore, id: string, patch: Partial<Pick<
   return job;
 }
 
+function estimateScope(inspection: NonNullable<WorkshopJob['inspection']>): string {
+  return JSON.stringify({ findings: inspection.findings, checklist: inspection.checklist,
+    recommendedJobs: inspection.recommendedJobs.map(item => ({ id:item.id,name:item.name,detail:item.detail,priority:item.priority })),
+    parts: inspection.parts, labor: inspection.labor, consumables: inspection.consumables,
+    additionalCost: inspection.additionalCost, discount: inspection.discount, taxRate: inspection.taxRate });
+}
+
 /** Reversible operational overlay; it never changes Phase 1 workflow data or job IDs. */
-export function setWaitingParts(store: WorkshopStore, id: string, waiting: boolean, now = new Date()): WorkshopJob | null {
+export function setWaitingParts(store: WorkshopStore, id: string, waiting: boolean, now = new Date(), reason = ''): WorkshopJob | null {
   const job = store.jobs.find(item => item.id === id);
   if (!job || (waiting && !canSetWaitingParts(job)) || job.status === 'completed') return null;
   ensureOperations(job);
-  if (job.operations!.waitingParts === waiting) return job;
+  const previousReason=job.operations!.waitingPartsReason??'';
+  if (job.operations!.waitingParts === waiting && (!waiting || !reason.trim() || previousReason === reason.trim())) return job;
+  if (waiting && !hasPartsShortage(store, job) && !reason.trim()) return null;
   const previousStatus = operationalStatus(job);
   job.operations!.waitingParts = waiting;
+  job.operations!.waitingPartsReason = waiting ? reason.trim() || undefined : undefined;
   job.updatedAt = now.toISOString();
   const nextStatus = operationalStatus(job);
-  recordTransition(job, previousStatus, nextStatus, now, waiting ? 'Waiting for parts' : 'Waiting for parts cleared');
+  recordTransition(job, previousStatus, nextStatus, now, waiting ? `Waiting for parts${job.operations!.waitingPartsReason ? `: ${job.operations!.waitingPartsReason}` : ''}` : 'Waiting for parts cleared');
+  if(previousStatus===nextStatus&&waiting&&previousReason!==reason.trim())job.operations!.history.push({status:nextStatus,at:now.toISOString(),reason:`Waiting Parts reason updated: ${reason.trim()}`});
   return job;
+}
+
+function hasPartsShortage(store:WorkshopStore,job:WorkshopJob):boolean {
+  const requested=new Map<string,number>();for(const row of job.workOrder?.parts??[])if(row.partId)requested.set(row.partId,(requested.get(row.partId)??0)+row.quantity);
+  for(const [partId,quantity]of requested){const issued=store.partMovements.filter(m=>m.partId===partId&&m.jobId===job.id&&m.type==='ISSUE_TO_JOB').reduce((n,m)=>n+m.quantity,0),returned=store.partMovements.filter(m=>m.partId===partId&&m.jobId===job.id&&m.type==='RETURN_FROM_JOB').reduce((n,m)=>n+m.quantity,0),available=store.partMovements.filter(m=>m.partId===partId).reduce((n,m)=>n+(['OPENING','STOCK_IN','RETURN_FROM_JOB','ADJUSTMENT_IN'].includes(m.type)?m.quantity:-m.quantity),0);if(quantity-Math.max(0,issued-returned)>available)return true;}
+  return false;
 }
 
 function ensureOperations(job: WorkshopJob): void {
@@ -128,7 +152,7 @@ function isCustomer(value: unknown): value is Customer { return isRecord(value) 
 function isVehicle(value: unknown): value is Vehicle { return isRecord(value) && typeof value.id === 'string' && (value.type === 'Car' || value.type === 'Motorcycle') && typeof value.plate === 'string' && typeof value.make === 'string' && typeof value.model === 'string' && (value.year === null || typeof value.year === 'number') && typeof value.color === 'string' && (value.odometer === null || typeof value.odometer === 'number'); }
 function isRowArray(value: unknown): value is Record<string, unknown>[] { return Array.isArray(value) && value.every(isRecord); }
 function isPart(value: unknown): boolean { return isRecord(value) && ['id','sku','name','category','brand','unit','location','supplier','compatibility','createdAt','updatedAt'].every(k => typeof value[k] === 'string') && typeof value.active === 'boolean' && typeof value.minimumStock === 'number' && Number.isFinite(value.minimumStock) && value.minimumStock >= 0 && (value.barcode === undefined || typeof value.barcode === 'string'); }
-function isPartMovement(value: unknown): boolean { return isRecord(value) && typeof value.id === 'string' && typeof value.partId === 'string' && ['OPENING','STOCK_IN','ISSUE_TO_JOB','RETURN_FROM_JOB','ADJUSTMENT_IN','ADJUSTMENT_OUT'].includes(String(value.type)) && typeof value.quantity === 'number' && Number.isFinite(value.quantity) && value.quantity > 0 && typeof value.at === 'string' && ['unitCost','supplier','reference','note','jobId'].every(k => value[k] === undefined || (k === 'unitCost' ? typeof value[k] === 'number' && Number.isFinite(value[k]) && (value[k] as number) >= 0 : typeof value[k] === 'string')); }
+function isPartMovement(value: unknown): boolean { return isRecord(value) && typeof value.id === 'string' && typeof value.partId === 'string' && ['OPENING','STOCK_IN','ISSUE_TO_JOB','RETURN_FROM_JOB','ADJUSTMENT_IN','ADJUSTMENT_OUT'].includes(String(value.type)) && typeof value.quantity === 'number' && Number.isFinite(value.quantity) && value.quantity > 0 && typeof value.at === 'string' && ['unitCost','supplier','reference','note','jobId','partNameSnapshot','partSkuSnapshot','partUnitSnapshot'].every(k => value[k] === undefined || (k === 'unitCost' ? typeof value[k] === 'number' && Number.isFinite(value[k]) && (value[k] as number) >= 0 : typeof value[k] === 'string')); }
 function isWarranty(value:unknown):value is WorkshopWarranty{return isRecord(value)&&['id','jobId','vehicleId','terms','createdAt','updatedAt'].every(k=>typeof value[k]==='string')&&isISODate(value.startDate)&&['Labor','Parts','Labor and parts'].includes(String(value.coverageType))&&Array.isArray(value.coveredWork)&&value.coveredWork.every(x=>typeof x==='string')&&Array.isArray(value.coveredPartIds)&&value.coveredPartIds.every(x=>typeof x==='string')&&(value.startOdometer===null||typeof value.startOdometer==='number'&&Number.isFinite(value.startOdometer)&&value.startOdometer>=0)&&(value.expiryDate===null||isISODate(value.expiryDate)&&value.expiryDate>=value.startDate)&&(value.expiryOdometer===null||typeof value.expiryOdometer==='number'&&Number.isFinite(value.expiryOdometer)&&value.expiryOdometer>=0&&(value.startOdometer===null||value.expiryOdometer>=value.startOdometer))&&(value.expiryDate!==null||value.expiryOdometer!==null);}
 function isWarrantyClaim(value:unknown):value is WarrantyClaim{return isRecord(value)&&['id','warrantyId','issue','resolution','notes','createdAt','updatedAt'].every(k=>typeof value[k]==='string')&&isISODate(value.date)&&['Open','Resolved','Declined'].includes(String(value.status))&&(value.odometer===null||typeof value.odometer==='number'&&Number.isFinite(value.odometer)&&value.odometer>=0);}
 function isNextService(value:unknown):value is NextService{return isRecord(value)&&['id','jobId','vehicleId','recommendation','createdAt','updatedAt'].every(k=>typeof value[k]==='string')&&(value.date===null||isISODate(value.date))&&(value.odometer===null||typeof value.odometer==='number'&&Number.isFinite(value.odometer)&&value.odometer>=0);}

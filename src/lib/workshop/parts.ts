@@ -18,7 +18,7 @@ export function createPart(store: WorkshopStore, input: Omit<WorkshopPart,'id'|'
   if (input.sku.trim() && store.parts.some(p => p.active && p.sku.trim().toLocaleLowerCase() === input.sku.trim().toLocaleLowerCase())) return fail('That SKU is already used by an active part.');
   const at = now.toISOString(), part: WorkshopPart = { ...input, id: makeId('part'), sku: input.sku.trim(), name: input.name.trim(), createdAt: at, updatedAt: at };
   store.parts.push(part);
-  if (opening > 0) store.partMovements.push({ id: makeId('movement'), partId: part.id, type: 'OPENING', quantity: opening, at, note: 'Opening balance' });
+  if (opening > 0) store.partMovements.push({ id: makeId('movement'), partId: part.id, type: 'OPENING', quantity: opening, at, partNameSnapshot: part.name, partSkuSnapshot: part.sku, partUnitSnapshot: part.unit, note: 'Opening balance' });
   return { ok: true, part };
 }
 export function updatePart(store: WorkshopStore, id: string, patch: Partial<Omit<WorkshopPart,'id'|'createdAt'>>): PartResult {
@@ -31,7 +31,8 @@ export function updatePart(store: WorkshopStore, id: string, patch: Partial<Omit
 export function deactivatePart(store: WorkshopStore, id: string): PartResult { return updatePart(store, id, { active: false }); }
 function record(store: WorkshopStore, partId: string, type: PartMovementType, quantity: number, extra: Partial<PartMovement> = {}, now = new Date()): PartMovement {
   const at = now.toISOString(), part=store.parts.find(x=>x.id===partId);if(part)part.updatedAt=at;
-  const m: PartMovement = { id: makeId('movement'), partId, type, quantity, at, ...extra }; store.partMovements.push(m); return m;
+  const m: PartMovement = { id: makeId('movement'), partId, type, quantity, at,
+    ...(part ? { partNameSnapshot: part.name, partSkuSnapshot: part.sku, partUnitSnapshot: part.unit } : {}), ...extra }; store.partMovements.push(m); return m;
 }
 export function stockIn(store: WorkshopStore, partId: string, quantity: number, extra: Pick<PartMovement,'unitCost'|'supplier'|'reference'|'note'> = {}, now = new Date()): PartResult {
   const p = store.parts.find(x => x.id === partId); if (!p || !p.active) return fail('Choose an active part.'); if (!validQty(quantity)) return fail('Enter a quantity greater than zero.'); if (extra.unitCost !== undefined && (!Number.isFinite(extra.unitCost) || extra.unitCost < 0)) return fail('Unit cost must be zero or greater.');
@@ -66,5 +67,5 @@ export function jobPartSummary(store: WorkshopStore, job: WorkshopJob): JobPartS
   return [...requested].flatMap(([partId,qty])=>{const part=store.parts.find(p=>p.id===partId);if(!part)return[];const issued=store.partMovements.filter(m=>m.partId===partId&&m.jobId===job.id&&m.type==='ISSUE_TO_JOB').reduce((n,m)=>n+m.quantity,0),returned=store.partMovements.filter(m=>m.partId===partId&&m.jobId===job.id&&m.type==='RETURN_FROM_JOB').reduce((n,m)=>n+m.quantity,0),net=Math.max(0,issued-returned),available=partBalance(store,partId),need=Math.max(0,qty-net);return [{part,requested:qty,issued:net,returned,available,shortage:part.active?Math.max(0,need-available):need}];});
 }
 export function jobShortage(store: WorkshopStore, job: WorkshopJob): number { return jobPartSummary(store,job).reduce((n,x)=>n+x.shortage,0); }
-export function markWaitingForParts(store: WorkshopStore, jobId: string): boolean { return !!setWaitingParts(store,jobId,true); }
+export function markWaitingForParts(store: WorkshopStore, jobId: string, reason = ''): boolean { return !!setWaitingParts(store,jobId,true,new Date(),reason); }
 export function clearWaitingForParts(store: WorkshopStore, jobId: string): boolean { const job=store.jobs.find(x=>x.id===jobId);return !!job&&jobShortage(store,job)===0&&!!setWaitingParts(store,jobId,false); }

@@ -11,7 +11,8 @@ const intake = { number: 'WI-QUEUE-1', complaint: 'Brake noise', accessories: []
 function passingQC() { return { number: 'QC-1', date: '2026-09-27', inspector: '', mechanic: '', finalStatus: 'Ready for handover' as const,
   checks: [{ name: 'Brakes', result: 'Pass' as const, note: '' }], unresolvedIssues: [], returnedItems: [], roadTest: 'Not required' as const,
   roadTester: '', odometerBefore: null, odometerAfter: null, roadTestNotes: '', readinessNotes: '', recommendations: '', customerNotes: '',
-  handoverRecipient: '', handoverStaff: '', handoverDate: '', handoverTime: '' }; }
+  handoverRecipient: 'Customer', handoverStaff: 'Advisor', handoverDate: '2026-09-27', handoverTime: '12:00' }; }
+function finishedWorkOrder() { return { number:'WO-1',date:'2026-09-27',status:'Complete' as const,mechanic:'Tech',approvedWork:[],actualWork:[{id:'actual',name:'Repair',detail:'',status:'Complete' as const,mechanic:'Tech'}],parts:[],changes:[],startTime:'',endTime:'',mechanicNotes:'',result:'Done',recommendations:'',signoff:'Tech' }; }
 
 test('status derives from Phase 1 intake, inspection completeness, work order, QC and completion', () => {
   const store = emptyStore(), job = createJob(store, { customer, vehicle, intake }, p => p, now);
@@ -19,14 +20,14 @@ test('status derives from Phase 1 intake, inspection completeness, work order, Q
   const inspection = emptyInspection(vehicle.type); job.status = 'inspection'; job.inspection = inspection;
   assert.equal(workflowStatus(job), 'Inspection');
   for (const group of inspection.checklist) for (const item of group.items) item.status = 'Good';
-  assert.equal(workflowStatus(job), 'Waiting Approval');
+  assert.equal(workflowStatus(job), 'Inspection');
   job.workOrder = { number: 'WO-1', date: '', status: 'Not started', mechanic: '', approvedWork: [], actualWork: [], parts: [], changes: [], startTime: '', endTime: '', mechanicNotes: '', result: '', recommendations: '', signoff: '' };
-  assert.equal(workflowStatus(job), 'Waiting Approval');
+  assert.equal(workflowStatus(job), 'Inspection');
   job.workOrder.status = 'In progress'; assert.equal(workflowStatus(job), 'Work In Progress');
-  job.workOrder.status = 'Complete'; assert.equal(workflowStatus(job), 'QC');
+  job.workOrder = finishedWorkOrder(); assert.equal(workflowStatus(job), 'QC');
   job.status = 'qc'; job.qc = { ...passingQC(), finalStatus: 'In progress', checks: [{ name: 'Brakes', result: 'Needs attention', note: '' }] };
   assert.equal(workflowStatus(job), 'QC'); assert.equal(qcPassed(job), false);
-  job.qc = passingQC(); assert.equal(workflowStatus(job), 'Ready for Pickup');
+  job.workOrder = finishedWorkOrder();job.qc = passingQC(); assert.equal(workflowStatus(job), 'Ready for Pickup');
   assert.ok(updateJob(store, job.id, { status: 'completed' }, now)); assert.equal(operationalStatus(job), 'Completed');
 });
 
@@ -36,7 +37,7 @@ test('incomplete or failed QC cannot be marked ready/completed and a completed j
   assert.equal(operationalStatus(job), 'QC'); assert.equal(updateJob(store, job.id, { status: 'completed' }, now), null); assert.notEqual(job.status, 'completed');
   job.qc = { ...passingQC(), unresolvedIssues: [{ id: 'issue', issue: 'Leak', status: 'Needs follow-up', recommendation: '' }] };
   assert.equal(operationalStatus(job), 'QC'); assert.equal(updateJob(store, job.id, { status: 'completed' }, now), null);
-  job.qc = passingQC(); assert.ok(updateJob(store, job.id, { status: 'completed' }, now));
+  job.workOrder=finishedWorkOrder();job.qc = passingQC(); assert.ok(updateJob(store, job.id, { status: 'completed' }, now));
   assert.equal(updateJob(store, job.id, { status: 'intake' }, now), null); assert.equal(job.status, 'completed'); assert.equal(operationalStatus(job), 'Completed');
 });
 
@@ -44,21 +45,21 @@ test('Waiting Parts is reversible, records transitions and preserves the derived
   const store = emptyStore(), job = createJob(store, { customer, vehicle, intake }, p => p, now);
   job.status = 'work-order'; job.workOrder = { number: 'WO-1', date: '', status: 'In progress', mechanic: '', approvedWork: [], actualWork: [], parts: [], changes: [], startTime: '', endTime: '', mechanicNotes: '', result: '', recommendations: '', signoff: '' };
   assert.equal(workflowStatus(job), 'Work In Progress'); assert.equal(canSetWaitingParts(job), true);
-  assert.ok(setWaitingParts(store, job.id, true, new Date(now.getTime() + 1000)));
+  assert.ok(setWaitingParts(store, job.id, true, new Date(now.getTime() + 1000), 'External supplier'));
   assert.equal(operationalStatus(job), 'Waiting Parts'); assert.equal(workflowStatus(job), 'Work In Progress');
   assert.equal(setWaitingParts(store, job.id, true), job);
   assert.ok(setWaitingParts(store, job.id, false, new Date(now.getTime() + 2000)));
   assert.equal(operationalStatus(job), 'Work In Progress');
   assert.deepEqual(job.operations?.history.map(item => item.status), ['Intake', 'Waiting Parts', 'Work In Progress']);
   assert.deepEqual(job.operations?.history.map(item => item.at), [now.toISOString(), new Date(now.getTime() + 1000).toISOString(), new Date(now.getTime() + 2000).toISOString()]);
-  job.qc = passingQC(); job.status = 'qc'; assert.equal(canSetWaitingParts(job), false); assert.equal(setWaitingParts(store, job.id, true), null);
+  job.workOrder=finishedWorkOrder();job.qc = passingQC(); job.status = 'qc'; assert.equal(canSetWaitingParts(job), false); assert.equal(setWaitingParts(store, job.id, true), null);
   job.status = 'completed'; assert.equal(setWaitingParts(store, job.id, false), null);
 });
 
 test('Cancelled Work Orders override Waiting Parts, remain terminal, persist, and record a transition', () => {
   const store=emptyStore(), job=createJob(store,{customer,vehicle,intake},p=>p,now);
-  job.status='work-order';job.workOrder={number:'WO-CANCEL',date:'',status:'In progress',mechanic:'',approvedWork:[],actualWork:[],parts:[],changes:[],startTime:'',endTime:'',mechanicNotes:'',result:'',recommendations:'',signoff:''};
-  setWaitingParts(store,job.id,true,new Date(now.getTime()+1000));
+  job.status='work-order';job.inspection=emptyInspection(vehicle.type);job.workOrder={number:'WO-CANCEL',date:'',status:'In progress',mechanic:'',approvedWork:[],actualWork:[],parts:[],changes:[],startTime:'',endTime:'',mechanicNotes:'',result:'',recommendations:'',signoff:''};
+  setWaitingParts(store,job.id,true,new Date(now.getTime()+1000),'External supplier');
   const cancelled={...job.workOrder,status:'Cancelled' as const};
   assert.ok(updateJob(store,job.id,{workOrder:cancelled},new Date(now.getTime()+2000)));
   assert.equal(workflowStatus(job),'Cancelled');assert.equal(operationalStatus(job),'Cancelled');assert.equal(canSetWaitingParts(job),false);
@@ -80,7 +81,7 @@ test('Cancelled Work Orders override Waiting Parts, remain terminal, persist, an
 
 test('a cancellation update cannot also advance the Phase 1 job into QC or completion', () => {
   const store=emptyStore(),job=createJob(store,{customer,vehicle,intake},p=>p,now);
-  job.status='work-order';job.workOrder={number:'WO-CANCEL',date:'',status:'In progress',mechanic:'',approvedWork:[],actualWork:[],parts:[],changes:[],startTime:'',endTime:'',mechanicNotes:'',result:'',recommendations:'',signoff:''};job.qc=passingQC();
+  job.status='work-order';job.inspection=emptyInspection(vehicle.type);job.workOrder={number:'WO-CANCEL',date:'',status:'In progress',mechanic:'',approvedWork:[],actualWork:[],parts:[],changes:[],startTime:'',endTime:'',mechanicNotes:'',result:'',recommendations:'',signoff:''};job.qc=passingQC();
   assert.equal(updateJob(store,job.id,{workOrder:{...job.workOrder,status:'Cancelled'},status:'completed'},now),null);
   assert.equal(updateJob(store,job.id,{workOrder:{...job.workOrder,status:'Cancelled'},status:'qc',qc:passingQC()},now),null);
   assert.equal(job.workOrder.status,'In progress');assert.equal(job.status,'work-order');
@@ -93,11 +94,11 @@ test('automatic timeline records each derived state transition once with reasons
   job.workOrder = { number: 'WO-1', date: '', status: 'Not started', mechanic: '', approvedWork: [], actualWork: [], parts: [], changes: [], startTime: '', endTime: '', mechanicNotes: '', result: '', recommendations: '', signoff: '' };
   updateJob(store, job.id, { workOrder: job.workOrder }, new Date(now.getTime() + 2000));
   updateJob(store, job.id, { workOrder: { ...job.workOrder, status: 'In progress' } }, new Date(now.getTime() + 3000));
-  updateJob(store, job.id, { workOrder: { ...job.workOrder, status: 'Complete' } }, new Date(now.getTime() + 4000));
+  updateJob(store, job.id, { workOrder: finishedWorkOrder() }, new Date(now.getTime() + 4000));
   updateJob(store, job.id, { status: 'qc', qc: passingQC() }, new Date(now.getTime() + 5000));
   updateJob(store, job.id, { status: 'completed' }, new Date(now.getTime() + 6000));
-  assert.deepEqual(job.operations?.history.map(item => item.status), ['Intake','Waiting Approval','Work In Progress','QC','Ready for Pickup','Completed']);
-  assert.deepEqual(job.operations?.history.slice(1).map(item => item.reason), ['Inspection checklist completed','Work Order started','Quality check started','QC passed','Handover completed']);
+  assert.deepEqual(job.operations?.history.map(item => item.status), ['Intake','Inspection','Work In Progress','QC','Ready for Pickup','Completed']);
+  assert.deepEqual(job.operations?.history.slice(1).map(item => item.reason), ['Inspection started','Work Order started','Quality check started','QC passed','Handover completed']);
   assert.equal(new Set(job.operations?.history.map(item => item.at)).size, 6);
 });
 
@@ -125,8 +126,8 @@ test('continue-job route respects derived status and returns to estimate approva
   assert.equal(nextWorkflowRoute(job),'/tools/workshop/inspection-estimate/');
   const inspection=emptyInspection(vehicle.type);inspection.checklist.forEach(group=>group.items.forEach(item=>item.status='Good'));
   inspection.recommendedJobs=[{id:'rec',name:'Replace pads',detail:'',priority:'Recommended',approved:false}];job.inspection=inspection;job.status='inspection';
-  assert.equal(nextWorkflowRoute(job),'/tools/workshop/inspection-estimate/');
-  inspection.recommendedJobs[0]!.approved=true;
+  assert.equal(workflowStatus(job),'Waiting Approval');assert.equal(nextWorkflowRoute(job),'/tools/workshop/inspection-estimate/');
+  inspection.recommendedJobs[0]!.approved=true;inspection.recommendedJobs[0]!.approvedAt=now.toISOString();inspection.recommendedJobs[0]!.approvedBy='Customer';inspection.approvedBy='Customer';inspection.approvedAt=now.toISOString();inspection.revision=1;inspection.approvedRevision=1;
   assert.equal(nextWorkflowRoute(job),'/tools/workshop/work-order/');
   job.workOrder={number:'WO',date:'',status:'In progress',mechanic:'',approvedWork:[],actualWork:[],parts:[],changes:[],startTime:'',endTime:'',mechanicNotes:'',result:'',recommendations:'',signoff:''};
   assert.equal(nextWorkflowRoute(job),'/tools/workshop/work-order/');

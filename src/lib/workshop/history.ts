@@ -6,8 +6,9 @@ export interface ConsumedPart { partId: string; name: string; sku: string; unit:
 export interface ServiceProjection {
   jobId: string; vehicleId: string; jobNumber: string; customerName: string;
   serviceDate: string; odometer: number | null; complaint: string; findings: string;
-  actualWork: { id: string; name: string; detail: string; mechanic: string }[];
-  technician: string; consumedParts: ConsumedPart[]; freeTextMaterials: { name: string; partNumber: string; quantity: number; unit: string; notes: string }[];
+  actualWork: { id: string; name: string; detail: string; mechanic: string; sourceRecommendationId?: string }[];
+  technician: string; technicians: string[]; qcInspector: string; consumedParts: ConsumedPart[]; freeTextMaterials: { name: string; partNumber: string; quantity: number; unit: string; notes: string }[];
+  deferredIssues: { issue: string; reason: string }[];
   qcResult: string; handoverNotes: string; handoverRecipient: string; status: 'Completed';
 }
 export type WarrantyStatus = 'Active' | 'Expired' | 'Odometer unknown';
@@ -24,11 +25,12 @@ const movementQty=(movements:PartMovement[],jobId:string,partId:string,type:Part
 export function completedService(job:WorkshopJob,store:WorkshopStore):ServiceProjection|null {
   if(job.status!=='completed'||workflowStatus(job)!=='Completed'||!job.qc)return null;
   const customer=store.customers.find(c=>c.id===job.customerId);
-  const actualWork=(job.workOrder?.actualWork??[]).filter(w=>w.status==='Complete'&&w.name.trim()).map(w=>({id:w.id,name:w.name.trim(),detail:w.detail,mechanic:w.mechanic.trim()}));
+  const actualWork=(job.workOrder?.actualWork??[]).filter(w=>w.status==='Complete'&&w.name.trim()).map(w=>({id:w.id,name:w.name.trim(),detail:w.detail,mechanic:w.mechanic.trim(),sourceRecommendationId:w.sourceRecommendationId}));
   const partIds=new Set(store.partMovements.filter(m=>m.jobId===job.id&&(m.type==='ISSUE_TO_JOB'||m.type==='RETURN_FROM_JOB')).map(m=>m.partId));
-  const consumedParts=[...partIds].flatMap(partId=>{const quantity=movementQty(store.partMovements,job.id,partId,'ISSUE_TO_JOB')-movementQty(store.partMovements,job.id,partId,'RETURN_FROM_JOB');if(quantity<=0)return[];const part=store.parts.find(p=>p.id===partId);return[{partId,name:part?.name??'Inventory part',sku:part?.sku??'',unit:part?.unit??'each',quantity}];});
+  const consumedParts=[...partIds].flatMap(partId=>{const quantity=movementQty(store.partMovements,job.id,partId,'ISSUE_TO_JOB')-movementQty(store.partMovements,job.id,partId,'RETURN_FROM_JOB');if(quantity<=0)return[];const movement=store.partMovements.find(m=>m.jobId===job.id&&m.partId===partId&&m.type==='ISSUE_TO_JOB'&&m.partNameSnapshot);const part=store.parts.find(p=>p.id===partId);return[{partId,name:movement?.partNameSnapshot??part?.name??'Inventory part',sku:movement?.partSkuSnapshot??part?.sku??'',unit:movement?.partUnitSnapshot??part?.unit??'each',quantity}];});
   const freeTextMaterials=(job.workOrder?.parts??[]).filter(p=>!p.partId&&p.name.trim()).map(p=>({name:p.name.trim(),partNumber:p.partNumber,quantity:p.quantity,unit:p.unit,notes:p.notes}));
-  return {jobId:job.id,vehicleId:job.vehicleId,jobNumber:job.number,customerName:customer?.name??'',serviceDate:serviceDate(job),odometer:serviceOdometer(job,store),complaint:job.intake.complaint,findings:job.inspection?.findings??'',actualWork,technician:actualWork.map(w=>w.mechanic).find(Boolean)||job.workOrder?.mechanic||job.qc.mechanic||'',consumedParts,freeTextMaterials,qcResult:job.qc.finalStatus,handoverNotes:[job.qc.readinessNotes,job.qc.customerNotes,job.qc.recommendations].filter(Boolean).join(' · '),handoverRecipient:job.qc.handoverRecipient,status:'Completed'};
+  const technicians=[...new Set(actualWork.map(w=>w.mechanic).filter(Boolean))];
+  return {jobId:job.id,vehicleId:job.vehicleId,jobNumber:job.number,customerName:customer?.name??'',serviceDate:serviceDate(job),odometer:serviceOdometer(job,store),complaint:job.intake.complaint,findings:job.inspection?.findings??'',actualWork,technician:technicians.join(', ')||job.workOrder?.mechanic||'',technicians,qcInspector:job.qc.inspector,deferredIssues:job.qc.unresolvedIssues.filter(x=>x.status==='Customer deferred').map(x=>({issue:x.issue,reason:x.deferralReason??x.recommendation})),consumedParts,freeTextMaterials,qcResult:job.qc.finalStatus,handoverNotes:[job.qc.readinessNotes,job.qc.customerNotes,job.qc.recommendations].filter(Boolean).join(' · '),handoverRecipient:job.qc.handoverRecipient,status:'Completed'};
 }
 export function serviceHistory(store:WorkshopStore,vehicleId?:string):ServiceProjection[]{return store.jobs.map(j=>completedService(j,store)).filter((x):x is ServiceProjection=>!!x&&(!vehicleId||x.vehicleId===vehicleId)).sort((a,b)=>b.serviceDate.localeCompare(a.serviceDate)||b.jobId.localeCompare(a.jobId));}
 export function vehicleHistorySearch(store:WorkshopStore,query:string){const q=query.trim().toLocaleLowerCase();return store.vehicles.filter(v=>{const histories=serviceHistory(store,v.id);if(!histories.length)return false;const customer=histories.map(h=>h.customerName).join(' ');return !q||[v.plate,v.make,v.model,customer].some(x=>x.toLocaleLowerCase().includes(q));});}

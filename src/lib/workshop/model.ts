@@ -2,7 +2,7 @@ export type VehicleType = 'Motorcycle' | 'Car';
 export type JobStatus = 'intake' | 'inspection' | 'work-order' | 'qc' | 'completed';
 export type OperationalStatus = 'Intake' | 'Inspection' | 'Waiting Approval' | 'Work In Progress' | 'Waiting Parts' | 'QC' | 'Ready for Pickup' | 'Completed' | 'Cancelled';
 export interface OperationalTransition { status: OperationalStatus; at: string; reason?: string }
-export interface WorkshopOperationsState { waitingParts: boolean; history: OperationalTransition[] }
+export interface WorkshopOperationsState { waitingParts: boolean; waitingPartsReason?: string; history: OperationalTransition[] }
 
 export interface Customer { id: string; name: string; phone: string; address: string }
 export interface Vehicle {
@@ -17,26 +17,28 @@ export type InspectionStatus = 'Good' | 'Monitor' | 'Service' | 'Replace' | 'Not
 export type Priority = 'Urgent' | 'Recommended' | 'Can wait';
 export interface InspectionCheck { name: string; status: InspectionStatus; note: string }
 export interface InspectionGroup { category: string; items: InspectionCheck[] }
-export interface RecommendedJob { id: string; name: string; detail: string; priority: Priority; approved: boolean }
+export interface RecommendedJob { id: string; name: string; detail: string; priority: Priority; approved: boolean; approvedAt?: string; approvedBy?: string }
 export interface PartEstimate { id: string; name: string; partNumber: string; quantity: number; unit: string; unitPrice: number }
 export interface LaborEstimate { id: string; name: string; mode: 'fixed' | 'hourly'; hours: number; rate: number; fixed: number }
 export interface Inspection {
   findings: string; checklist: InspectionGroup[]; recommendedJobs: RecommendedJob[];
   parts: PartEstimate[]; labor: LaborEstimate[]; consumables: number;
   additionalCost: number; discount: number; taxRate: number;
+  revision?: number; approvedRevision?: number; approvedAt?: string; approvedBy?: string;
 }
 export type WorkStatus = 'Not started' | 'In progress' | 'Complete' | 'Paused' | 'Cancelled';
-export interface WorkRow { id: string; name: string; detail: string; status: WorkStatus; mechanic: string }
+export interface WorkRow { id: string; name: string; detail: string; status: WorkStatus; mechanic: string; sourceRecommendationId?: string }
 export interface WorkPart { id: string; name: string; partNumber: string; quantity: number; unit: string; notes: string; partId?: string }
 export interface WorkChange { id: string; work: string; reason: string; approval: 'Awaiting approval' | 'Approved' | 'Deferred' | 'Declined'; notes: string }
 export interface WorkOrder {
   number: string; date: string; status: WorkStatus; mechanic: string; approvedWork: WorkRow[];
   actualWork: WorkRow[]; parts: WorkPart[]; changes: WorkChange[]; startTime: string;
   endTime: string; mechanicNotes: string; result: string; recommendations: string; signoff: string;
+  noRepairAcknowledged?: boolean; noRepairReason?: string;
 }
 export type QCResult = 'Pass' | 'Needs attention' | 'Not applicable' | 'Not checked';
 export interface QCCheck { name: string; result: QCResult; note: string }
-export interface UnresolvedIssue { id: string; issue: string; status: 'Customer deferred' | 'Needs follow-up'; recommendation: string }
+export interface UnresolvedIssue { id: string; issue: string; status: 'Customer deferred' | 'Needs follow-up'; recommendation: string; deferralReason?: string }
 export interface QualityCheck {
   number: string; date: string; inspector: string; mechanic: string; finalStatus: 'In progress' | 'Rework required' | 'Ready for handover';
   checks: QCCheck[]; unresolvedIssues: UnresolvedIssue[]; returnedItems: string[];
@@ -88,5 +90,6 @@ export interface WorkshopPart {
 export type PartMovementType = 'OPENING' | 'STOCK_IN' | 'ISSUE_TO_JOB' | 'RETURN_FROM_JOB' | 'ADJUSTMENT_IN' | 'ADJUSTMENT_OUT';
 export interface PartMovement {
   id: string; partId: string; type: PartMovementType; quantity: number; at: string;
+  partNameSnapshot?: string; partSkuSnapshot?: string; partUnitSnapshot?: string;
   unitCost?: number; supplier?: string; reference?: string; note?: string; jobId?: string;
 }
