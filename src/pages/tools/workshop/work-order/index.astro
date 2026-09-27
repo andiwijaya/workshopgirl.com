@@ -1,0 +1,17 @@
+---
+import WorkshopLayout from '../../../../components/workshop/WorkshopLayout.astro';
+const title = 'Work Order | WorkshopGirl Workshop Operations';
+const description = 'Turn approved inspection work into a repair work order with technician, tasks, materials and job notes.';
+const canonical = 'https://workshopgirl.com/tools/workshop/work-order/';
+---
+<WorkshopLayout title={title} description={description} canonical={canonical} step="work-order" heading="Work order." intro="Approved work and the inspection context load from the same job. Record what the workshop will do and what was completed.">
+  <section class="workshop-card"><h2>Repair work</h2><div id="work-order-context"></div><form id="work-order-form" class="workshop-form" novalidate>
+    <section class="form-section"><h2>Work order details</h2><div class="form-grid three-col"><label><span>Work order number</span><input name="number" required /></label><label><span>Date</span><input name="date" type="date" /></label><label><span>Status</span><select name="status"><option>Not started</option><option>In progress</option><option>Complete</option><option>Paused</option><option>Cancelled</option></select></label><label><span>Technician / mechanic</span><input name="mechanic" /></label><label><span>Start time</span><input name="startTime" type="time" /></label><label><span>End time</span><input name="endTime" type="time" /></label></div><p id="work-duration"></p></section>
+    <section class="form-section"><h2>Approved work</h2><div class="workshop-row-list" id="approved-work"></div><button class="button-secondary" type="button" data-add-row="approved-work">Add approved work</button></section>
+    <section class="form-section"><h2>Actual work performed</h2><div class="workshop-row-list" id="actual-work"></div><button class="button-secondary" type="button" data-add-row="actual-work">Add actual work</button></section>
+    <section class="form-section"><h2>Parts and materials</h2><div class="workshop-row-list" id="work-parts"></div><button class="button-secondary" type="button" data-add-row="work-part">Add part or material</button></section>
+    <section class="form-section"><h2>Changes and customer approval</h2><div class="workshop-row-list" id="work-changes"></div><button class="button-secondary" type="button" data-add-row="change">Add change / approval note</button></section>
+    <section class="form-section"><h2>Repair notes and sign-off</h2><div class="form-grid"><label><span>Mechanic notes</span><textarea name="mechanicNotes"></textarea></label><label><span>Repair result</span><textarea name="result"></textarea></label><label><span>Recommendations</span><textarea name="recommendations"></textarea></label><label><span>Mechanic sign-off</span><input name="signoff" /></label></div></section>
+    <p class="field-error" id="work-order-error" role="alert" hidden></p><div class="button-row"><button type="submit">Save Work Order</button></div>
+  </form><div class="workflow-next" id="next-qc" hidden><h2>Work Order saved</h2><a id="continue-qc" href="#">Continue to QC &amp; Handover →</a></div></section>
+</WorkshopLayout>

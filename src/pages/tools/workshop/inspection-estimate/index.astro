@@ -1,0 +1,16 @@
+---
+import WorkshopLayout from '../../../../components/workshop/WorkshopLayout.astro';
+const title = 'Inspection & Estimate | WorkshopGirl Workshop Operations';
+const description = 'Inspect a motorcycle or car, record findings and prepare a local parts and labor estimate for the same workshop job.';
+const canonical = 'https://workshopgirl.com/tools/workshop/inspection-estimate/';
+---
+<WorkshopLayout title={title} description={description} canonical={canonical} step="inspection" heading="Inspection & estimate." intro="Continue an intake using its shared job ID. Inspection findings, recommended work and estimate stay with that job.">
+  <section class="workshop-card"><h2>Job inspection</h2><p>Customer and vehicle information comes from Vehicle Intake.</p><div id="inspection-context"></div><form id="inspection-form" class="workshop-form" novalidate>
+    <section class="form-section"><h2>Vehicle inspection</h2><div id="inspection-checklist"></div><label class="form-span-all"><span>Overall findings</span><textarea name="findings"></textarea></label></section>
+    <section class="form-section"><h2>Recommended work</h2><p>Mark each item approved before continuing it into the work order.</p><div class="workshop-row-list" id="recommended-rows"></div><button class="button-secondary" type="button" data-add-row="recommended">Add recommended job</button></section>
+    <section class="form-section"><h2>Parts estimate</h2><div class="workshop-row-list" id="estimate-parts"></div><button class="button-secondary" type="button" data-add-row="estimate-part">Add part</button></section>
+    <section class="form-section"><h2>Labor</h2><div class="workshop-row-list" id="estimate-labor"></div><button class="button-secondary" type="button" data-add-row="labor">Add labor</button></section>
+    <section class="form-section"><h2>Other costs</h2><div class="form-grid three-col"><label><span>Consumables</span><input name="consumables" type="number" min="0" step="0.01" value="0" /></label><label><span>Additional cost</span><input name="additionalCost" type="number" min="0" step="0.01" value="0" /></label><label><span>Discount</span><input name="discount" type="number" min="0" step="0.01" value="0" /></label><label><span>Tax rate (%)</span><input name="taxRate" type="number" min="0" max="100" step="0.01" value="0" /></label></div><div class="estimate-summary" id="estimate-summary" aria-live="polite"></div></section>
+    <p class="field-error" id="inspection-error" role="alert" hidden></p><div class="button-row"><button type="submit">Save inspection &amp; estimate</button></div>
+  </form><div class="workflow-next" id="next-work-order" hidden><h2>Inspection saved</h2><a id="continue-work-order" href="#">Continue to Work Order →</a></div></section>
+</WorkshopLayout>
