@@ -12,6 +12,7 @@ const steps = [
   ['qc', 'QC & Handover', '/tools/workshop/qc-handover/'],
   ['queue', 'Queue / Job Status', '/tools/workshop/queue/'],
   ['parts-inventory', 'Parts Inventory', '/tools/workshop/parts-inventory/'],
+  ['service-history', 'Service History & Warranty', '/tools/workshop/service-history/'],
 ];
 ---
 <!doctype html><html lang="en"><head>
@@ -20,8 +21,8 @@ const steps = [
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head><body>
-  <a class="skip-link" href="#main">Skip to workshop tool</a><SiteHeader current="tools" />
-  <main id="main" class="workshop-page" data-workshop-step={step}>
+  <a class="skip-link" href="#main" tabindex="0">Skip to workshop tool</a><SiteHeader current="tools" />
+  <main id="main" class="workshop-page" tabindex="-1" data-workshop-step={step}>
     <div class="workshop-hero"><a class="eyebrow" href="/tools/">WorkshopGirl / Digital workbench</a><p class="operation-label">Workshop Operations</p><h1>{heading}</h1><p>{intro}</p><ToolShare title={title} description={description} canonical={canonical} /></div>
     <nav class="workshop-steps" aria-label="Workshop job pages">
       {steps.map(([id, label, href], index) => <a href={href} data-step-link={id} aria-current={step === id ? 'step' : undefined} class:list={{ 'is-current': step === id }}><span>{id === 'queue' ? '↗' : index + 1}</span>{label}</a>)}

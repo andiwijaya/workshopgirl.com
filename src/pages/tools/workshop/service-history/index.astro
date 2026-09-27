@@ -1,0 +1,11 @@
+---
+import WorkshopLayout from '../../../../components/workshop/WorkshopLayout.astro';
+const title = 'Service History & Warranty | WorkshopGirl Workshop Operations';
+const description = 'Review completed local workshop services by vehicle, document warranty coverage and claims, and record the next service recommendation.';
+const canonical = 'https://workshopgirl.com/tools/workshop/service-history/';
+---
+<WorkshopLayout title={title} description={description} canonical={canonical} step="service-history" heading="Service history." intro="Review completed work for a saved vehicle. Service records are derived from completed Workshop Jobs and stay in this browser.">
+  <section class="workshop-card history-search-card"><h2>Find a vehicle</h2><p>Search the saved local service history, then choose the exact vehicle record. Plate numbers are never matched automatically.</p><div class="history-search-grid"><label><span>Search plate, make, model or customer</span><input id="history-search" type="search" autocomplete="off" /></label><label><span>Vehicle with completed services</span><select id="history-vehicle"><option value="">Choose a vehicle</option></select></label></div><p id="history-privacy">Private workshop data remains in this browser. Shared links contain only this tool’s canonical URL.</p></section>
+  <p id="history-feedback" class="workshop-status" role="status" aria-live="polite" hidden></p>
+  <section id="history-content" aria-live="polite"></section>
+</WorkshopLayout>

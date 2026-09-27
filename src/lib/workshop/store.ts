@@ -1,11 +1,11 @@
-import type { Customer, Intake, Vehicle, VehicleType, WorkshopJob, WorkshopStore } from './model.ts';
+import type { Customer, Intake, NextService, Vehicle, VehicleType, WarrantyClaim, WorkshopJob, WorkshopStore, WorkshopWarranty } from './model.ts';
 import { canSetWaitingParts, operationalStatus, qcPassed, transitionReason } from './queue.ts';
 
 export const STORAGE_KEY = 'workshopgirl.workshop.operations.v1';
 export const STORE_VERSION = 1 as const;
 export interface StorageLike { getItem(key: string): string | null; setItem(key: string, value: string): void }
 export interface StoreLoad { store: WorkshopStore; recovered: boolean; message: string }
-export const emptyStore = (): WorkshopStore => ({ version: STORE_VERSION, customers: [], vehicles: [], jobs: [], parts: [], partMovements: [] });
+export const emptyStore = (): WorkshopStore => ({ version: STORE_VERSION, customers: [], vehicles: [], jobs: [], parts: [], partMovements: [], warranties: [], warrantyClaims: [], nextServices: [] });
 
 export function makeId(prefix: string): string {
   const uuid = globalThis.crypto?.randomUUID?.();
@@ -24,8 +24,10 @@ export function loadStore(storage: StorageLike): StoreLoad {
     }
     const rawParts = value.parts === undefined ? [] : value.parts;
     const rawMovements = value.partMovements === undefined ? [] : value.partMovements;
-    if (!Array.isArray(rawParts) || !rawParts.every(isPart) || !Array.isArray(rawMovements) || !rawMovements.every(isPartMovement)) {
-      return { store: emptyStore(), recovered: true, message: 'Saved workshop inventory has an unsupported shape. The original browser data was left untouched.' };
+    const rawWarranties=value.warranties===undefined?[]:value.warranties,rawClaims=value.warrantyClaims===undefined?[]:value.warrantyClaims,rawNext=value.nextServices===undefined?[]:value.nextServices;
+    if (!Array.isArray(rawParts) || !rawParts.every(isPart) || !Array.isArray(rawMovements) || !rawMovements.every(isPartMovement)
+      || !Array.isArray(rawWarranties)||!rawWarranties.every(isWarranty)||!Array.isArray(rawClaims)||!rawClaims.every(isWarrantyClaim)||!Array.isArray(rawNext)||!rawNext.every(isNextService)) {
+      return { store: emptyStore(), recovered: true, message: 'Saved workshop inventory or service follow-up data has an unsupported shape. The original browser data was left untouched.' };
     }
     const customers = value.customers.filter(isCustomer);
     const vehicles = value.vehicles.filter(isVehicle);
@@ -33,12 +35,12 @@ export function loadStore(storage: StorageLike): StoreLoad {
     const vehicleIds = new Set(vehicles.map(x => x.id));
     const jobs = value.jobs.filter((x): x is WorkshopJob => isJob(x) && customerIds.has(x.customerId) && vehicleIds.has(x.vehicleId));
     if (customers.length !== value.customers.length || vehicles.length !== value.vehicles.length || jobs.length !== value.jobs.length) {
-      return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements }, recovered: true, message: 'Some invalid saved records were skipped. The original browser data was not overwritten until you save a change.' };
+      return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements, warranties:rawWarranties,warrantyClaims:rawClaims,nextServices:rawNext }, recovered: true, message: 'Some invalid saved records were skipped. The original browser data was not overwritten until you save a change.' };
     }
     // Phase 1 records predate Queue metadata. Add an in-memory starting point and
     // persist it only when the user next saves a normal Workshop Job change.
     for (const job of jobs) ensureOperations(job);
-    return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements }, recovered: false, message: '' };
+    return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements, warranties:rawWarranties,warrantyClaims:rawClaims,nextServices:rawNext }, recovered: false, message: '' };
   } catch {
     return { store: emptyStore(), recovered: true, message: 'Saved workshop data could not be read. The original browser data was left untouched.' };
   }
@@ -51,20 +53,22 @@ export function saveStore(store: WorkshopStore, storage: StorageLike): { ok: boo
 }
 
 export function createJob(store: WorkshopStore, input: {
-  customer: Omit<Customer, 'id'>; vehicle: Omit<Vehicle, 'id'>; intake: Intake;
+  customer: Omit<Customer, 'id'>; vehicle: Omit<Vehicle, 'id'>; intake: Intake; existingVehicleId?: string;
 }, idFactory: (prefix: string) => string = makeId, now = new Date()): WorkshopJob {
   const customer: Customer = { id: idFactory('customer'), ...input.customer };
-  const vehicle: Vehicle = { id: idFactory('vehicle'), ...input.vehicle };
+  const existing=input.existingVehicleId?store.vehicles.find(x=>x.id===input.existingVehicleId):undefined;
+  const vehicle: Vehicle = existing??{ id: idFactory('vehicle'), ...input.vehicle };
+  if(existing){const readings=[existing.odometer,input.vehicle.odometer].filter((x):x is number=>x!==null);const latest=readings.length?Math.max(...readings):null;Object.assign(existing,input.vehicle,{id:existing.id,odometer:latest});}
   const job: WorkshopJob = {
     id: idFactory('job'), number: input.intake.number, status: 'intake', customerId: customer.id,
     vehicleId: vehicle.id, intake: structuredClone(input.intake), createdAt: now.toISOString(), updatedAt: now.toISOString(),
     operations: { waitingParts: false, history: [{ status: 'Intake', at: now.toISOString(), reason: 'Job created' }] },
   };
-  store.customers.push(customer); store.vehicles.push(vehicle); store.jobs.push(job);
+  store.customers.push(customer); if(!existing)store.vehicles.push(vehicle); store.jobs.push(job);
   return job;
 }
 
-export function updateJob(store: WorkshopStore, id: string, patch: Partial<Pick<WorkshopJob, 'status' | 'intake' | 'inspection' | 'workOrder' | 'qc'>>, now = new Date()): WorkshopJob | null {
+export function updateJob(store: WorkshopStore, id: string, patch: Partial<Pick<WorkshopJob, 'status' | 'intake' | 'inspection' | 'workOrder' | 'qc' | 'serviceOdometer'>>, now = new Date()): WorkshopJob | null {
   const job = store.jobs.find(item => item.id === id);
   if (!job) return null;
   if (job.status === 'completed') return null;
@@ -79,6 +83,7 @@ export function updateJob(store: WorkshopStore, id: string, patch: Partial<Pick<
   if (patch.inspection) job.inspection = structuredClone(patch.inspection);
   if (patch.workOrder) job.workOrder = structuredClone(patch.workOrder);
   if (patch.qc) job.qc = structuredClone(patch.qc);
+  if (patch.serviceOdometer !== undefined) job.serviceOdometer = patch.serviceOdometer;
   job.updatedAt = now.toISOString();
   recordTransition(job, previousStatus, operationalStatus(job), now);
   return job;
@@ -118,14 +123,19 @@ export function getVehicle(store: WorkshopStore, job: WorkshopJob): Vehicle | nu
 export function vehicleType(value: string): VehicleType { return value === 'Car' ? 'Car' : 'Motorcycle'; }
 
 function isRecord(value: unknown): value is Record<string, unknown> { return !!value && typeof value === 'object' && !Array.isArray(value); }
+function isISODate(value:unknown):value is string{return typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&!Number.isNaN(Date.parse(`${value}T00:00:00Z`))&&new Date(`${value}T00:00:00Z`).toISOString().slice(0,10)===value;}
 function isCustomer(value: unknown): value is Customer { return isRecord(value) && typeof value.id === 'string' && typeof value.name === 'string' && typeof value.phone === 'string' && typeof value.address === 'string'; }
 function isVehicle(value: unknown): value is Vehicle { return isRecord(value) && typeof value.id === 'string' && (value.type === 'Car' || value.type === 'Motorcycle') && typeof value.plate === 'string' && typeof value.make === 'string' && typeof value.model === 'string' && (value.year === null || typeof value.year === 'number') && typeof value.color === 'string' && (value.odometer === null || typeof value.odometer === 'number'); }
 function isRowArray(value: unknown): value is Record<string, unknown>[] { return Array.isArray(value) && value.every(isRecord); }
 function isPart(value: unknown): boolean { return isRecord(value) && ['id','sku','name','category','brand','unit','location','supplier','compatibility','createdAt','updatedAt'].every(k => typeof value[k] === 'string') && typeof value.active === 'boolean' && typeof value.minimumStock === 'number' && Number.isFinite(value.minimumStock) && value.minimumStock >= 0 && (value.barcode === undefined || typeof value.barcode === 'string'); }
 function isPartMovement(value: unknown): boolean { return isRecord(value) && typeof value.id === 'string' && typeof value.partId === 'string' && ['OPENING','STOCK_IN','ISSUE_TO_JOB','RETURN_FROM_JOB','ADJUSTMENT_IN','ADJUSTMENT_OUT'].includes(String(value.type)) && typeof value.quantity === 'number' && Number.isFinite(value.quantity) && value.quantity > 0 && typeof value.at === 'string' && ['unitCost','supplier','reference','note','jobId'].every(k => value[k] === undefined || (k === 'unitCost' ? typeof value[k] === 'number' && Number.isFinite(value[k]) && (value[k] as number) >= 0 : typeof value[k] === 'string')); }
+function isWarranty(value:unknown):value is WorkshopWarranty{return isRecord(value)&&['id','jobId','vehicleId','terms','createdAt','updatedAt'].every(k=>typeof value[k]==='string')&&isISODate(value.startDate)&&['Labor','Parts','Labor and parts'].includes(String(value.coverageType))&&Array.isArray(value.coveredWork)&&value.coveredWork.every(x=>typeof x==='string')&&Array.isArray(value.coveredPartIds)&&value.coveredPartIds.every(x=>typeof x==='string')&&(value.startOdometer===null||typeof value.startOdometer==='number'&&Number.isFinite(value.startOdometer)&&value.startOdometer>=0)&&(value.expiryDate===null||isISODate(value.expiryDate)&&value.expiryDate>=value.startDate)&&(value.expiryOdometer===null||typeof value.expiryOdometer==='number'&&Number.isFinite(value.expiryOdometer)&&value.expiryOdometer>=0&&(value.startOdometer===null||value.expiryOdometer>=value.startOdometer))&&(value.expiryDate!==null||value.expiryOdometer!==null);}
+function isWarrantyClaim(value:unknown):value is WarrantyClaim{return isRecord(value)&&['id','warrantyId','issue','resolution','notes','createdAt','updatedAt'].every(k=>typeof value[k]==='string')&&isISODate(value.date)&&['Open','Resolved','Declined'].includes(String(value.status))&&(value.odometer===null||typeof value.odometer==='number'&&Number.isFinite(value.odometer)&&value.odometer>=0);}
+function isNextService(value:unknown):value is NextService{return isRecord(value)&&['id','jobId','vehicleId','recommendation','createdAt','updatedAt'].every(k=>typeof value[k]==='string')&&(value.date===null||isISODate(value.date))&&(value.odometer===null||typeof value.odometer==='number'&&Number.isFinite(value.odometer)&&value.odometer>=0);}
 function isIntake(value: unknown): boolean { return isRecord(value) && typeof value.number === 'string' && typeof value.complaint === 'string' && Array.isArray(value.accessories) && value.accessories.every(x => typeof x === 'string') && typeof value.conditionNotes === 'string' && typeof value.date === 'string' && typeof value.arrivalTime === 'string'; }
 function isJob(value: unknown): value is WorkshopJob {
   if (!isRecord(value) || typeof value.id !== 'string' || typeof value.customerId !== 'string' || typeof value.vehicleId !== 'string' || typeof value.number !== 'string' || !['intake','inspection','work-order','qc','completed'].includes(String(value.status)) || !isIntake(value.intake) || typeof value.createdAt !== 'string' || typeof value.updatedAt !== 'string') return false;
+  if(value.serviceOdometer!==undefined&&value.serviceOdometer!==null&&(typeof value.serviceOdometer!=='number'||!Number.isFinite(value.serviceOdometer)||value.serviceOdometer<0))return false;
   if (value.inspection != null && (!isRecord(value.inspection) || !Array.isArray(value.inspection.checklist) || !value.inspection.checklist.every(group => isRecord(group) && typeof group.category === 'string' && isRowArray(group.items)) || !isRowArray(value.inspection.recommendedJobs) || !isRowArray(value.inspection.parts) || !isRowArray(value.inspection.labor))) return false;
   if (value.workOrder != null && (!isRecord(value.workOrder) || !isRowArray(value.workOrder.approvedWork) || !isRowArray(value.workOrder.actualWork) || !isRowArray(value.workOrder.parts) || !isRowArray(value.workOrder.changes))) return false;
   if (value.qc != null && (!isRecord(value.qc) || !isRowArray(value.qc.checks) || !isRowArray(value.qc.unresolvedIssues) || !Array.isArray(value.qc.returnedItems))) return false;

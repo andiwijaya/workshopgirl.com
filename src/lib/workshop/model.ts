@@ -48,6 +48,8 @@ export interface QualityCheck {
 export interface WorkshopJob {
   id: string; number: string; status: JobStatus; customerId: string; vehicleId: string;
   intake: Intake; inspection?: Inspection; workOrder?: WorkOrder; qc?: QualityCheck;
+  /** Vehicle odometer captured when this job was completed. */
+  serviceOdometer?: number | null;
   /** Optional, additive local metadata. Phase 1 records without it remain valid. */
   operations?: WorkshopOperationsState;
   createdAt: string; updatedAt: string;
@@ -56,6 +58,26 @@ export interface WorkshopStore {
   version: 1; customers: Customer[]; vehicles: Vehicle[]; jobs: WorkshopJob[];
   /** Additive local inventory ledger. Missing arrays are initialized on load. */
   parts: WorkshopPart[]; partMovements: PartMovement[];
+  /** Additive local service follow-up metadata; history itself is always projected from jobs. */
+  warranties: WorkshopWarranty[]; warrantyClaims: WarrantyClaim[]; nextServices: NextService[];
+}
+
+export type WarrantyCoverageType = 'Labor' | 'Parts' | 'Labor and parts';
+export type WarrantyClaimStatus = 'Open' | 'Resolved' | 'Declined';
+export interface WorkshopWarranty {
+  id: string; jobId: string; vehicleId: string; coverageType: WarrantyCoverageType;
+  coveredWork: string[]; coveredPartIds: string[]; startDate: string; startOdometer: number | null;
+  expiryDate: string | null; expiryOdometer: number | null; terms: string;
+  createdAt: string; updatedAt: string;
+}
+export interface WarrantyClaim {
+  id: string; warrantyId: string; date: string; odometer: number | null;
+  issue: string; resolution: string; notes: string; status: WarrantyClaimStatus;
+  createdAt: string; updatedAt: string;
+}
+export interface NextService {
+  id: string; jobId: string; vehicleId: string; date: string | null;
+  odometer: number | null; recommendation: string; createdAt: string; updatedAt: string;
 }
 
 export interface WorkshopPart {
