@@ -1,4 +1,5 @@
 import type { Customer, Intake, Vehicle, VehicleType, WorkshopJob, WorkshopStore } from './model.ts';
+import { canSetWaitingParts, operationalStatus, qcPassed, transitionReason } from './queue.ts';
 
 export const STORAGE_KEY = 'workshopgirl.workshop.operations.v1';
 export const STORE_VERSION = 1 as const;
@@ -29,6 +30,9 @@ export function loadStore(storage: StorageLike): StoreLoad {
     if (customers.length !== value.customers.length || vehicles.length !== value.vehicles.length || jobs.length !== value.jobs.length) {
       return { store: { version: STORE_VERSION, customers, vehicles, jobs }, recovered: true, message: 'Some invalid saved records were skipped. The original browser data was not overwritten until you save a change.' };
     }
+    // Phase 1 records predate Queue metadata. Add an in-memory starting point and
+    // persist it only when the user next saves a normal Workshop Job change.
+    for (const job of jobs) ensureOperations(job);
     return { store: { version: STORE_VERSION, customers, vehicles, jobs }, recovered: false, message: '' };
   } catch {
     return { store: emptyStore(), recovered: true, message: 'Saved workshop data could not be read. The original browser data was left untouched.' };
@@ -49,6 +53,7 @@ export function createJob(store: WorkshopStore, input: {
   const job: WorkshopJob = {
     id: idFactory('job'), number: input.intake.number, status: 'intake', customerId: customer.id,
     vehicleId: vehicle.id, intake: structuredClone(input.intake), createdAt: now.toISOString(), updatedAt: now.toISOString(),
+    operations: { waitingParts: false, history: [{ status: 'Intake', at: now.toISOString(), reason: 'Job created' }] },
   };
   store.customers.push(customer); store.vehicles.push(vehicle); store.jobs.push(job);
   return job;
@@ -57,13 +62,47 @@ export function createJob(store: WorkshopStore, input: {
 export function updateJob(store: WorkshopStore, id: string, patch: Partial<Pick<WorkshopJob, 'status' | 'intake' | 'inspection' | 'workOrder' | 'qc'>>, now = new Date()): WorkshopJob | null {
   const job = store.jobs.find(item => item.id === id);
   if (!job) return null;
+  if (job.status === 'completed') return null;
+  if (job.workOrder?.status === 'Cancelled') return null;
+  const candidate = { ...job, ...structuredClone(patch) };
+  if (candidate.workOrder?.status === 'Cancelled' && (patch.status === 'qc' || patch.status === 'completed' || patch.qc)) return null;
+  if (patch.status === 'completed' && !qcPassed(candidate)) return null;
+  ensureOperations(job);
+  const previousStatus = operationalStatus(job);
   if (patch.status) job.status = patch.status;
   if (patch.intake) job.intake = structuredClone(patch.intake);
   if (patch.inspection) job.inspection = structuredClone(patch.inspection);
   if (patch.workOrder) job.workOrder = structuredClone(patch.workOrder);
   if (patch.qc) job.qc = structuredClone(patch.qc);
   job.updatedAt = now.toISOString();
+  recordTransition(job, previousStatus, operationalStatus(job), now);
   return job;
+}
+
+/** Reversible operational overlay; it never changes Phase 1 workflow data or job IDs. */
+export function setWaitingParts(store: WorkshopStore, id: string, waiting: boolean, now = new Date()): WorkshopJob | null {
+  const job = store.jobs.find(item => item.id === id);
+  if (!job || (waiting && !canSetWaitingParts(job)) || job.status === 'completed') return null;
+  ensureOperations(job);
+  if (job.operations!.waitingParts === waiting) return job;
+  const previousStatus = operationalStatus(job);
+  job.operations!.waitingParts = waiting;
+  job.updatedAt = now.toISOString();
+  const nextStatus = operationalStatus(job);
+  recordTransition(job, previousStatus, nextStatus, now, waiting ? 'Waiting for parts' : 'Waiting for parts cleared');
+  return job;
+}
+
+function ensureOperations(job: WorkshopJob): void {
+  if (!job.operations || !Array.isArray(job.operations.history)) {
+    const status = operationalStatus(job);
+    job.operations = { waitingParts: false, history: [{ status, at: job.updatedAt || job.createdAt, reason: 'Phase 1 job loaded' }] };
+  }
+}
+
+function recordTransition(job: WorkshopJob, previous: string, next: ReturnType<typeof operationalStatus>, now: Date, reason?: string): void {
+  if (previous === next) return;
+  job.operations!.history.push({ status: next, at: now.toISOString(), reason: reason ?? transitionReason(next) });
 }
 
 export function getJob(store: WorkshopStore, id: string | null | undefined): WorkshopJob | null {
@@ -83,5 +122,6 @@ function isJob(value: unknown): value is WorkshopJob {
   if (value.inspection != null && (!isRecord(value.inspection) || !Array.isArray(value.inspection.checklist) || !value.inspection.checklist.every(group => isRecord(group) && typeof group.category === 'string' && isRowArray(group.items)) || !isRowArray(value.inspection.recommendedJobs) || !isRowArray(value.inspection.parts) || !isRowArray(value.inspection.labor))) return false;
   if (value.workOrder != null && (!isRecord(value.workOrder) || !isRowArray(value.workOrder.approvedWork) || !isRowArray(value.workOrder.actualWork) || !isRowArray(value.workOrder.parts) || !isRowArray(value.workOrder.changes))) return false;
   if (value.qc != null && (!isRecord(value.qc) || !isRowArray(value.qc.checks) || !isRowArray(value.qc.unresolvedIssues) || !Array.isArray(value.qc.returnedItems))) return false;
+  if (value.operations != null && (!isRecord(value.operations) || typeof value.operations.waitingParts !== 'boolean' || !Array.isArray(value.operations.history) || !value.operations.history.every(entry => isRecord(entry) && typeof entry.status === 'string' && typeof entry.at === 'string'))) return false;
   return true;
 }

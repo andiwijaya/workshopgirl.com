@@ -1,5 +1,8 @@
 export type VehicleType = 'Motorcycle' | 'Car';
 export type JobStatus = 'intake' | 'inspection' | 'work-order' | 'qc' | 'completed';
+export type OperationalStatus = 'Intake' | 'Inspection' | 'Waiting Approval' | 'Work In Progress' | 'Waiting Parts' | 'QC' | 'Ready for Pickup' | 'Completed' | 'Cancelled';
+export interface OperationalTransition { status: OperationalStatus; at: string; reason?: string }
+export interface WorkshopOperationsState { waitingParts: boolean; history: OperationalTransition[] }
 
 export interface Customer { id: string; name: string; phone: string; address: string }
 export interface Vehicle {
@@ -45,6 +48,8 @@ export interface QualityCheck {
 export interface WorkshopJob {
   id: string; number: string; status: JobStatus; customerId: string; vehicleId: string;
   intake: Intake; inspection?: Inspection; workOrder?: WorkOrder; qc?: QualityCheck;
+  /** Optional, additive local metadata. Phase 1 records without it remain valid. */
+  operations?: WorkshopOperationsState;
   createdAt: string; updatedAt: string;
 }
 export interface WorkshopStore {

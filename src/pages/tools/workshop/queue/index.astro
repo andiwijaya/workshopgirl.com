@@ -1,0 +1,14 @@
+---
+import WorkshopLayout from '../../../../components/workshop/WorkshopLayout.astro';
+const title = 'Queue / Job Status | WorkshopGirl Workshop Operations';
+const description = 'Track existing WorkshopGirl jobs in one local queue, with derived workflow status, status history and direct links to the next job step.';
+const canonical = 'https://workshopgirl.com/tools/workshop/queue/';
+---
+<WorkshopLayout title={title} description={description} canonical={canonical} step="queue" heading="Queue / Job Status." intro="The operational dashboard for Workshop Jobs already saved in this browser. Queue status follows the same job record used by intake, inspection, work order and QC.">
+  <section class="queue-dashboard" aria-label="Workshop job queue">
+    <div class="queue-summary" id="queue-summary" aria-label="Job counts by status"></div>
+    <div class="queue-toolbar" id="queue-toolbar"></div>
+    <p class="queue-feedback" id="queue-feedback" role="status" aria-live="polite" hidden></p>
+    <section class="queue-list" id="queue-list" aria-label="Workshop jobs"></section>
+  </section>
+</WorkshopLayout>
