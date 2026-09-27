@@ -11,6 +11,7 @@ export function GET() {
     'https://workshopgirl.com/tools/workshop/work-order/',
     'https://workshopgirl.com/tools/workshop/qc-handover/',
     'https://workshopgirl.com/tools/workshop/queue/',
+    'https://workshopgirl.com/tools/workshop/parts-inventory/',
     'https://workshopgirl.com/tutorials/',
     'https://workshopgirl.com/diary/',
     'https://workshopgirl.com/diary/the-first-bolt-i-couldnt-remove/',

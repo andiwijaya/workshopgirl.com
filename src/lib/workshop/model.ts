@@ -27,7 +27,7 @@ export interface Inspection {
 }
 export type WorkStatus = 'Not started' | 'In progress' | 'Complete' | 'Paused' | 'Cancelled';
 export interface WorkRow { id: string; name: string; detail: string; status: WorkStatus; mechanic: string }
-export interface WorkPart { id: string; name: string; partNumber: string; quantity: number; unit: string; notes: string }
+export interface WorkPart { id: string; name: string; partNumber: string; quantity: number; unit: string; notes: string; partId?: string }
 export interface WorkChange { id: string; work: string; reason: string; approval: 'Awaiting approval' | 'Approved' | 'Deferred' | 'Declined'; notes: string }
 export interface WorkOrder {
   number: string; date: string; status: WorkStatus; mechanic: string; approvedWork: WorkRow[];
@@ -54,4 +54,17 @@ export interface WorkshopJob {
 }
 export interface WorkshopStore {
   version: 1; customers: Customer[]; vehicles: Vehicle[]; jobs: WorkshopJob[];
+  /** Additive local inventory ledger. Missing arrays are initialized on load. */
+  parts: WorkshopPart[]; partMovements: PartMovement[];
+}
+
+export interface WorkshopPart {
+  id: string; sku: string; name: string; category: string; brand: string; unit: string;
+  location: string; supplier: string; minimumStock: number; barcode?: string;
+  compatibility: string; active: boolean; createdAt: string; updatedAt: string;
+}
+export type PartMovementType = 'OPENING' | 'STOCK_IN' | 'ISSUE_TO_JOB' | 'RETURN_FROM_JOB' | 'ADJUSTMENT_IN' | 'ADJUSTMENT_OUT';
+export interface PartMovement {
+  id: string; partId: string; type: PartMovementType; quantity: number; at: string;
+  unitCost?: number; supplier?: string; reference?: string; note?: string; jobId?: string;
 }

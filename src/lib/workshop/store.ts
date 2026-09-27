@@ -5,7 +5,7 @@ export const STORAGE_KEY = 'workshopgirl.workshop.operations.v1';
 export const STORE_VERSION = 1 as const;
 export interface StorageLike { getItem(key: string): string | null; setItem(key: string, value: string): void }
 export interface StoreLoad { store: WorkshopStore; recovered: boolean; message: string }
-export const emptyStore = (): WorkshopStore => ({ version: STORE_VERSION, customers: [], vehicles: [], jobs: [] });
+export const emptyStore = (): WorkshopStore => ({ version: STORE_VERSION, customers: [], vehicles: [], jobs: [], parts: [], partMovements: [] });
 
 export function makeId(prefix: string): string {
   const uuid = globalThis.crypto?.randomUUID?.();
@@ -22,18 +22,23 @@ export function loadStore(storage: StorageLike): StoreLoad {
     if (!isRecord(value) || value.version !== STORE_VERSION || !Array.isArray(value.customers) || !Array.isArray(value.vehicles) || !Array.isArray(value.jobs)) {
       return { store: emptyStore(), recovered: true, message: 'Saved workshop data has an unsupported version or shape. It was left untouched; new records can still be created.' };
     }
+    const rawParts = value.parts === undefined ? [] : value.parts;
+    const rawMovements = value.partMovements === undefined ? [] : value.partMovements;
+    if (!Array.isArray(rawParts) || !rawParts.every(isPart) || !Array.isArray(rawMovements) || !rawMovements.every(isPartMovement)) {
+      return { store: emptyStore(), recovered: true, message: 'Saved workshop inventory has an unsupported shape. The original browser data was left untouched.' };
+    }
     const customers = value.customers.filter(isCustomer);
     const vehicles = value.vehicles.filter(isVehicle);
     const customerIds = new Set(customers.map(x => x.id));
     const vehicleIds = new Set(vehicles.map(x => x.id));
     const jobs = value.jobs.filter((x): x is WorkshopJob => isJob(x) && customerIds.has(x.customerId) && vehicleIds.has(x.vehicleId));
     if (customers.length !== value.customers.length || vehicles.length !== value.vehicles.length || jobs.length !== value.jobs.length) {
-      return { store: { version: STORE_VERSION, customers, vehicles, jobs }, recovered: true, message: 'Some invalid saved records were skipped. The original browser data was not overwritten until you save a change.' };
+      return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements }, recovered: true, message: 'Some invalid saved records were skipped. The original browser data was not overwritten until you save a change.' };
     }
     // Phase 1 records predate Queue metadata. Add an in-memory starting point and
     // persist it only when the user next saves a normal Workshop Job change.
     for (const job of jobs) ensureOperations(job);
-    return { store: { version: STORE_VERSION, customers, vehicles, jobs }, recovered: false, message: '' };
+    return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements }, recovered: false, message: '' };
   } catch {
     return { store: emptyStore(), recovered: true, message: 'Saved workshop data could not be read. The original browser data was left untouched.' };
   }
@@ -116,6 +121,8 @@ function isRecord(value: unknown): value is Record<string, unknown> { return !!v
 function isCustomer(value: unknown): value is Customer { return isRecord(value) && typeof value.id === 'string' && typeof value.name === 'string' && typeof value.phone === 'string' && typeof value.address === 'string'; }
 function isVehicle(value: unknown): value is Vehicle { return isRecord(value) && typeof value.id === 'string' && (value.type === 'Car' || value.type === 'Motorcycle') && typeof value.plate === 'string' && typeof value.make === 'string' && typeof value.model === 'string' && (value.year === null || typeof value.year === 'number') && typeof value.color === 'string' && (value.odometer === null || typeof value.odometer === 'number'); }
 function isRowArray(value: unknown): value is Record<string, unknown>[] { return Array.isArray(value) && value.every(isRecord); }
+function isPart(value: unknown): boolean { return isRecord(value) && ['id','sku','name','category','brand','unit','location','supplier','compatibility','createdAt','updatedAt'].every(k => typeof value[k] === 'string') && typeof value.active === 'boolean' && typeof value.minimumStock === 'number' && Number.isFinite(value.minimumStock) && value.minimumStock >= 0 && (value.barcode === undefined || typeof value.barcode === 'string'); }
+function isPartMovement(value: unknown): boolean { return isRecord(value) && typeof value.id === 'string' && typeof value.partId === 'string' && ['OPENING','STOCK_IN','ISSUE_TO_JOB','RETURN_FROM_JOB','ADJUSTMENT_IN','ADJUSTMENT_OUT'].includes(String(value.type)) && typeof value.quantity === 'number' && Number.isFinite(value.quantity) && value.quantity > 0 && typeof value.at === 'string' && ['unitCost','supplier','reference','note','jobId'].every(k => value[k] === undefined || (k === 'unitCost' ? typeof value[k] === 'number' && Number.isFinite(value[k]) && (value[k] as number) >= 0 : typeof value[k] === 'string')); }
 function isIntake(value: unknown): boolean { return isRecord(value) && typeof value.number === 'string' && typeof value.complaint === 'string' && Array.isArray(value.accessories) && value.accessories.every(x => typeof x === 'string') && typeof value.conditionNotes === 'string' && typeof value.date === 'string' && typeof value.arrivalTime === 'string'; }
 function isJob(value: unknown): value is WorkshopJob {
   if (!isRecord(value) || typeof value.id !== 'string' || typeof value.customerId !== 'string' || typeof value.vehicleId !== 'string' || typeof value.number !== 'string' || !['intake','inspection','work-order','qc','completed'].includes(String(value.status)) || !isIntake(value.intake) || typeof value.createdAt !== 'string' || typeof value.updatedAt !== 'string') return false;
