@@ -6,7 +6,7 @@ test('Procurement records supplier, Need, PO, partial receipts and stock exactly
   const errors:string[]=[];const requests:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
   await page.addInitScript(()=>{window.print=()=>{};});
   await page.goto('/tools/workshop/parts-inventory/');
-  await page.locator('#part-form [name="name"]').fill('E2E Oil Filter');await page.locator('#part-form [name="sku"]').fill('E2E-OF');await page.locator('#part-form [name="unit"]').fill('each');await page.getByLabel('Opening balance').fill('0');await page.getByRole('button',{name:'Save part'}).click();
+  await page.locator('#part-form [name="name"]').fill('Synthetic Workshop Filter with a very long human readable name');await page.locator('#part-form [name="sku"]').fill('E2E-OF');await page.locator('#part-form [name="unit"]').fill('each');await page.getByLabel('Opening balance').fill('0');await page.getByRole('button',{name:'Save part'}).click();
   const partId=await page.evaluate(()=>JSON.parse(localStorage.getItem('workshopgirl.workshop.operations.v1')!).parts[0].id);
   await page.goto('/tools/workshop/procurement/');await expect(page.getByRole('heading',{name:'Workshop Procurement.'})).toBeVisible();await expect(page.locator('#main')).toHaveAttribute('data-workshop-step','procurement');
   for(const width of [320,375,390,768,1440]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`procurement overflow at ${width}px`).toBeTruthy();}
