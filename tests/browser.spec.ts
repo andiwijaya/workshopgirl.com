@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { wav, upload, expectTone, syntheticMicrophone, audioState } from './audio-fixtures';
 
 test.beforeEach(async ({ page }, info) => {
-  if (/^(Site navigation|Responsive|Missing audio)/.test(info.title)) return;
+  if (/^(Site navigation|Homepage promotes|Responsive|Missing audio)/.test(info.title)) return;
   await page.goto('/tools/sound-analyzer/');
   test.skip(!await page.evaluate(() => !!window.AudioContext), 'This browser build lacks Web Audio (Windows Playwright WebKit). Audio tests require a Web Audio-capable build.');
 });
@@ -158,6 +158,57 @@ test('Site navigation, mobile menu, articles and sitemap remain available', asyn
   for (const match of xml.matchAll(/<loc>https:\/\/workshopgirl.com([^<]*)<\/loc>/g)) {
     const response = await request.get(match[1]); expect(response.ok(), match[1]).toBe(true);
   }
+});
+
+test('Homepage promotes the two tool families with working anchors, keyboard focus and responsive cards', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('h1')).toHaveCount(1);
+  const promotion = page.locator('#tool-promotion');
+  await expect(promotion.getByRole('heading', { level: 2, name: 'The digital workbench.' })).toBeVisible();
+  const cards = promotion.locator('.tool-promo-card');
+  await expect(cards).toHaveCount(2);
+  await expect(cards.nth(0).getByRole('heading', { level: 3, name: 'Analyze sound, right here.' })).toBeVisible();
+  await expect(cards.nth(0)).toContainText('Sound Analyzer · Engine Analyzer · Speaker Analyzer');
+  await expect(cards.nth(1).getByRole('heading', { level: 3, name: 'Keep workshop jobs moving.' })).toBeVisible();
+  await expect(cards.nth(1)).toContainText('Intake · Work Orders · Parts · Billing · Procurement');
+  await expect(cards.getByRole('link')).toHaveCount(2);
+  const diagnosticsCta = cards.getByRole('link', { name: 'Explore Diagnostics' });
+  const operationsCta = cards.getByRole('link', { name: 'Explore Workshop Operations' });
+  await expect(diagnosticsCta).toHaveAttribute('href', '/tools/#diagnostics');
+  await expect(operationsCta).toHaveAttribute('href', '/tools/#workshop-operations');
+  await expect(promotion.locator('a[href^="/tools/workshop/"]')).toHaveCount(0);
+  expect(await page.locator('#main, main').count()).toBe(1);
+
+  await page.keyboard.press('Tab');
+  await operationsCta.focus();
+  await expect(operationsCta).toBeFocused();
+  expect(await operationsCta.evaluate(node => getComputedStyle(node).outlineStyle)).toBe('solid');
+
+  for (const width of [320, 375, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await promotion.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `homepage overflow at ${width}px`).toBe(true);
+    await expect(diagnosticsCta).toBeVisible();
+    await expect(operationsCta).toBeVisible();
+    const [first, second] = await Promise.all([cards.nth(0).evaluate(node => node.getBoundingClientRect().toJSON()), cards.nth(1).evaluate(node => node.getBoundingClientRect().toJSON())]);
+    expect(first).not.toBeNull();
+    expect(second).not.toBeNull();
+    expect(second!.right).toBeLessThanOrEqual(width);
+    if (width <= 760) expect(second!.y).toBeGreaterThan(first!.y);
+    else {
+      expect(Math.abs(second!.y - first!.y)).toBeLessThan(2);
+      expect(second!.x).toBeGreaterThan(first!.x);
+    }
+  }
+
+  await page.goto('/tools/#diagnostics');
+  await expect(page).toHaveURL(/\/tools\/#diagnostics$/);
+  await expect(page.locator('#diagnostics')).toBeInViewport();
+  await expect(page.locator('#diagnostics').getByRole('heading', { name: 'Diagnostics' })).toBeVisible();
+  await page.goto('/tools/#workshop-operations');
+  await expect(page).toHaveURL(/\/tools\/#workshop-operations$/);
+  await expect(page.locator('#workshop-operations')).toBeInViewport();
+  await expect(page.locator('#workshop-operations').getByRole('heading', { name: 'Workshop Operations' })).toBeVisible();
 });
 
 test('Responsive empty state, keyboard controls and reduced motion', async ({ page, browserName }, testInfo) => {
