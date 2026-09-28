@@ -1,0 +1,32 @@
+import { test, expect } from '@playwright/test';
+
+const storageKey='workshopgirl.workshop.operations.v1';
+
+test('Procurement records supplier, Need, PO, partial receipts and stock exactly once',async({page})=>{
+  const errors:string[]=[];const requests:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push(r.url()));
+  await page.addInitScript(()=>{window.print=()=>{};});
+  await page.goto('/tools/workshop/parts-inventory/');
+  await page.locator('#part-form [name="name"]').fill('E2E Oil Filter');await page.locator('#part-form [name="sku"]').fill('E2E-OF');await page.locator('#part-form [name="unit"]').fill('each');await page.getByLabel('Opening balance').fill('0');await page.getByRole('button',{name:'Save part'}).click();
+  const partId=await page.evaluate(()=>JSON.parse(localStorage.getItem('workshopgirl.workshop.operations.v1')!).parts[0].id);
+  await page.goto('/tools/workshop/procurement/');await expect(page.getByRole('heading',{name:'Workshop Procurement.'})).toBeVisible();await expect(page.locator('#main')).toHaveAttribute('data-workshop-step','procurement');
+  for(const width of [320,375,390,768,1440]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`procurement overflow at ${width}px`).toBeTruthy();}
+  await page.locator('#supplier-form [name="name"]').fill('E2E Supplier');await page.locator('#supplier-form [name="phone"]').fill('0812345678');await page.getByRole('button',{name:'Save Supplier'}).click();await expect(page.locator('.proc-card').filter({hasText:'E2E Supplier'})).toBeVisible();
+  await page.locator('#need-form [name="partId"]').selectOption(partId);await page.locator('#need-form [name="quantity"]').fill('2');await page.locator('#need-form [name="reason"]').fill('Scheduled replenishment');await page.getByRole('button',{name:'Create Purchase Need'}).click();await expect(page.locator('section[aria-labelledby="proc-needs"]')).toContainText('requested 2 each');
+  const needId=await page.locator('[data-select-need]').getAttribute('data-select-need');expect(needId).toBeTruthy();await page.locator('[data-select-need]').check();await page.getByRole('button',{name:'Create Draft PO from selected Needs'}).click();const draft=page.locator('.proc-po').filter({hasText:'Draft Purchase Order'});await expect(draft).toBeVisible();
+  await draft.locator('[name="supplierId"]').selectOption({label:'E2E Supplier'});await draft.locator('input[name^="cost-"]').fill('10000');await draft.getByRole('button',{name:'Save Draft PO'}).click();
+  const draftCard=page.locator('.proc-po').filter({hasText:'Draft Purchase Order'});await draftCard.getByRole('button',{name:'Issue PO'}).click();const issued=page.locator('.proc-po').filter({hasText:/PO-\d{8}-\d{4}/});await expect(issued).toContainText('Issued');
+  const poNumber=(await issued.locator('h3').first().innerText()).match(/PO-\d{8}-\d{4}/)?.[0];expect(poNumber).toMatch(/^PO-\d{8}-\d{4}$/);
+  await issued.getByRole('button',{name:'Print / Save as PDF'}).click();await page.emulateMedia({media:'print'});await expect(page.locator('#procurement-print')).toBeVisible();await expect(page.locator('#procurement-print')).toContainText('E2E Supplier');await expect(page.locator('#procurement-print')).toContainText('REPLENISHMENT: 2 each');await page.emulateMedia({media:'screen'});
+  const lineId=await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('workshopgirl.workshop.operations.v1')!);return s.purchaseOrders[0].lines[0].lineId;});
+  await page.goto('/tools/workshop/parts-inventory/');await expect(page.locator('#parts-list')).toContainText('2 each on order');await expect(page.locator('#parts-list')).toContainText('0 each on hand');
+  await page.goto('/tools/workshop/procurement/');let receive=page.locator(`form[data-receive-po]`);await expect(receive).toBeVisible();await receive.locator(`[name="delivered-${lineId}"]`).fill('1');await receive.locator(`[name="accepted-${lineId}"]`).fill('1');await receive.locator(`[name="recvalloc-${lineId}-${needId}"]`).fill('1');await receive.getByRole('button',{name:'Save Goods Receipt + Stock In'}).click();await expect(page.locator('section[aria-labelledby="proc-receipts"]')).toContainText('GR-');await expect(page.locator('section[aria-labelledby="proc-needs"]')).toContainText('received 1');
+  await page.goto('/tools/workshop/parts-inventory/');await expect(page.locator('#parts-list')).toContainText('1 each on hand');await expect(page.locator('#parts-list')).toContainText('1 each on order');
+  await page.goto('/tools/workshop/procurement/');receive=page.locator('form[data-receive-po]');await receive.locator(`[name="delivered-${lineId}"]`).fill('1');await receive.locator(`[name="accepted-${lineId}"]`).fill('1');await receive.locator(`[name="recvalloc-${lineId}-${needId}"]`).fill('1');await receive.getByRole('button',{name:'Save Goods Receipt + Stock In'}).click();await expect(page.locator('section[aria-labelledby="proc-needs"]')).toContainText('Fulfilled');await expect(page.locator('section[aria-labelledby="proc-pos"]')).toContainText('Closed');
+  const store=await page.evaluate(key=>JSON.parse(localStorage.getItem(key)!),storageKey);expect(store.suppliers).toHaveLength(1);expect(store.purchaseNeeds).toHaveLength(1);expect(store.purchaseOrders).toHaveLength(1);expect(store.goodsReceipts).toHaveLength(2);expect(store.partMovements.filter((m:{sourceType:string})=>m.sourceType==='PURCHASE_RECEIPT')).toHaveLength(2);expect(store.invoices).toHaveLength(0);expect(store.payments).toHaveLength(0);
+  for(const url of requests){expect(url).not.toContain('supplier=');expect(url).not.toContain('receipt=');}expect(new URL(page.url()).search).toBe('');expect(errors).toEqual([]);
+});
+
+test('Procurement duplicate-submit prevention and storage failure rollback',async({page})=>{
+  await page.addInitScript(key=>{Object.defineProperty(Storage.prototype,'setItem',{configurable:true,value:function(k:string,v:string){void v;if(k===key)throw new Error('blocked storage');}});},storageKey);
+  await page.goto('/tools/workshop/procurement/');await page.locator('#supplier-form [name="name"]').fill('Never Persisted');await page.getByRole('button',{name:'Save Supplier'}).click();await expect(page.locator('#procurement-feedback')).toContainText('not saved');await expect(page.locator('#proc-suppliers')).not.toContainText('Never Persisted');
+});

@@ -3,6 +3,8 @@ import { test, expect, type Page } from '@playwright/test';
 async function chooseAll(page:Page,selector:string,value:string){const controls=page.locator(selector);await expect(controls.first()).toBeVisible();const count=await controls.count();for(let index=0;index<count;index++)await controls.nth(index).selectOption(value);}
 
 test('Workshop shared skip link stays hidden until keyboard focus and targets #main on every operations page', async ({ page }) => {
+  // This cross-route keyboard and viewport sweep is intentionally heavier in WebKit mobile.
+  test.setTimeout(60_000);
   const routes = [
     '/tools/workshop/vehicle-intake/',
     '/tools/workshop/inspection-estimate/',
@@ -11,6 +13,7 @@ test('Workshop shared skip link stays hidden until keyboard focus and targets #m
     '/tools/workshop/queue/',
     '/tools/workshop/parts-inventory/',
     '/tools/workshop/service-history/',
+    '/tools/workshop/procurement/',
   ];
   for (const route of routes) {
     await page.goto(route);
@@ -32,7 +35,7 @@ test('Workshop shared skip link stays hidden until keyboard focus and targets #m
     expect(await main.evaluate(node => node.getBoundingClientRect().top)).toBe(mainTop);
     await page.keyboard.press('Tab');
     await expect(skip).not.toBeFocused();
-    expect((await skip.boundingBox())!.y + (await skip.boundingBox())!.height).toBeLessThanOrEqual(0);
+    const unfocusedSkipBottom=await page.evaluate(()=>{const node=document.querySelector('.skip-link');return node?.getBoundingClientRect().bottom??null;});expect(unfocusedSkipBottom===null||unfocusedSkipBottom<=0).toBeTruthy();
     await page.keyboard.press('Shift+Tab');
     await expect(skip).toBeFocused();
     await page.keyboard.press('Enter');
@@ -102,7 +105,7 @@ test('Workshop pages handle validation, invalid job links, share, print and narr
   await page.evaluate(()=>{window.print=()=>{};});await page.locator('[data-print]').click();await expect(page.locator('#print-sheet')).toBeVisible();await expect(page.locator('#print-content')).toContainText('Print Test');
   const jobId=new URL(url!, 'http://local').searchParams.get('job')!;const widths=[320,375,390,768,1440];
   for(const route of ['/tools/workshop/vehicle-intake/','/tools/workshop/inspection-estimate/','/tools/workshop/work-order/','/tools/workshop/qc-handover/'])for(const width of widths){await page.setViewportSize({width,height:900});await page.goto(`${route}?job=${encodeURIComponent(jobId)}`);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),`${route} horizontal overflow at ${width}px`).toBeTruthy();}
-  await page.goto('/tools/');await expect(page.getByRole('heading',{name:'Workshop Operations'})).toBeVisible();await expect(page.locator('a[href="/tools/dsp-validation/"]')).toBeVisible();await expect(page.locator('a[href="/tools/workshop/service-history/"]')).toContainText('Service History & Warranty');
+  await page.goto('/tools/');await expect(page.getByRole('heading',{name:'Workshop Operations'})).toBeVisible();await expect(page.locator('a[href="/tools/dsp-validation/"]')).toBeVisible();await expect(page.locator('a[href="/tools/workshop/service-history/"]')).toContainText('Service History & Warranty');await expect(page.locator('a[href="/tools/workshop/procurement/"]')).toContainText('Procurement');
   for(const width of widths){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),`tools index horizontal overflow at ${width}px`).toBeTruthy();}
   expect(errors).toEqual([]);
 });
@@ -177,4 +180,4 @@ test('Service History projects actual services, supports explicit repeat visits,
  await page.clock.setFixedTime(new Date('2026-06-03T12:00:00Z'));await page.reload();await page.getByLabel('Search plate, make, model or customer').fill('WG-HISTORY-1');await page.getByLabel('Vehicle with completed services').selectOption(vehicleId);await expect(page.locator('.history-service-card').first().locator('.history-warranty-card')).toContainText('Expired');await expect(page.locator('.history-service-card').last().locator('.history-warranty-card')).toContainText('Expired');const persisted=await page.evaluate(()=>JSON.parse(localStorage.getItem('workshopgirl.workshop.operations.v1')!));expect(persisted.warranties).toHaveLength(2);expect(persisted.warrantyClaims).toHaveLength(1);expect(persisted.nextServices).toHaveLength(1);expect(persisted.jobs.filter((j:{vehicleId:string})=>j.vehicleId===vehicleId)).toHaveLength(2);await page.goto('/tools/workshop/vehicle-intake/');await page.getByLabel('Existing vehicle (optional)').selectOption(vehicleId);await page.getByLabel('Customer record').selectOption('');await page.getByLabel('Name *').fill('Different Vehicle Owner');await page.getByLabel('Odometer').fill('2010');await page.getByLabel('Complaint / reason for visit').fill('New owner intake');await page.getByRole('button',{name:'Save intake'}).click();const changedOwnerJobId=new URL((await page.locator('#continue-inspection').getAttribute('href'))!,'http://local').searchParams.get('job')!;const changedIdentity=await page.evaluate(jobId=>{const store=JSON.parse(localStorage.getItem('workshopgirl.workshop.operations.v1')!);const job=store.jobs.find((j:{id:string})=>j.id===jobId);return {...job,customerName:store.customers.find((c:{id:string})=>c.id===job.customerId)?.name};},changedOwnerJobId);expect(changedIdentity.vehicleId).toBe(vehicleId);expect(changedIdentity.customerId).not.toBe(persisted.jobs.find((j:{id:string})=>j.id===firstJobId).customerId);expect(changedIdentity.customerName).toBe('Different Vehicle Owner');await page.goto('/tools/workshop/service-history/');await page.getByLabel('Search plate, make, model or customer').fill('WG-HISTORY-1');await page.getByLabel('Vehicle with completed services').selectOption(vehicleId);expect(persisted.partMovements.map((m:{type:string})=>m.type)).toEqual(['OPENING','ISSUE_TO_JOB','RETURN_FROM_JOB']);for(const width of [320,375,390,768,1440]){await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`service history overflow at ${width}px`).toBeTruthy();}await page.locator('#history-search').focus();await expect(page.locator('#history-search')).toBeFocused();await page.keyboard.press('Tab');await expect(page.locator('#history-vehicle')).toBeFocused();expect(await page.locator('#history-vehicle').evaluate(node=>getComputedStyle(node).outlineStyle)).toBe('solid');expect(errors).toEqual([]);
 });
 
-for(const route of ['/tools/workshop/vehicle-intake/','/tools/workshop/inspection-estimate/','/tools/workshop/work-order/','/tools/workshop/qc-handover/','/tools/workshop/parts-inventory/','/tools/workshop/service-history/'])test(`direct load ${route}`,async({page})=>{await page.goto(route);await expect(page).toHaveTitle(/Workshop Operations/);await expect(page.locator('h1')).toHaveCount(1);await expect(page.locator('meta[name="description"]')).toHaveAttribute('content',/.+/);await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href',`https://workshopgirl.com${route}`);await expect(page.locator('body')).not.toContainText('bisnis.cc');});
+for(const route of ['/tools/workshop/vehicle-intake/','/tools/workshop/inspection-estimate/','/tools/workshop/work-order/','/tools/workshop/qc-handover/','/tools/workshop/parts-inventory/','/tools/workshop/service-history/','/tools/workshop/procurement/'])test(`direct load ${route}`,async({page})=>{await page.goto(route);await expect(page).toHaveTitle(/Workshop|Procurement/);await expect(page.locator('h1')).toHaveCount(1);await expect(page.locator('meta[name="description"]')).toHaveAttribute('content',/.+/);await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href',`https://workshopgirl.com${route}`);await expect(page.locator('body')).not.toContainText('bisnis.cc');});

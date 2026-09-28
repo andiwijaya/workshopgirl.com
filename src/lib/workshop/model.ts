@@ -64,6 +64,9 @@ export interface WorkshopStore {
   warranties: WorkshopWarranty[]; warrantyClaims: WarrantyClaim[]; nextServices: NextService[];
   /** Additive local-first billing records. Missing arrays are initialized on load. */
   invoices: WorkshopInvoice[]; payments: WorkshopPayment[];
+  /** Additive local-first procurement. Older stores are loaded with empty collections. */
+  suppliers: WorkshopSupplier[]; purchaseNeeds: PurchaseNeed[];
+  purchaseOrders: PurchaseOrder[]; goodsReceipts: GoodsReceipt[];
 }
 
 export type WorkshopInvoiceStatus = 'Draft' | 'Issued' | 'Void';
@@ -111,11 +114,27 @@ export interface NextService {
 export interface WorkshopPart {
   id: string; sku: string; name: string; category: string; brand: string; unit: string;
   location: string; supplier: string; minimumStock: number; barcode?: string;
-  compatibility: string; active: boolean; createdAt: string; updatedAt: string;
+  compatibility: string; active: boolean; defaultSupplierId?: string; createdAt: string; updatedAt: string;
 }
 export type PartMovementType = 'OPENING' | 'STOCK_IN' | 'ISSUE_TO_JOB' | 'RETURN_FROM_JOB' | 'ADJUSTMENT_IN' | 'ADJUSTMENT_OUT';
+export type PartMovementSourceType = 'PURCHASE_RECEIPT';
 export interface PartMovement {
   id: string; partId: string; type: PartMovementType; quantity: number; at: string;
   partNameSnapshot?: string; partSkuSnapshot?: string; partUnitSnapshot?: string;
   unitCost?: number; supplier?: string; reference?: string; note?: string; jobId?: string;
+  sourceType?: PartMovementSourceType; sourceId?: string; poId?: string; poNumber?: string;
+  receiptId?: string; receiptNumber?: string; receiptLineId?: string;
 }
+
+export type PurchaseNeedSource = 'JOB_SHORTAGE' | 'REPLENISHMENT' | 'MANUAL';
+export type PurchaseNeedState = 'Open' | 'Ordered' | 'Partially Received' | 'Fulfilled' | 'Cancelled';
+export interface WorkshopSupplier { supplierId: string; name: string; phone?: string; email?: string; address?: string; contactPerson?: string; notes?: string; active: boolean; createdAt: string; updatedAt: string }
+export interface PurchaseNeed { needId: string; source: PurchaseNeedSource; partId: string; partNameSnapshot: string; skuSnapshot: string; unitSnapshot: string; requestedQuantity: number; jobId?: string; jobRequestedQuantitySnapshot?: number; requiredBy?: string; reason?: string; createdAt: string; cancelledAt?: string; cancelReason?: string }
+export interface PurchaseNeedAllocation { needId: string; quantity: number }
+export type PurchaseOrderStatus = 'Draft' | 'Issued' | 'Closed' | 'Cancelled';
+export interface PurchaseOrderLine { lineId: string; partId: string; partNameSnapshot: string; skuSnapshot: string; unitSnapshot: string; orderedQuantity: number; agreedUnitCost: number; sourceAllocations: PurchaseNeedAllocation[] }
+export interface SupplierSnapshot { name: string; phone?: string; email?: string; address?: string; contactPerson?: string }
+export interface PurchaseOrder { poId: string; poNumber?: string; status: PurchaseOrderStatus; supplierId?: string; supplierSnapshot?: SupplierSnapshot; orderDate: string; expectedDate?: string; lines: PurchaseOrderLine[]; notes?: string; createdAt: string; updatedAt: string; issuedAt?: string; closedAt?: string; cancelledAt?: string; cancelReason?: string; closeReason?: string }
+export interface AcceptedNeedAllocation { needId: string; quantity: number }
+export interface GoodsReceiptLine { receiptLineId: string; poLineId: string; partId: string; partNameSnapshot: string; skuSnapshot: string; unitSnapshot: string; deliveredQuantity: number; acceptedQuantity: number; rejectedQuantity: number; actualUnitCost?: number; rejectionNote?: string; acceptedNeedAllocations: AcceptedNeedAllocation[]; stockMovementId?: string }
+export interface GoodsReceipt { receiptId: string; receiptNumber: string; poId: string; receivedAt: string; supplierDeliveryNote?: string; supplierInvoiceReference?: string; receivedBy?: string; notes?: string; lines: GoodsReceiptLine[]; createdAt: string }
