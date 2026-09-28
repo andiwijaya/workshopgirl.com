@@ -6,8 +6,8 @@ export default defineConfig({
   projects: [
     { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'] } },
     { name: 'chromium-mobile', use: { ...devices['Pixel 7'] } },
-    { name: 'webkit-desktop', use: { ...devices['Desktop Safari'] } },
-    { name: 'webkit-mobile', use: { ...devices['iPhone 13'] } },
+    { name: 'webkit-desktop', workers: 1, use: { ...devices['Desktop Safari'] } },
+    { name: 'webkit-mobile', workers: 1, use: { ...devices['iPhone 13'] } },
   ],
   webServer: { command: 'npm exec -- astro preview --host 127.0.0.1 --port 4379 --ignore-lock', url: 'http://127.0.0.1:4379', reuseExistingServer: false },
 });

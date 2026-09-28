@@ -5,7 +5,7 @@ export const STORAGE_KEY = 'workshopgirl.workshop.operations.v1';
 export const STORE_VERSION = 1 as const;
 export interface StorageLike { getItem(key: string): string | null; setItem(key: string, value: string): void }
 export interface StoreLoad { store: WorkshopStore; recovered: boolean; message: string }
-export const emptyStore = (): WorkshopStore => ({ version: STORE_VERSION, customers: [], vehicles: [], jobs: [], parts: [], partMovements: [], warranties: [], warrantyClaims: [], nextServices: [] });
+export const emptyStore = (): WorkshopStore => ({ version: STORE_VERSION, customers: [], vehicles: [], jobs: [], parts: [], partMovements: [], warranties: [], warrantyClaims: [], nextServices: [], invoices: [], payments: [] });
 
 export function makeId(prefix: string): string {
   const uuid = globalThis.crypto?.randomUUID?.();
@@ -25,9 +25,11 @@ export function loadStore(storage: StorageLike): StoreLoad {
     const rawParts = value.parts === undefined ? [] : value.parts;
     const rawMovements = value.partMovements === undefined ? [] : value.partMovements;
     const rawWarranties=value.warranties===undefined?[]:value.warranties,rawClaims=value.warrantyClaims===undefined?[]:value.warrantyClaims,rawNext=value.nextServices===undefined?[]:value.nextServices;
+    const rawInvoices=value.invoices===undefined?[]:value.invoices,rawPayments=value.payments===undefined?[]:value.payments;
     if (!Array.isArray(rawParts) || !rawParts.every(isPart) || !Array.isArray(rawMovements) || !rawMovements.every(isPartMovement)
-      || !Array.isArray(rawWarranties)||!rawWarranties.every(isWarranty)||!Array.isArray(rawClaims)||!rawClaims.every(isWarrantyClaim)||!Array.isArray(rawNext)||!rawNext.every(isNextService)) {
-      return { store: emptyStore(), recovered: true, message: 'Saved workshop inventory or service follow-up data has an unsupported shape. The original browser data was left untouched.' };
+      || !Array.isArray(rawWarranties)||!rawWarranties.every(isWarranty)||!Array.isArray(rawClaims)||!rawClaims.every(isWarrantyClaim)||!Array.isArray(rawNext)||!rawNext.every(isNextService)
+      || !Array.isArray(rawInvoices)||!rawInvoices.every(isInvoice)||!Array.isArray(rawPayments)||!rawPayments.every(isPayment)) {
+      return { store: emptyStore(), recovered: true, message: 'Saved workshop inventory, service follow-up, or billing data has an unsupported shape. The original browser data was left untouched.' };
     }
     const customers = value.customers.filter(isCustomer);
     const vehicles = value.vehicles.filter(isVehicle);
@@ -35,12 +37,12 @@ export function loadStore(storage: StorageLike): StoreLoad {
     const vehicleIds = new Set(vehicles.map(x => x.id));
     const jobs = value.jobs.filter((x): x is WorkshopJob => isJob(x) && customerIds.has(x.customerId) && vehicleIds.has(x.vehicleId));
     if (customers.length !== value.customers.length || vehicles.length !== value.vehicles.length || jobs.length !== value.jobs.length) {
-      return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements, warranties:rawWarranties,warrantyClaims:rawClaims,nextServices:rawNext }, recovered: true, message: 'Some invalid saved records were skipped. The original browser data was not overwritten until you save a change.' };
+      return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements, warranties:rawWarranties,warrantyClaims:rawClaims,nextServices:rawNext,invoices:rawInvoices,payments:rawPayments }, recovered: true, message: 'Some invalid saved records were skipped. The original browser data was not overwritten until you save a change.' };
     }
     // Phase 1 records predate Queue metadata. Add an in-memory starting point and
     // persist it only when the user next saves a normal Workshop Job change.
     for (const job of jobs) ensureOperations(job);
-    return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements, warranties:rawWarranties,warrantyClaims:rawClaims,nextServices:rawNext }, recovered: false, message: '' };
+    return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements, warranties:rawWarranties,warrantyClaims:rawClaims,nextServices:rawNext,invoices:rawInvoices,payments:rawPayments }, recovered: false, message: '' };
   } catch {
     return { store: emptyStore(), recovered: true, message: 'Saved workshop data could not be read. The original browser data was left untouched.' };
   }
@@ -156,6 +158,19 @@ function isPartMovement(value: unknown): boolean { return isRecord(value) && typ
 function isWarranty(value:unknown):value is WorkshopWarranty{return isRecord(value)&&['id','jobId','vehicleId','terms','createdAt','updatedAt'].every(k=>typeof value[k]==='string')&&isISODate(value.startDate)&&['Labor','Parts','Labor and parts'].includes(String(value.coverageType))&&Array.isArray(value.coveredWork)&&value.coveredWork.every(x=>typeof x==='string')&&Array.isArray(value.coveredPartIds)&&value.coveredPartIds.every(x=>typeof x==='string')&&(value.startOdometer===null||typeof value.startOdometer==='number'&&Number.isFinite(value.startOdometer)&&value.startOdometer>=0)&&(value.expiryDate===null||isISODate(value.expiryDate)&&value.expiryDate>=value.startDate)&&(value.expiryOdometer===null||typeof value.expiryOdometer==='number'&&Number.isFinite(value.expiryOdometer)&&value.expiryOdometer>=0&&(value.startOdometer===null||value.expiryOdometer>=value.startOdometer))&&(value.expiryDate!==null||value.expiryOdometer!==null);}
 function isWarrantyClaim(value:unknown):value is WarrantyClaim{return isRecord(value)&&['id','warrantyId','issue','resolution','notes','createdAt','updatedAt'].every(k=>typeof value[k]==='string')&&isISODate(value.date)&&['Open','Resolved','Declined'].includes(String(value.status))&&(value.odometer===null||typeof value.odometer==='number'&&Number.isFinite(value.odometer)&&value.odometer>=0);}
 function isNextService(value:unknown):value is NextService{return isRecord(value)&&['id','jobId','vehicleId','recommendation','createdAt','updatedAt'].every(k=>typeof value[k]==='string')&&(value.date===null||isISODate(value.date))&&(value.odometer===null||typeof value.odometer==='number'&&Number.isFinite(value.odometer)&&value.odometer>=0);}
+function isInvoice(value:unknown):boolean {
+  if(!isRecord(value)||!['invoiceId','jobId','createdAt','updatedAt'].every(k=>typeof value[k]==='string')||!['Draft','Issued','Void'].includes(String(value.status))||value.currency!=='IDR'||!Array.isArray(value.lines))return false;
+  if(!['subtotal','discount','taxRateBps','taxAmount','grandTotal'].every(k=>Number.isSafeInteger(value[k])&&(value[k] as number)>=0)||typeof value.noCharge!=='boolean')return false;
+  if(value.invoiceNumber!==undefined&&typeof value.invoiceNumber!=='string'||value.issuedAt!==undefined&&typeof value.issuedAt!=='string'||value.voidAt!==undefined&&typeof value.voidAt!=='string'||value.voidReason!==undefined&&typeof value.voidReason!=='string')return false;
+  if(value.customerSnapshot!==undefined){const snapshot=value.customerSnapshot;if(!isRecord(snapshot)||!['name','phone','address'].every(k=>typeof snapshot[k]==='string'))return false;}
+  if(value.vehicleSnapshot!==undefined){const snapshot=value.vehicleSnapshot;if(!isRecord(snapshot)||!['plate','make','model'].every(k=>typeof snapshot[k]==='string')||!['Car','Motorcycle'].includes(String(snapshot.type))||(snapshot.year!==null&&typeof snapshot.year!=='number'))return false;}
+  if(value.status!=='Draft'&&(typeof value.invoiceNumber!=='string'||typeof value.issuedAt!=='string'||!value.customerSnapshot||!value.vehicleSnapshot||typeof value.jobNumberSnapshot!=='string'))return false;
+  if(value.status==='Void'&&(typeof value.voidAt!=='string'||typeof value.voidReason!=='string'||!value.voidReason.trim()))return false;
+  return value.lines.every(line=>isRecord(line)&&typeof line.lineId==='string'&&['LABOR','INVENTORY_PART','NON_INVENTORY_MATERIAL','MANUAL'].includes(String(line.sourceType))&&typeof line.description==='string'&&Number.isSafeInteger(line.quantityMilli)&&Number(line.quantityMilli)>=0&&typeof line.unit==='string'&&(line.unitSellingPrice===null||Number.isSafeInteger(line.unitSellingPrice)&&Number(line.unitSellingPrice)>=0)&&typeof line.priceConfirmed==='boolean'&&typeof line.included==='boolean'&&Number.isSafeInteger(line.lineTotal)&&Number(line.lineTotal)>=0&&(line.sourceId===undefined||typeof line.sourceId==='string')&&(line.sourceIds===undefined||Array.isArray(line.sourceIds)&&line.sourceIds.every(x=>typeof x==='string')));
+}
+function isPayment(value:unknown):boolean {
+  return isRecord(value)&&['paymentId','invoiceId','paidAt','createdAt'].every(k=>typeof value[k]==='string')&&['Payment','Reversal'].includes(String(value.kind))&&Number.isSafeInteger(value.amount)&&Number(value.amount)>0&&(value.method===undefined||['Cash','Bank Transfer','Card','Digital Payment','Other'].includes(String(value.method)))&&(value.reference===undefined||typeof value.reference==='string')&&(value.note===undefined||typeof value.note==='string')&&(value.reversalOfPaymentId===undefined||typeof value.reversalOfPaymentId==='string')&&(value.reversalReason===undefined||typeof value.reversalReason==='string')&&(value.receiptNumber===undefined||typeof value.receiptNumber==='string')&&(value.kind==='Payment'?typeof value.method==='string'&&typeof value.receiptNumber==='string':typeof value.reversalOfPaymentId==='string'&&typeof value.reversalReason==='string');
+}
 function isIntake(value: unknown): boolean { return isRecord(value) && typeof value.number === 'string' && typeof value.complaint === 'string' && Array.isArray(value.accessories) && value.accessories.every(x => typeof x === 'string') && typeof value.conditionNotes === 'string' && typeof value.date === 'string' && typeof value.arrivalTime === 'string'; }
 function isJob(value: unknown): value is WorkshopJob {
   if (!isRecord(value) || typeof value.id !== 'string' || typeof value.customerId !== 'string' || typeof value.vehicleId !== 'string' || typeof value.number !== 'string' || !['intake','inspection','work-order','qc','completed'].includes(String(value.status)) || !isIntake(value.intake) || typeof value.createdAt !== 'string' || typeof value.updatedAt !== 'string') return false;

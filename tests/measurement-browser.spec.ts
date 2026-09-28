@@ -93,7 +93,7 @@ test('Reference worker cancellation, navigation cleanup and missing APIs are rec
   await page.evaluate(() => { (window as unknown as { validationResources: { hold: boolean } }).validationResources.hold = true; });
   await page.locator('#run-reference').click(); await page.locator('#cancel-reference').click(); await expect(page.locator('#reference-status')).toContainText('Cancelled');
   expect((await resources(page)).terminated).toBe(1);
-  await page.locator('#run-reference').click(); await page.evaluate(() => document.dispatchEvent(new Event('astro:before-swap'))); expect((await resources(page)).terminated).toBe(2);
+  await page.locator('#run-reference').click(); await page.evaluate(() => document.dispatchEvent(new Event('astro:before-swap'))); await expect.poll(async () => (await resources(page)).terminated).toBe(2);
   await page.reload(); await page.locator('#run-reference').click(); await expect(page.locator('#reference-status')).toContainText('PASS');
   await page.evaluate(() => Object.defineProperty(window, 'Worker', { value: undefined })); await page.locator('#run-reference').click(); await expect(page.locator('#reference-status')).toContainText('does not support');
 });

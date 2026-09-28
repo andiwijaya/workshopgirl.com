@@ -62,6 +62,32 @@ export interface WorkshopStore {
   parts: WorkshopPart[]; partMovements: PartMovement[];
   /** Additive local service follow-up metadata; history itself is always projected from jobs. */
   warranties: WorkshopWarranty[]; warrantyClaims: WarrantyClaim[]; nextServices: NextService[];
+  /** Additive local-first billing records. Missing arrays are initialized on load. */
+  invoices: WorkshopInvoice[]; payments: WorkshopPayment[];
+}
+
+export type WorkshopInvoiceStatus = 'Draft' | 'Issued' | 'Void';
+export type WorkshopInvoiceLineType = 'LABOR' | 'INVENTORY_PART' | 'NON_INVENTORY_MATERIAL' | 'MANUAL';
+export type WorkshopPaymentMethod = 'Cash' | 'Bank Transfer' | 'Card' | 'Digital Payment' | 'Other';
+export interface WorkshopInvoiceLine {
+  lineId: string; sourceType: WorkshopInvoiceLineType; sourceId?: string; sourceIds?: string[];
+  description: string; quantityMilli: number; unit: string; unitSellingPrice: number | null;
+  priceConfirmed: boolean; included: boolean; lineTotal: number;
+}
+export interface WorkshopPartySnapshot { name: string; phone: string; address: string }
+export interface WorkshopVehicleSnapshot { type: VehicleType; plate: string; make: string; model: string; year: number | null }
+export interface WorkshopInvoice {
+  invoiceId: string; invoiceNumber?: string; jobId: string; status: WorkshopInvoiceStatus;
+  customerSnapshot?: WorkshopPartySnapshot; vehicleSnapshot?: WorkshopVehicleSnapshot;
+  jobNumberSnapshot?: string; lines: WorkshopInvoiceLine[]; subtotal: number; discount: number;
+  taxRateBps: number; taxAmount: number; grandTotal: number; currency: 'IDR';
+  noCharge: boolean; cancelledBillingReason?: string; replacesInvoiceId?: string; replacedByInvoiceId?: string;
+  issuedAt?: string; voidAt?: string; voidReason?: string; createdAt: string; updatedAt: string;
+}
+export interface WorkshopPayment {
+  paymentId: string; invoiceId: string; kind: 'Payment' | 'Reversal'; amount: number;
+  method?: WorkshopPaymentMethod; reference?: string; paidAt: string; note?: string;
+  createdAt: string; reversalOfPaymentId?: string; reversalReason?: string; receiptNumber?: string;
 }
 
 export type WarrantyCoverageType = 'Labor' | 'Parts' | 'Labor and parts';
