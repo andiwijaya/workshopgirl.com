@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- heterogeneous form rows are serialized from data-field keyed controls. */
+import { selectedWorkshopJob, workshopJobParams, localJobHref } from '../../lib/workshop/navigation.ts';
+import { mountWorkshopNavigation, setWorkshopJobContext } from './navigation.ts';
 import type { Inspection, OperationalStatus, QualityCheck, WorkOrder, WorkRow, WorkshopJob } from '../../lib/workshop/model.ts';
 import { emptyInspection, calculateEstimate, validateIntake, validateInspection, workDuration, qcWarning, validateOdometers } from '../../lib/workshop/rules.ts';
 import { loadStore, saveStore, createJob, updateJob, setWaitingParts, getJob, getCustomer, getVehicle, makeId } from '../../lib/workshop/store.ts';
@@ -19,34 +21,57 @@ const value = (root: ParentNode, name: string) => (root.querySelector<HTMLInputE
 const num = (root: ParentNode, name: string): number | null => value(root, name) === '' ? null : Number(value(root, name));
 const localDate = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 const stamp = () => `${Date.now().toString(36).slice(-5).toUpperCase()}`;
+const savedSnapshots = new WeakMap<ReturnType<typeof loadStore>['store'], ReturnType<typeof loadStore>['store']>();
+function rollbackWorkflow(store: ReturnType<typeof loadStore>['store']) {
+  const snapshot = savedSnapshots.get(store);
+  if (!snapshot) return;
+  // Keep existing object identities held by form closures, remove uncommitted new
+  // records, and restore absent optional fields as well as changed values.
+  for (const field of ['customers', 'vehicles', 'jobs'] as const) {
+    const current = store[field] as unknown as Record<string, unknown>[];
+    const restored = (snapshot[field] as unknown as Record<string, unknown>[]).map(record => {
+      const target = current.find(item => item.id === record.id) ?? {};
+      for (const key of Object.keys(target)) delete target[key];
+      Object.assign(target, structuredClone(record));
+      return target;
+    });
+    current.splice(0, current.length, ...restored);
+  }
+}
 function set(root: ParentNode, name: string, v: unknown) { const node = root.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(`[name="${name}"]`); if (node) node.value = v == null ? '' : String(v); }
 function setError(root: ParentNode, selector: string, message: string) { const node = root.querySelector<HTMLElement>(selector); if (node) { node.textContent = message; node.hidden = !message; } }
 function money(n: number) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n); }
 function rows<T extends {id:string}>(host: HTMLElement, list: T[], render: (row:T)=>HTMLElement) { host.replaceChildren(...list.map(render)); }
 function textRow(parent: HTMLElement, label: string, content: unknown) { const p = el('p'); const b = el('strong', undefined, `${label}: `); p.append(b, document.createTextNode(content == null || content === '' ? '—' : String(content))); parent.append(p); }
 function status(root: HTMLElement, message: string) { const n = $(root, '#workshop-status'); if (n) { n.textContent = message; n.hidden = !message; } }
-function save(root: HTMLElement, store: ReturnType<typeof loadStore>['store']) { try { const result = saveStore(store, window.localStorage); if (!result.ok) status(root, result.message); return result.ok; } catch { status(root,'Browser storage is unavailable. Your latest change was not saved.'); return false; } }
-function context(root: HTMLElement, job: WorkshopJob | null, store: ReturnType<typeof loadStore>['store']) {
-  const node = $(root, '#workshop-job-context'); if (!node) return; node.replaceChildren(); node.hidden = !job;
-  if (job) { const c = getCustomer(store, job), v = getVehicle(store, job); node.append(el('strong', undefined, `${job.number} · ${job.status.replace('-', ' ')}`), el('span', undefined, `${c?.name ?? 'Customer'} · ${v?.plate ?? 'Vehicle'} · ${[v?.make,v?.model].filter(Boolean).join(' ')}`)); }
-  const picker = $(root, '#workshop-job-picker'); if (!picker) return;
-  if (!job && store.jobs.length) { picker.hidden = false; picker.replaceChildren(el('strong', undefined, 'Existing local jobs')); for (const j of store.jobs) { const v=getVehicle(store,j), c=getCustomer(store,j); const a=el('a',undefined,`${j.number} · ${v?.plate ?? ''} · ${c?.name ?? ''}`) as HTMLAnchorElement; a.href=`?job=${encodeURIComponent(j.id)}`; picker.append(a); } } else picker.hidden = true;
+function save(root: HTMLElement, store: ReturnType<typeof loadStore>['store']) {
+  try {
+    const result = saveStore(store, window.localStorage);
+    if (!result.ok) { rollbackWorkflow(store); status(root, result.message); }
+    else { savedSnapshots.set(store, structuredClone(store)); setWorkshopJobContext(root, store, getJob(store, root.dataset.selectedJob)); }
+    return result.ok;
+  } catch { rollbackWorkflow(store); status(root, 'Browser storage is unavailable. Your latest change was not saved.'); return false; }
 }
-function jobFromUrl(store: ReturnType<typeof loadStore>['store']) { return getJob(store, new URL(location.href).searchParams.get('job')); }
-function linkFor(id: string, path: string) { return `${path}?job=${encodeURIComponent(id)}`; }
+function context(root: HTMLElement, job: WorkshopJob | null, store: ReturnType<typeof loadStore>['store']) {
+  setWorkshopJobContext(root, store, job);
+  const picker = $(root, '#workshop-job-picker'); if (!picker) return;
+  if (!job && store.jobs.length) { picker.hidden = false; picker.replaceChildren(el('strong', undefined, 'Existing local jobs')); for (const j of store.jobs) { const v=getVehicle(store,j), c=getCustomer(store,j); const a=el('a',undefined,`${j.number} · ${v?.plate ?? ''} · ${c?.name ?? ''}`) as HTMLAnchorElement; a.href=localJobHref(location.pathname,j.id); picker.append(a); } } else picker.hidden = true;
+}
+function jobFromUrl(store: ReturnType<typeof loadStore>['store']) { return selectedWorkshopJob(store, workshopJobParams(new URL(location.href))); }
+function linkFor(id: string, path: string) { return localJobHref(path,id); }
 function labelInput(parent: HTMLElement, label: string, name: string, type='text', val='') { const l=el('label'); l.append(el('span',undefined,label)); const i=document.createElement('input'); i.name=name; i.type=type; i.value=val; i.dataset.field=name; l.append(i); parent.append(l); return i; }
 function selectField(parent: HTMLElement, label: string, name: string, choices: string[], val: string) { const l=el('label'); l.append(el('span',undefined,label)); const s=el('select'); s.name=name; s.dataset.field=name; for (const x of choices) { const o=el('option',undefined,x); o.value=x; s.append(o); } s.value=val; l.append(s); parent.append(l); return s; }
 
-function mountIntake(root: HTMLElement, store: ReturnType<typeof loadStore>['store'], job: WorkshopJob | null) {
+function mountIntake(root: HTMLElement, store: ReturnType<typeof loadStore>['store'], job: WorkshopJob | null, onSelected: (job: WorkshopJob) => void) {
  const form=$<HTMLFormElement>(root,'#intake-form'); if(!form)return; const c=job?getCustomer(store,job):null,v=job?getVehicle(store,job):null,i=job?.intake;
  const customerPicker=form.querySelector<HTMLSelectElement>('[name="existingCustomerId"]')!;customerPicker.replaceChildren(new Option('New customer',''),...store.customers.map(customer=>new Option(`${customer.name}${customer.phone?` / ${customer.phone}`:''}`,customer.id)));const chooseCustomer=(id:string)=>{customerPicker.value=id;const selected=store.customers.find(customer=>customer.id===id);if(selected)for(const [name,value]of Object.entries({customerName:selected.name,phone:selected.phone,address:selected.address}))set(form,name,value);for(const name of ['customerName','phone','address']){const control=form.querySelector<HTMLInputElement|HTMLTextAreaElement>(`[name="${name}"]`);if(control)control.disabled=!!selected&&!job;}};customerPicker.addEventListener('change',()=>chooseCustomer(customerPicker.value));if(job){customerPicker.value=job.customerId;customerPicker.disabled=true;}const vehiclePicker=form.querySelector<HTMLSelectElement>('[name="existingVehicleId"]')!;vehiclePicker.replaceChildren(new Option('Create a new vehicle record',''),...store.vehicles.map(vehicle=>new Option(`${vehicle.plate} · ${[vehicle.make,vehicle.model].filter(Boolean).join(' ')||vehicle.type} · last known ${latestKnownOdometer(store,vehicle.id)??'unknown'} km`,vehicle.id)));vehiclePicker.hidden=!!job;vehiclePicker.closest('label')?.toggleAttribute('hidden',!!job);vehiclePicker.addEventListener('change',()=>{const selected=store.vehicles.find(vehicle=>vehicle.id===vehiclePicker.value);if(!selected)return;for(const [name,value] of Object.entries({vehicleType:selected.type,plate:selected.plate,make:selected.make,model:selected.model,year:selected.year,color:selected.color,odometer:latestKnownOdometer(store,selected.id)}))set(form,name,value);const prior=store.jobs.filter(item=>item.vehicleId===selected.id).sort((a,b)=>b.createdAt.localeCompare(a.createdAt))[0];if(prior)chooseCustomer(prior.customerId);});
  if(job){ for(const [n,x] of Object.entries({customerName:c?.name,phone:c?.phone,address:c?.address,vehicleType:v?.type,plate:v?.plate,make:v?.make,model:v?.model,year:v?.year,color:v?.color,odometer:v?.odometer,complaint:i?.complaint,accessories:i?.accessories.join('\n'),conditionNotes:i?.conditionNotes,date:i?.date,arrivalTime:i?.arrivalTime})) set(form,n,x); }
  else {set(form,'date',localDate());set(form,'arrivalTime',`${String(new Date().getHours()).padStart(2,'0')}:${String(new Date().getMinutes()).padStart(2,'0')}`);}
  form.addEventListener('submit',e=>{e.preventDefault(); const errors=validateIntake({name:value(form,'customerName'),plate:value(form,'plate'),year:value(form,'year'),odometer:value(form,'odometer')});const selectedVehicleId=job?.vehicleId||value(form,'existingVehicleId'),knownOdometer=selectedVehicleId?latestKnownOdometer(store,selectedVehicleId):null,enteredOdometer=num(form,'odometer');if(knownOdometer!==null&&enteredOdometer!==null&&enteredOdometer<knownOdometer)errors.push(`Odometer cannot be below the last known reading of ${knownOdometer}.`); if(errors.length){setError(root,'#intake-error',errors.join(' '));return;}
- const intake={number:i?.number??`WI-${localDate().replaceAll('-','')}-${stamp()}`, complaint:value(form,'complaint'), accessories:value(form,'accessories').split(/[\n,]/).map(x=>x.trim()).filter(Boolean),conditionNotes:value(form,'conditionNotes'),date:value(form,'date')||localDate(),arrivalTime:value(form,'arrivalTime')};
+ const intake={number:job?.intake.number??`WI-${localDate().replaceAll('-','')}-${stamp()}`, complaint:value(form,'complaint'), accessories:value(form,'accessories').split(/[\n,]/).map(x=>x.trim()).filter(Boolean),conditionNotes:value(form,'conditionNotes'),date:value(form,'date')||localDate(),arrivalTime:value(form,'arrivalTime')};
  if(job){ const customer=getCustomer(store,job), vehicle=getVehicle(store,job); if(customer)Object.assign(customer,{name:value(form,'customerName'),phone:value(form,'phone'),address:value(form,'address')}); if(vehicle)Object.assign(vehicle,{type:value(form,'vehicleType'),plate:value(form,'plate'),make:value(form,'make'),model:value(form,'model'),year:num(form,'year'),color:value(form,'color'),odometer:enteredOdometer===null?vehicle.odometer:Math.max(vehicle.odometer??0,enteredOdometer)}); updateJob(store,job.id,{intake}); }
  else createJob(store,{customer:{name:value(form,'customerName'),phone:value(form,'phone'),address:value(form,'address')},vehicle:{type:value(form,'vehicleType')==='Car'?'Car':'Motorcycle',plate:value(form,'plate'),make:value(form,'make'),model:value(form,'model'),year:num(form,'year'),color:value(form,'color'),odometer:num(form,'odometer')},intake,existingVehicleId:value(form,'existingVehicleId')||undefined,existingCustomerId:value(form,'existingCustomerId')||undefined});
- const saved=job??store.jobs.at(-1)!; if(save(root,store)){ const next=$<HTMLElement>(root,'#next-inspection'); if(next)next.hidden=false; const a=$<HTMLAnchorElement>(root,'#continue-inspection'); if(a)a.href=linkFor(saved.id,'/tools/workshop/inspection-estimate/');setError(root,'#intake-error','');status(root,'Intake saved in this browser.'); }
+ const saved=job??store.jobs.at(-1)!; if(save(root,store)){ job=saved; customerPicker.disabled=true; vehiclePicker.hidden=true;vehiclePicker.closest('label')?.setAttribute('hidden',''); onSelected(saved); const next=$<HTMLElement>(root,'#next-inspection'); if(next)next.hidden=false; const a=$<HTMLAnchorElement>(root,'#continue-inspection'); if(a)a.href=linkFor(saved.id,'/tools/workshop/inspection-estimate/');setError(root,'#intake-error','');status(root,'Intake saved in this browser.'); }
  });
 }
 
@@ -92,7 +117,7 @@ function printJob(root:HTMLElement,store:ReturnType<typeof loadStore>['store'],j
  if(step==='inspection'&&job.inspection){const d=job.inspection;const total=calculateEstimate(d);textRow(content,'Inspection findings',d.findings);addLines('Inspection checklist',d.checklist.flatMap(g=>g.items.map(x=>`${g.category} · ${x.name}: ${x.status}${x.note?` — ${x.note}`:''}`)));addLines('Recommended work',d.recommendedJobs.map(x=>`${x.name} · ${x.priority} · ${x.approved?'Approved':'Not approved'}${x.detail?` — ${x.detail}`:''}`));addLines('Parts estimate',d.parts.map(x=>`${x.name} · ${x.quantity} ${x.unit} × ${money(x.unitPrice)} = ${money(x.quantity*x.unitPrice)}`));addLines('Labor estimate',d.labor.map(x=>`${x.name} · ${money(x.mode==='hourly'?x.hours*x.rate:x.fixed)}`));textRow(content,'Estimate total',money(total.total));}
  if(step==='work-order'&&job.workOrder){const d=job.workOrder;textRow(content,'Work order number',d.number);textRow(content,'Status',d.status);addLines('Approved work',d.approvedWork.map(x=>`${x.name}${x.detail?` — ${x.detail}`:''} · ${x.status}`));addLines('Work performed',d.actualWork.map(x=>`${x.name}${x.detail?` — ${x.detail}`:''} · ${x.status}${x.mechanic?` · ${x.mechanic}`:''}`));addLines('Parts and materials',d.parts.map(x=>`${x.name} · Qty ${x.quantity}${x.partNumber?` · ${x.partNumber}`:''}${x.notes?` — ${x.notes}`:''}`));addLines('Changes and approval',d.changes.map(x=>`${x.work} · ${x.approval} · ${x.reason}${x.notes?` — ${x.notes}`:''}`));textRow(content,'Mechanic notes',d.mechanicNotes);textRow(content,'Repair result',d.result);textRow(content,'Mechanic sign-off',d.signoff);}
  if(step==='qc'&&job.qc){const d=job.qc;textRow(content,'Final status',d.finalStatus);addLines('Verification checklist',d.checks.map(x=>`${x.name}: ${x.result}${x.note?` — ${x.note}`:''}`));addLines('Unresolved issues',d.unresolvedIssues.map(x=>`${x.issue} · ${x.status}${x.recommendation?` — ${x.recommendation}`:''}`));textRow(content,'Road test',`${d.roadTest}${d.odometerBefore!=null?` · Before ${d.odometerBefore}`:''}${d.odometerAfter!=null?` · After ${d.odometerAfter}`:''}`);textRow(content,'Returned items',d.returnedItems.join(', '));textRow(content,'Readiness notes',d.readinessNotes);textRow(content,'Recommendations',d.recommendations);textRow(content,'Customer notes',d.customerNotes);textRow(content,'Handover recipient',d.handoverRecipient);textRow(content,'Handover staff',d.handoverStaff);textRow(content,'Handover date / time',`${d.handoverDate} ${d.handoverTime}`);}
- sheet.hidden=false;sheet.classList.add('is-preview');window.print();window.addEventListener('afterprint',()=>{sheet.classList.remove('is-preview');sheet.hidden=true;},{once:true});}
+ sheet.hidden=false;sheet.classList.add('is-preview');window.addEventListener('afterprint',()=>{sheet.classList.remove('is-preview');sheet.hidden=true;},{once:true});window.print();}
 function queueArrival(job: WorkshopJob): Date {
   const value = `${job.intake.date}T${job.intake.arrivalTime || '00:00'}`;
   const arrival = new Date(value);
@@ -104,9 +129,9 @@ function mountWorkshopQueue(root: HTMLElement, store: ReturnType<typeof loadStor
   const statuses: OperationalStatus[] = ['Intake','Inspection','Waiting Approval','Work In Progress','Waiting Parts','QC','Ready for Pickup','Completed','Cancelled'];
   const rank = new Map(statuses.map((item, index) => [item, index]));
   const state = { query: '', status: 'All', sort: 'newest' };
-  const params = new URL(location.href).searchParams;
-  const linkedJob = params.get('job');
-  if (linkedJob && !getJob(store, linkedJob)) { feedback.textContent = 'That job link is no longer available in this browser. Showing the saved queue.'; feedback.hidden = false; }
+  const params = workshopJobParams(new URL(location.href));
+  const linkedJob = selectedWorkshopJob(store, params)?.id ?? null;
+  if (params.has('job') && !linkedJob) { feedback.textContent = 'That job link is no longer available in this browser. Showing the saved queue.'; feedback.hidden = false; }
   const searchLabel = el('label', 'queue-search-label', 'Search jobs');
   const search = el('input'); search.type = 'search'; search.id = 'queue-search'; search.placeholder = 'Plate, customer, make or model'; search.autocomplete = 'off'; search.setAttribute('aria-label', 'Search by plate, customer, make or model'); searchLabel.append(search);
   const filterLabel = el('label', undefined, 'Filter by status'); const filter = el('select'); filter.id = 'queue-filter'; filter.setAttribute('aria-label', 'Filter jobs by status');
@@ -176,6 +201,78 @@ function nextAction(route: string, status: OperationalStatus): string {
   if(route.endsWith('work-order/'))return 'Continue to Work Order →';
   return status==='Completed'?'Review Completed Job →':status==='Ready for Pickup'?'Open QC & Handover →':'Continue to QC & Handover →';
 }
-function jobHref(id:string,route:string):string{return `${route}?job=${encodeURIComponent(id)}`;}
+function jobHref(id:string,route:string):string{return localJobHref(route,id);}
 
-export function mountWorkshopPage(root:HTMLElement){let loaded;try{loaded=loadStore(window.localStorage);}catch{loaded=loadStore({getItem:()=>{throw new Error('Storage unavailable');},setItem:()=>{throw new Error('Storage unavailable');}});}const {store}=loaded;const step=root.dataset.workshopStep;if(loaded.message)status(root,loaded.message);if(step==='billing'){mountBilling(root,store);return;}if(step==='procurement'){mountProcurement(root,store);return;}if(step==='service-history'){mountServiceHistory(root);return;}if(step==='parts-inventory'){mountPartsInventory(root,store);return;}if(step==='queue'){mountWorkshopQueue(root,store);return;}const job=jobFromUrl(store);context(root,job,store);if(step!=='intake'&&!job)status(root,'Choose a saved local job below or open this page with a valid job link.');if(step==='intake')mountIntake(root,store,job);if(step==='inspection')mountInspection(root,store,job);if(step==='work-order')mountWorkOrder(root,store,job);if(step==='qc')mountQC(root,store,job);if(job?.status==='completed'||job?.workOrder?.status==='Cancelled'){status(root,job.workOrder?.status==='Cancelled'?'This Work Order is cancelled. The saved job is read-only and can be reviewed or printed.':'This completed job is read-only. You can review or print its saved workflow.');if(job.workOrder?.status==='Cancelled'&&step==='qc')$<HTMLFormElement>(root,'#qc-form')?.setAttribute('hidden','');for(const form of all<HTMLFormElement>(root,'form'))for(const control of all<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement|HTMLButtonElement>(form,'input,select,textarea,button'))control.disabled=true;} $<HTMLButtonElement>(root,'[data-print]')?.addEventListener('click',()=>printJob(root,store,job));}
+export function mountWorkshopPage(root: HTMLElement) {
+  if (root.dataset.workshopMounted === 'true') return;
+  initializeWorkshopPage(root);
+  // Modules have consumed legacy/invalid context for their feedback by now.
+  // Leave only an exact validated selection in the local URL.
+  const url = new URL(location.href);
+  url.searchParams.delete('job');
+  url.hash = root.dataset.selectedJob ? new URLSearchParams({ job: root.dataset.selectedJob }).toString() : '';
+  history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+  root.removeAttribute('inert');
+  root.querySelector<HTMLElement>('#workshop-loading')!.hidden = true;
+  root.setAttribute('aria-busy', 'false');
+  root.dataset.workshopMounted = 'true';
+}
+
+function initializeWorkshopPage(root: HTMLElement) {
+  let loaded;
+  try { loaded = loadStore(window.localStorage); }
+  catch { loaded = loadStore({ getItem: () => { throw new Error('Storage unavailable'); }, setItem: () => { throw new Error('Storage unavailable'); } }); }
+  const { store } = loaded, step = root.dataset.workshopStep;
+  savedSnapshots.set(store, structuredClone(store));
+  if (loaded.message) status(root, loaded.message);
+  mountWorkshopNavigation(root, store);
+  const empty = root.querySelector<HTMLElement>('#workshop-empty')!;
+  const noRecords = step === 'parts-inventory' ? !store.parts.length : step === 'procurement' ? !store.purchaseNeeds.length && !store.purchaseOrders.length : step === 'billing' ? !store.invoices.length : step === 'service-history' ? !store.jobs.some(job => workflowStatus(job) === 'Completed') : step !== 'intake' && !store.jobs.length;
+  if (noRecords) {
+    empty.hidden = false;
+    const message = el('p', undefined, step === 'parts-inventory' ? 'No parts yet. Add a part below to begin your local inventory.' : step === 'procurement' ? 'No purchase needs or orders yet. Add a need below or review shortages in Parts Inventory.' : step === 'billing' ? 'No invoices yet. Billing starts from jobs ready for pickup or completed after QC.' : step === 'service-history' ? 'No service history yet. Completed jobs appear here after QC and handover.' : 'No local jobs yet. Start intake before continuing the service workflow.');
+    const link = el('a', 'button-link', 'Start a Workshop Job'); link.href = '/tools/workshop/vehicle-intake/'; empty.append(message, link);
+  }
+  const print = $<HTMLButtonElement>(root, '[data-print]');
+  if (step === 'queue' || step === 'parts-inventory') {
+    print?.addEventListener('click', () => printOperationalSummary(root, store, step));
+  }
+  if (step === 'billing') { mountBilling(root, store); return; }
+  if (step === 'procurement') { mountProcurement(root, store); return; }
+  if (step === 'service-history') { mountServiceHistory(root); return; }
+  if (step === 'parts-inventory') { mountPartsInventory(root, store); return; }
+  if (step === 'queue') { mountWorkshopQueue(root, store); return; }
+  let job = jobFromUrl(store);
+  context(root, job, store);
+  if (step !== 'intake' && !job && !loaded.message) status(root, 'Choose a saved local job below or open this page with a valid job link.');
+  if (step === 'intake') mountIntake(root, store, job, saved => {
+    job = saved;
+    context(root, saved, store);
+    setWorkshopJobContext(root, store, saved, true);
+  });
+  if (step === 'inspection') mountInspection(root, store, job);
+  if (step === 'work-order') mountWorkOrder(root, store, job);
+  if (step === 'qc') mountQC(root, store, job);
+  if (job?.status === 'completed' || job?.workOrder?.status === 'Cancelled') {
+    status(root, job.workOrder?.status === 'Cancelled' ? 'This Work Order is cancelled. The saved job is read-only and can be reviewed or printed.' : 'This completed job is read-only. You can review or print its saved workflow.');
+    if (job.workOrder?.status === 'Cancelled' && step === 'qc') $<HTMLFormElement>(root, '#qc-form')?.setAttribute('hidden', '');
+    for (const form of all<HTMLFormElement>(root, 'form')) for (const control of all<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLButtonElement>(form, 'input,select,textarea,button')) control.disabled = true;
+  }
+  print?.addEventListener('click', () => printJob(root, store, job));
+}
+
+function printOperationalSummary(root: HTMLElement, store: ReturnType<typeof loadStore>['store'], step: 'queue' | 'parts-inventory'): void {
+  const sheet = $<HTMLElement>(root, '#print-sheet')!, content = $<HTMLElement>(root, '#print-content')!;
+  $<HTMLElement>(root, '#print-title')!.textContent = step === 'queue' ? 'All local jobs · Queue summary' : 'All local parts · Inventory summary';
+  content.replaceChildren();
+  textRow(content, 'Printed', new Date().toLocaleString());
+  const records = step === 'queue'
+    ? store.jobs.map(job => `${job.number} · ${getVehicle(store, job)?.plate ?? 'Vehicle'} · ${operationalStatus(job)}`)
+    : store.parts.map(part => `${part.name} · ${part.sku || 'No SKU'} · ${partBalance(store, part.id)} ${part.unit} · ${part.active ? stockState(store, part) : 'Inactive'}`);
+  for (const record of records) content.append(el('p', 'print-line', record));
+  if (!records.length) content.append(el('p', undefined, step === 'queue' ? 'No local jobs recorded.' : 'No local parts recorded.'));
+  sheet.hidden = false;
+  sheet.classList.add('is-preview');
+  window.addEventListener('afterprint', () => { sheet.hidden = true; sheet.classList.remove('is-preview'); }, { once: true });
+  window.print();
+}

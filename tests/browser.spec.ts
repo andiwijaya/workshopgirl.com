@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { wav, upload, expectTone, syntheticMicrophone, audioState } from './audio-fixtures';
+import { wav, upload, expectTone, syntheticMicrophone, waitForPendingMicrophone, audioState } from './audio-fixtures';
 
 test.beforeEach(async ({ page }, info) => {
   if (/^(Site navigation|Homepage promotes|Responsive|Missing audio)/.test(info.title)) return;
@@ -129,6 +129,11 @@ test('Cancel pending permission releases a late stream', async ({ page }) => {
   await page.goto('/tools/sound-analyzer/');
   await page.locator('#start-mic').click();
   await expect.poll(async () => (await audioState(page)).calls).toBe(1);
+  // Calls increments before Firefox finishes resuming the synthetic source.
+  // Wait for the delayed permission promise itself, so cancellation tests a
+  // real late stream rather than invoking an uninitialized fixture callback.
+  await waitForPendingMicrophone(page);
+  expect((await audioState(page)).tracks).toHaveLength(1);
   await page.locator('#stop-analysis').click();
   await page.evaluate(() => (window as unknown as { audioTest: { resolve: () => void } }).audioTest.resolve());
   await expect.poll(async () => (await audioState(page)).tracks.every(state => state === 'ended')).toBe(true);
@@ -160,55 +165,27 @@ test('Site navigation, mobile menu, articles and sitemap remain available', asyn
   }
 });
 
-test('Homepage promotes the two tool families with working anchors, keyboard focus and responsive cards', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.locator('h1')).toHaveCount(1);
-  const promotion = page.locator('#tool-promotion');
-  await expect(promotion.getByRole('heading', { level: 2, name: 'The digital workbench.' })).toBeVisible();
-  const cards = promotion.locator('.tool-promo-card');
-  await expect(cards).toHaveCount(2);
-  await expect(cards.nth(0).getByRole('heading', { level: 3, name: 'Analyze sound, right here.' })).toBeVisible();
-  await expect(cards.nth(0)).toContainText('Sound Analyzer · Engine Analyzer · Speaker Analyzer');
-  await expect(cards.nth(1).getByRole('heading', { level: 3, name: 'Keep workshop jobs moving.' })).toBeVisible();
-  await expect(cards.nth(1)).toContainText('Intake · Work Orders · Parts · Billing · Procurement');
-  await expect(cards.getByRole('link')).toHaveCount(2);
-  const diagnosticsCta = cards.getByRole('link', { name: 'Explore Diagnostics' });
-  const operationsCta = cards.getByRole('link', { name: 'Explore Workshop Operations' });
-  await expect(diagnosticsCta).toHaveAttribute('href', '/tools/#diagnostics');
-  await expect(operationsCta).toHaveAttribute('href', '/tools/#workshop-operations');
-  await expect(promotion.locator('a[href^="/tools/workshop/"]')).toHaveCount(0);
-  expect(await page.locator('#main, main').count()).toBe(1);
-
-  await page.keyboard.press('Tab');
-  await operationsCta.focus();
-  await expect(operationsCta).toBeFocused();
-  expect(await operationsCta.evaluate(node => getComputedStyle(node).outlineStyle)).toBe('solid');
-
-  for (const width of [320, 375, 390, 768, 1440]) {
-    await page.setViewportSize({ width, height: 900 });
-    await promotion.scrollIntoViewIfNeeded();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `homepage overflow at ${width}px`).toBe(true);
-    await expect(diagnosticsCta).toBeVisible();
-    await expect(operationsCta).toBeVisible();
-    const [first, second] = await Promise.all([cards.nth(0).evaluate(node => node.getBoundingClientRect().toJSON()), cards.nth(1).evaluate(node => node.getBoundingClientRect().toJSON())]);
-    expect(first).not.toBeNull();
-    expect(second).not.toBeNull();
-    expect(second!.right).toBeLessThanOrEqual(width);
-    if (width <= 760) expect(second!.y).toBeGreaterThan(first!.y);
-    else {
-      expect(Math.abs(second!.y - first!.y)).toBeLessThan(2);
-      expect(second!.x).toBeGreaterThan(first!.x);
-    }
+test('Homepage promotes direct analysis, practical learning and connected Workshop actions', async ({ page }) => {
+  await page.goto('/'); await expect(page.locator('h1')).toHaveCount(1);
+  await expect(page.locator('.portrait img')).toHaveAttribute('srcset', /480.webp 480w.*800.webp 800w/);
+  const analyze = page.locator('#analyze');
+  for(const [label, slug] of [['Engine Sound Analyzer','engine-sound-analyzer'],['Sound Analyzer','sound-analyzer'],['Speaker Sound Analyzer','speaker-sound-analyzer']]) {
+    const link=analyze.getByRole('link', {name: new RegExp('^'+label)}); await expect(link).toHaveAttribute('href','/tools/'+slug+'/');
   }
-
-  await page.goto('/tools/#diagnostics');
-  await expect(page).toHaveURL(/\/tools\/#diagnostics$/);
-  await expect(page.locator('#diagnostics')).toBeInViewport();
-  await expect(page.locator('#diagnostics').getByRole('heading', { name: 'Diagnostics' })).toBeVisible();
-  await page.goto('/tools/#workshop-operations');
-  await expect(page).toHaveURL(/\/tools\/#workshop-operations$/);
-  await expect(page.locator('#workshop-operations')).toBeInViewport();
-  await expect(page.locator('#workshop-operations').getByRole('heading', { name: 'Workshop Operations' })).toBeVisible();
+  await expect(page.locator('#learn article')).toHaveCount(3); await expect(page.locator('#latest article')).toHaveCount(3);
+  const startJob=page.locator('#workshop').getByRole('link',{name:'Start a Workshop Job',exact:true});
+  await startJob.focus(); await expect(startJob).toBeFocused(); expect(await startJob.evaluate(node=>getComputedStyle(node).outlineStyle)).toBe('solid');
+  for(const width of [320,375,390,430,768,1024,1280,1440]) {
+    await page.setViewportSize({width,height:900});
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'home at '+width).toBe(true);
+    await expect(startJob).toBeVisible();
+  }
+  await startJob.click(); await expect(page).toHaveURL(/vehicle-intake/);
+  await page.goto('/'); await page.locator('#analyze a[href="/tools/engine-sound-analyzer/"]').click(); await expect(page).toHaveURL(/engine-sound-analyzer/);
+  await page.goto('/tools/#diagnostics'); await expect(page.locator('#diagnostics')).toBeInViewport();
+  await expect(page.locator('#diagnostics').getByRole('heading',{name:'Diagnose & Analyze'})).toBeVisible();
+  await page.goto('/tools/#workshop-operations'); await expect(page.locator('#workshop-operations')).toBeInViewport();
+  await page.getByRole('link',{name:'Open Workshop',exact:true}).click(); await expect(page).toHaveURL(/\/workshop\/$/);
 });
 
 test('Responsive empty state, keyboard controls and reduced motion', async ({ page, browserName }, testInfo) => {

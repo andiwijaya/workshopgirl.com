@@ -190,3 +190,10 @@ details.engine-settings { padding:0; }
   .chart { padding:16px 8px 10px; }canvas { height:215px; }.wide canvas { height:235px; }
   .comparison { padding:18px 12px; }.legend { gap:8px; }.color-scale { width:70px; }
 }
+.observation-attachment{margin-top:24px;border:1px solid var(--line);padding:16px;overflow-wrap:anywhere}
+.observation-attachment [hidden]{display:none!important}
+.observation-attachment input,.observation-attachment textarea,.observation-attachment select{max-width:100%;width:100%;box-sizing:border-box;min-width:0;min-height:44px}
+.observation-attachment label{display:block;margin:12px 0}
+.observation-attachment fieldset{min-width:0;margin:12px 0}
+.observation-attachment button{min-height:44px}
+#observation-preview{font-size:.9rem;line-height:1.65}

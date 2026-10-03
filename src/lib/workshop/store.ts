@@ -1,11 +1,21 @@
 import type { Customer, Intake, NextService, Vehicle, VehicleType, WarrantyClaim, WorkshopJob, WorkshopStore, WorkshopWarranty } from './model.ts';
 import { canCompleteWorkshopJob, canSetWaitingParts, estimateApprovalPending, operationalStatus, transitionReason, validWorkOrder } from './queue.ts';
+import { isEngineObservation, MAX_OBSERVATIONS } from './observation-summary.ts';
 
 export const STORAGE_KEY = 'workshopgirl.workshop.operations.v1';
-export const STORE_VERSION = 1 as const;
+// Retain the original key so existing users migrate in place, only on explicit save.
+export const STORE_VERSION = 2 as const;
 export interface StorageLike { getItem(key: string): string | null; setItem(key: string, value: string): void }
 export interface StoreLoad { store: WorkshopStore; recovered: boolean; message: string }
 export const emptyStore = (): WorkshopStore => ({ version: STORE_VERSION, customers: [], vehicles: [], jobs: [], parts: [], partMovements: [], warranties: [], warrantyClaims: [], nextServices: [], invoices: [], payments: [], suppliers: [], purchaseNeeds: [], purchaseOrders: [], goodsReceipts: [] });
+const origins = new WeakMap<WorkshopStore, { raw: string | null; blocked: boolean; storage: StorageLike }>();
+
+/** A rollback snapshot keeps the original concurrency/read-only guard. */
+export function cloneStore(store: WorkshopStore): WorkshopStore {
+  const clone = structuredClone(store), origin = origins.get(store);
+  if (origin) origins.set(clone, { ...origin });
+  return clone;
+}
 
 export function makeId(prefix: string): string {
   const uuid = globalThis.crypto?.randomUUID?.();
@@ -15,45 +25,60 @@ export function makeId(prefix: string): string {
 export function loadStore(storage: StorageLike): StoreLoad {
   let raw: string | null;
   try { raw = storage.getItem(STORAGE_KEY); }
-  catch { return { store: emptyStore(), recovered: true, message: 'Browser storage is unavailable. Records will not persist after this page closes.' }; }
-  if (raw === null) return { store: emptyStore(), recovered: false, message: '' };
+  catch {
+    const store = emptyStore(); origins.set(store, { raw: null, blocked: true, storage });
+    return { store, recovered: true, message: 'Browser storage is unavailable. Saving is blocked; no records have been changed.' };
+  }
+  const result = (store: WorkshopStore, recovered = false, message = ''): StoreLoad => {
+    origins.set(store, { raw, blocked: recovered, storage }); return { store, recovered, message };
+  };
+  const invalid = (message: string) => result(emptyStore(), true, `${message} Saving is blocked to preserve the original browser records. Use the original browser profile to recover the data; do not clear it.`);
+  if (raw === null) return result(emptyStore());
   try {
     const value: unknown = JSON.parse(raw);
-    if (!isRecord(value) || value.version !== STORE_VERSION || !Array.isArray(value.customers) || !Array.isArray(value.vehicles) || !Array.isArray(value.jobs)) {
-      return { store: emptyStore(), recovered: true, message: 'Saved workshop data has an unsupported version or shape. It was left untouched; new records can still be created.' };
+    if (!isRecord(value) || ![1, STORE_VERSION].includes(Number(value.version)) || typeof value.version !== 'number' || !Array.isArray(value.customers) || !Array.isArray(value.vehicles) || !Array.isArray(value.jobs)) {
+      return invalid('Saved workshop data has an unsupported version or shape.');
     }
-    const rawParts = value.parts === undefined ? [] : value.parts;
-    const rawMovements = value.partMovements === undefined ? [] : value.partMovements;
-    const rawWarranties=value.warranties===undefined?[]:value.warranties,rawClaims=value.warrantyClaims===undefined?[]:value.warrantyClaims,rawNext=value.nextServices===undefined?[]:value.nextServices;
-    const rawInvoices=value.invoices===undefined?[]:value.invoices,rawPayments=value.payments===undefined?[]:value.payments;
-    if (!Array.isArray(rawParts) || !rawParts.every(isPart) || !Array.isArray(rawMovements) || !rawMovements.every(isPartMovement)
-      || !Array.isArray(rawWarranties)||!rawWarranties.every(isWarranty)||!Array.isArray(rawClaims)||!rawClaims.every(isWarrantyClaim)||!Array.isArray(rawNext)||!rawNext.every(isNextService)
-      || !Array.isArray(rawInvoices)||!rawInvoices.every(isInvoice)||!Array.isArray(rawPayments)||!rawPayments.every(isPayment)) {
-      return { store: emptyStore(), recovered: true, message: 'Saved workshop inventory, service follow-up, or billing data has an unsupported shape. The original browser data was left untouched.' };
+    // Initialize absent historical modules; reject malformed collections rather than
+    // dropping rows. Spread preserves additive/unknown record fields without loss.
+    const candidate = { ...emptyStore(), ...value, version: STORE_VERSION };
+    const validators: Record<string, (record: unknown) => boolean> = {
+      customers: isCustomer, vehicles: isVehicle, jobs: isJob, parts: isPart, partMovements: isPartMovement,
+      warranties: isWarranty, warrantyClaims: isWarrantyClaim, nextServices: isNextService,
+      invoices: isInvoice, payments: isPayment, suppliers: isSupplier, purchaseNeeds: isPurchaseNeed,
+      purchaseOrders: isPurchaseOrder, goodsReceipts: isGoodsReceipt,
+    };
+    for (const [field, validate] of Object.entries(validators)) {
+      const rows = candidate[field as keyof typeof candidate];
+      if (!Array.isArray(rows) || !rows.every(validate)) return invalid(`Saved workshop ${field} data has an unsupported shape.`);
+      const idField = ({ suppliers: 'supplierId', purchaseNeeds: 'needId', purchaseOrders: 'poId', goodsReceipts: 'receiptId', invoices: 'invoiceId', payments: 'paymentId' } as Record<string, string>)[field] ?? 'id';
+      if (new Set(rows.map(row => (row as unknown as Record<string, unknown>)[idField])).size !== rows.length) return invalid(`Saved workshop ${field} data has duplicate identities.`);
     }
-    const customers = value.customers.filter(isCustomer);
-    const vehicles = value.vehicles.filter(isVehicle);
-    const customerIds = new Set(customers.map(x => x.id));
-    const vehicleIds = new Set(vehicles.map(x => x.id));
-    const jobs = value.jobs.filter((x): x is WorkshopJob => isJob(x) && customerIds.has(x.customerId) && vehicleIds.has(x.vehicleId));
-    if (customers.length !== value.customers.length || vehicles.length !== value.vehicles.length || jobs.length !== value.jobs.length) {
-      return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements, warranties:rawWarranties,warrantyClaims:rawClaims,nextServices:rawNext,invoices:rawInvoices,payments:rawPayments, suppliers:[], purchaseNeeds:[], purchaseOrders:[], goodsReceipts:[] }, recovered: true, message: 'Some invalid saved records were skipped. The original browser data was not overwritten until you save a change.' };
-    }
-    // Phase 1 records predate Queue metadata. Add an in-memory starting point and
-    // persist it only when the user next saves a normal Workshop Job change.
-    for (const job of jobs) ensureOperations(job);
-    const rawSuppliers=value.suppliers===undefined?[]:value.suppliers,rawNeeds=value.purchaseNeeds===undefined?[]:value.purchaseNeeds,rawPOs=value.purchaseOrders===undefined?[]:value.purchaseOrders,rawReceipts=value.goodsReceipts===undefined?[]:value.goodsReceipts;
-    const suppliers=Array.isArray(rawSuppliers)?rawSuppliers.filter(isSupplier):[],purchaseNeeds=Array.isArray(rawNeeds)?rawNeeds.filter(isPurchaseNeed):[],purchaseOrders=Array.isArray(rawPOs)?rawPOs.filter(isPurchaseOrder):[],goodsReceipts=Array.isArray(rawReceipts)?rawReceipts.filter(isGoodsReceipt):[];
-    const procurementRecovered=!Array.isArray(rawSuppliers)||!Array.isArray(rawNeeds)||!Array.isArray(rawPOs)||!Array.isArray(rawReceipts)||suppliers.length!==rawSuppliers.length||purchaseNeeds.length!==rawNeeds.length||purchaseOrders.length!==rawPOs.length||goodsReceipts.length!==rawReceipts.length;
-    return { store: { version: STORE_VERSION, customers, vehicles, jobs, parts: rawParts, partMovements: rawMovements, warranties:rawWarranties,warrantyClaims:rawClaims,nextServices:rawNext,invoices:rawInvoices,payments:rawPayments,suppliers,purchaseNeeds,purchaseOrders,goodsReceipts }, recovered: procurementRecovered, message: procurementRecovered?'Some invalid Procurement records were skipped. Existing Workshop data was preserved.':'' };
+    const store = candidate as WorkshopStore;
+    const customerIds = new Set(store.customers.map(customer => customer.id)), vehicleIds = new Set(store.vehicles.map(vehicle => vehicle.id));
+    if (store.jobs.some(job => !customerIds.has(job.customerId) || !vehicleIds.has(job.vehicleId))) return invalid('Saved jobs have missing customer or vehicle references.');
+    for (const job of store.jobs) { ensureOperations(job); job.observations ??= []; }
+    return result(store);
   } catch {
-    return { store: emptyStore(), recovered: true, message: 'Saved workshop data could not be read. The original browser data was left untouched.' };
+    return invalid('Saved workshop data could not be read or migrated.');
   }
 }
 
-export function saveStore(store: WorkshopStore, storage: StorageLike): { ok: boolean; message: string } {
+export function saveStore(store: WorkshopStore, storage: StorageLike, expectedRaw?: string | null): { ok: boolean; message: string } {
   if (store.version !== STORE_VERSION) return { ok: false, message: 'This workshop data version cannot be saved.' };
-  try { storage.setItem(STORAGE_KEY, JSON.stringify(store)); return { ok: true, message: '' }; }
+  const origin = origins.get(store);
+  if (origin?.blocked) return { ok: false, message: 'Saving is blocked to preserve unreadable original workshop records. Nothing was saved.' };
+  try {
+    const current = storage.getItem(STORAGE_KEY);
+    const expected = expectedRaw !== undefined ? expectedRaw : origin?.storage === storage ? origin.raw : undefined;
+    if (expected !== undefined && current !== expected) return { ok: false, message: 'Workshop records changed in another tab. Reload before saving; nothing was saved.' };
+    if (loadStore({ getItem: () => current, setItem: () => {} }).recovered) return { ok: false, message: 'Saving is blocked to preserve unreadable original workshop records. Nothing was saved.' };
+    const serialized = JSON.stringify(store);
+    if (loadStore({ getItem: () => serialized, setItem: () => {} }).recovered) return { ok: false, message: 'This change contains invalid workshop records. Nothing was saved.' };
+    storage.setItem(STORAGE_KEY, serialized);
+    origins.set(store, { raw: serialized, blocked: false, storage });
+    return { ok: true, message: '' };
+  }
   catch { return { ok: false, message: 'Browser storage is full or unavailable. Your latest change was not saved.' }; }
 }
 
@@ -183,12 +208,41 @@ function isPayment(value:unknown):boolean {
   return isRecord(value)&&['paymentId','invoiceId','paidAt','createdAt'].every(k=>typeof value[k]==='string')&&['Payment','Reversal'].includes(String(value.kind))&&Number.isSafeInteger(value.amount)&&Number(value.amount)>0&&(value.method===undefined||['Cash','Bank Transfer','Card','Digital Payment','Other'].includes(String(value.method)))&&(value.reference===undefined||typeof value.reference==='string')&&(value.note===undefined||typeof value.note==='string')&&(value.reversalOfPaymentId===undefined||typeof value.reversalOfPaymentId==='string')&&(value.reversalReason===undefined||typeof value.reversalReason==='string')&&(value.receiptNumber===undefined||typeof value.receiptNumber==='string')&&(value.kind==='Payment'?typeof value.method==='string'&&typeof value.receiptNumber==='string':typeof value.reversalOfPaymentId==='string'&&typeof value.reversalReason==='string');
 }
 function isIntake(value: unknown): boolean { return isRecord(value) && typeof value.number === 'string' && typeof value.complaint === 'string' && Array.isArray(value.accessories) && value.accessories.every(x => typeof x === 'string') && typeof value.conditionNotes === 'string' && typeof value.date === 'string' && typeof value.arrivalTime === 'string'; }
+const stringFields = (value: Record<string, unknown>, fields: string[]) => fields.every(field => typeof value[field] === 'string');
+const numericFields = (value: Record<string, unknown>, fields: string[]) => fields.every(field => typeof value[field] === 'number' && Number.isFinite(value[field]));
+function safeInspection(value: unknown): boolean {
+  return isRecord(value) && typeof value.findings === 'string' && numericFields(value, ['consumables','additionalCost','discount','taxRate'])
+    && Array.isArray(value.checklist) && value.checklist.every(group => isRecord(group) && typeof group.category === 'string' && isRowArray(group.items) && group.items.every(item => stringFields(item,['name','note']) && ['Good','Monitor','Service','Replace','Not checked','Not applicable'].includes(String(item.status))))
+    && isRowArray(value.recommendedJobs) && value.recommendedJobs.every(row => stringFields(row,['id','name','detail']) && typeof row.approved === 'boolean' && ['Urgent','Recommended','Can wait'].includes(String(row.priority)))
+    && isRowArray(value.parts) && value.parts.every(row => stringFields(row,['id','name','partNumber','unit']) && numericFields(row,['quantity','unitPrice']))
+    && isRowArray(value.labor) && value.labor.every(row => stringFields(row,['id','name']) && ['fixed','hourly'].includes(String(row.mode)) && numericFields(row,['hours','rate','fixed']))
+    && ['approvedAt','approvedBy'].every(field => value[field] === undefined || typeof value[field] === 'string')
+    && ['revision','approvedRevision'].every(field => value[field] === undefined || Number.isSafeInteger(value[field]) && Number(value[field]) >= 0);
+}
+function safeWorkOrder(value: unknown): boolean {
+  const workRows = (rows: unknown) => isRowArray(rows) && rows.every(row => stringFields(row,['id','name','detail','mechanic']) && ['Not started','In progress','Complete','Paused','Cancelled'].includes(String(row.status)));
+  return isRecord(value) && stringFields(value,['number','date','mechanic','startTime','endTime','mechanicNotes','result','recommendations','signoff'])
+    && ['Not started','In progress','Complete','Paused','Cancelled'].includes(String(value.status)) && workRows(value.approvedWork) && workRows(value.actualWork)
+    && isRowArray(value.parts) && value.parts.every(row => stringFields(row,['id','name','partNumber','unit','notes']) && numericFields(row,['quantity']) && (row.partId === undefined || typeof row.partId === 'string'))
+    && isRowArray(value.changes) && value.changes.every(row => stringFields(row,['id','work','reason','notes']) && ['Awaiting approval','Approved','Deferred','Declined'].includes(String(row.approval)))
+    && (value.noRepairReason === undefined || typeof value.noRepairReason === 'string') && (value.noRepairAcknowledged === undefined || typeof value.noRepairAcknowledged === 'boolean');
+}
+function safeQC(value: unknown): boolean {
+  return isRecord(value) && stringFields(value,['number','date','inspector','mechanic','roadTester','roadTestNotes','readinessNotes','recommendations','customerNotes','handoverRecipient','handoverStaff','handoverDate','handoverTime'])
+    && ['In progress','Rework required','Ready for handover'].includes(String(value.finalStatus)) && ['Completed','Not completed','Not required'].includes(String(value.roadTest))
+    && isRowArray(value.checks) && value.checks.every(row => stringFields(row,['name','note']) && ['Pass','Needs attention','Not applicable','Not checked'].includes(String(row.result)))
+    && isRowArray(value.unresolvedIssues) && value.unresolvedIssues.every(row => stringFields(row,['id','issue','recommendation']) && ['Customer deferred','Needs follow-up'].includes(String(row.status)) && (row.deferralReason === undefined || typeof row.deferralReason === 'string'))
+    && Array.isArray(value.returnedItems) && value.returnedItems.every(item => typeof item === 'string')
+    && ['odometerBefore','odometerAfter'].every(field => value[field] === null || typeof value[field] === 'number' && Number.isFinite(value[field]));
+}
 function isJob(value: unknown): value is WorkshopJob {
   if (!isRecord(value) || typeof value.id !== 'string' || typeof value.customerId !== 'string' || typeof value.vehicleId !== 'string' || typeof value.number !== 'string' || !['intake','inspection','work-order','qc','completed'].includes(String(value.status)) || !isIntake(value.intake) || typeof value.createdAt !== 'string' || typeof value.updatedAt !== 'string') return false;
+  if (!value.id || !Number.isFinite(Date.parse(value.createdAt)) || !Number.isFinite(Date.parse(value.updatedAt))) return false;
   if(value.serviceOdometer!==undefined&&value.serviceOdometer!==null&&(typeof value.serviceOdometer!=='number'||!Number.isFinite(value.serviceOdometer)||value.serviceOdometer<0))return false;
-  if (value.inspection != null && (!isRecord(value.inspection) || !Array.isArray(value.inspection.checklist) || !value.inspection.checklist.every(group => isRecord(group) && typeof group.category === 'string' && isRowArray(group.items)) || !isRowArray(value.inspection.recommendedJobs) || !isRowArray(value.inspection.parts) || !isRowArray(value.inspection.labor))) return false;
-  if (value.workOrder != null && (!isRecord(value.workOrder) || !isRowArray(value.workOrder.approvedWork) || !isRowArray(value.workOrder.actualWork) || !isRowArray(value.workOrder.parts) || !isRowArray(value.workOrder.changes))) return false;
-  if (value.qc != null && (!isRecord(value.qc) || !isRowArray(value.qc.checks) || !isRowArray(value.qc.unresolvedIssues) || !Array.isArray(value.qc.returnedItems))) return false;
-  if (value.operations != null && (!isRecord(value.operations) || typeof value.operations.waitingParts !== 'boolean' || !Array.isArray(value.operations.history) || !value.operations.history.every(entry => isRecord(entry) && typeof entry.status === 'string' && typeof entry.at === 'string'))) return false;
+  if (value.observations !== undefined && (!Array.isArray(value.observations) || value.observations.length > MAX_OBSERVATIONS || !value.observations.every(isEngineObservation) || new Set(value.observations.map(item => item.id)).size !== value.observations.length)) return false;
+  if (value.inspection != null && !safeInspection(value.inspection)) return false;
+  if (value.workOrder != null && !safeWorkOrder(value.workOrder)) return false;
+  if (value.qc != null && !safeQC(value.qc)) return false;
+  if (value.operations != null && (!isRecord(value.operations) || typeof value.operations.waitingParts !== 'boolean' || (value.operations.waitingPartsReason !== undefined && typeof value.operations.waitingPartsReason !== 'string') || !Array.isArray(value.operations.history) || !value.operations.history.every(entry => isRecord(entry) && typeof entry.status === 'string' && typeof entry.at === 'string' && Number.isFinite(Date.parse(entry.at)) && (entry.reason === undefined || typeof entry.reason === 'string')))) return false;
   return true;
 }

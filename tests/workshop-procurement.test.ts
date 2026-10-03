@@ -19,7 +19,7 @@ function jobNeed(f:ReturnType<typeof fixture>,qty=2){const r=createPurchaseNeed(
 function issuePO(f:ReturnType<typeof fixture>,needIds:string[]){const s=supplier(f.store);const d=createPurchaseOrderDraft(f.store,needIds,s.supplierId,now);if(!d.ok)throw Error(d.message);const po=d.value;const lines=po.lines.map(l=>({...l,agreedUnitCost:100_000}));const edited=updateDraftPO(f.store,po.poId,{supplierId:s.supplierId,lines},now);if(!edited.ok)throw Error(edited.message);const issued=issuePurchaseOrder(f.store,po.poId,now);if(!issued.ok)throw Error(issued.message);return issued.value;}
 
 test('pre-Phase-3B stores load with empty procurement collections and preserve existing records',()=>{
-  const {store,job,part}=fixture();const legacy=structuredClone(store) as unknown as Record<string,unknown>;delete legacy.suppliers;delete legacy.purchaseNeeds;delete legacy.purchaseOrders;delete legacy.goodsReceipts;
+  const {store,job,part}=fixture();const legacy=structuredClone(store) as unknown as Record<string,unknown>;legacy.version=1;delete legacy.suppliers;delete legacy.purchaseNeeds;delete legacy.purchaseOrders;delete legacy.goodsReceipts;
   const storage={getItem:()=>JSON.stringify(legacy),setItem:()=>{throw Error('should not save on read');}};const loaded=loadStore(storage);assert.equal(loaded.recovered,false);assert.equal(loaded.store.jobs[0]?.id,job.id);assert.equal(loaded.store.parts[0]?.id,part.id);assert.deepEqual(loaded.store.purchaseOrders,[]);assert.deepEqual(loaded.store.goodsReceipts,[]);
 });
 test('Supplier IDs are stable; edits retain identity and Part supplier text stays independent',()=>{

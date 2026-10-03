@@ -1,4 +1,6 @@
 ---
+import LocalJobContext from '../../../components/LocalJobContext.astro';
+import JourneyCards from '../../../components/JourneyCards.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import { REFERENCE_CASES } from '../../../lib/validation/reference.ts';
@@ -7,7 +9,7 @@ const title = 'DSP Validation Workbench — Known Signals | WorkshopGirl';
 const description = 'Engineering checks for known digital reference signals. Validate DSP outputs locally, then follow a separate physical-device measurement protocol.';
 const canonical = 'https://workshopgirl.com/tools/dsp-validation/';
 ---
-<!doctype html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" /><link rel="icon" type="image/svg+xml" href="/favicon.svg" /></head>
+<!doctype html><html lang="en"><head><LocalJobContext /><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" /><link rel="icon" type="image/svg+xml" href="/favicon.svg" /></head>
 <body><a class="skip-link" href="#main">Skip to validation</a><SiteHeader current="tools" /><main id="main"><div class="hero"><a class="eyebrow" href="/tools/engine-sound-analyzer/">Engine Analyzer / Advanced engineering</a><h1>Known input.<br /><span>Measured output.</span></h1><p>DSP software checks using deterministic digital signals. No microphone permission, playback or audio upload.</p></div>
   <section class="validation-workbench" id="reference-validation" aria-labelledby="reference-heading"><h2 id="reference-heading">Reference validation</h2><p>One second of generated PCM passes through the shared offline DSP worker path. Results compare measured frequencies, amplitudes and RMS with documented targets. This checks software, not your microphone or physical device.</p>
     <noscript><p class="notice">Enable JavaScript to run the local validation worker.</p></noscript>
@@ -22,4 +24,5 @@ const canonical = 'https://workshopgirl.com/tools/dsp-validation/';
     <p>Keep phones, hands and cables clear of moving or hot machinery. Digital dBFS is not calibrated acoustic SPL. Measurement consistency is not engine health.</p>
     <p><a href="/tools/sound-analyzer/">General Sound Analyzer</a> · <a href="/tools/">All tools</a></p>
   </section>
-</main><SiteFooter /><script>import { mountReferenceValidation } from '../../../components/validation/controller'; mountReferenceValidation(document.querySelector<HTMLElement>('#reference-validation')!);</script></body></html>
+<JourneyCards />
+  </main><SiteFooter /><script>import { mountReferenceValidation } from '../../../components/validation/controller'; mountReferenceValidation(document.querySelector<HTMLElement>('#reference-validation')!);</script></body></html>

@@ -1,4 +1,6 @@
 ---
+import LocalJobContext from '../../../components/LocalJobContext.astro';
+import JourneyCards from '../../../components/JourneyCards.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import Analyzer from '../../../components/sound-analyzer/Analyzer.astro';
@@ -9,7 +11,7 @@ const description = 'Analyze live microphone sound or local audio files in your 
 const canonical = 'https://workshopgirl.com/tools/sound-analyzer/';
 ---
 <!doctype html>
-<html lang="en"><head>
+<html lang="en"><head><LocalJobContext />
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" />
@@ -28,5 +30,6 @@ const canonical = 'https://workshopgirl.com/tools/sound-analyzer/';
       <h3>Your sound stays here</h3><p>Audio is decoded and analyzed locally. This page includes no analytics or audio upload service. Recording formats depend on your browser. Snapshots are held in memory only; use Download clip to keep a recording. Clear clip or leave this page to release it.</p>
       <p>Working with an engine? Try the <a href="/tools/engine-sound-analyzer/">Engine Sound Analyzer</a> for live snapshots, harmonics and optional RPM references. Continue with <a href="/tutorials/">WorkshopGirl’s practical tutorials</a> or the <a href="/tools/">digital workbench</a>.</p>
     </section>
+  <JourneyCards />
   </main><SiteFooter />
 </body></html>

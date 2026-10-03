@@ -54,10 +54,12 @@ export interface WorkshopJob {
   serviceOdometer?: number | null;
   /** Optional, additive local metadata. Phase 1 records without it remain valid. */
   operations?: WorkshopOperationsState;
+  /** Explicit local evidence only; bounded scalar summaries, never audio or spectrum buffers. */
+  observations?: import('./observation-summary.ts').EngineObservationSummary[];
   createdAt: string; updatedAt: string;
 }
 export interface WorkshopStore {
-  version: 1; customers: Customer[]; vehicles: Vehicle[]; jobs: WorkshopJob[];
+  version: 2; customers: Customer[]; vehicles: Vehicle[]; jobs: WorkshopJob[];
   /** Additive local inventory ledger. Missing arrays are initialized on load. */
   parts: WorkshopPart[]; partMovements: PartMovement[];
   /** Additive local service follow-up metadata; history itself is always projected from jobs. */

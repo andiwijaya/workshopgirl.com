@@ -1,4 +1,7 @@
 ---
+import JourneyCards from '../../../components/JourneyCards.astro';
+import TutorialTopics from '../../../components/TutorialTopics.astro';
+import { tutorialCategory } from '../../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../../components/ShareButton.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
@@ -10,7 +13,7 @@ const hero = 'https://workshopgirl.com/images/tutorials/cordless-drill/workshopg
 const schema = {
   '@context': 'https://schema.org', '@type': 'Article', headline: 'How to Use a Cordless Drill: A Beginner’s Guide',
   description, url: canonical, image: hero, datePublished: '2026-09-22', dateModified: '2026-09-22',
-  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' }, publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: 'Tools / Drilling / Woodworking'
+  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' }, publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: tutorialCategory(canonical)
 };
 ---
 <!doctype html>
@@ -18,7 +21,7 @@ const schema = {
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content="How to Use a Cordless Drill: A Beginner’s Guide" /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content="Tools / Drilling / Woodworking" /><meta property="article:published_time" content="2026-09-22" /><meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:title" content="How to Use a Cordless Drill: A Beginner’s Guide" /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content={tutorialCategory(canonical)} /><meta property="article:published_time" content="2026-09-22" /><meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{title}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
@@ -28,7 +31,7 @@ const schema = {
     </style>
   </head>
   <body><div class="shell"><SiteHeader current="tutorials" /><main>
-    <a class="back" href="/tutorials/">← Back to tutorials</a><div class="eyebrow">Tutorials / Tools / Drilling / Woodworking</div><h1>How to Use a Cordless Drill: A Beginner’s Guide</h1><p class="dek">A cordless drill looks simple — pull the trigger and it spins. A few controls make the difference between a clean hole and a stripped screw, split wood or broken bit.</p><div class="byline">Published September 22, 2026 · Workshop Girl</div><ShareButton title="How to Use a Cordless Drill: A Beginner’s Guide" canonical={canonical} />
+    <a class="back" href="/tutorials/">← Back to tutorials</a><TutorialTopics /><h1>How to Use a Cordless Drill: A Beginner’s Guide</h1><p class="dek">A cordless drill looks simple — pull the trigger and it spins. A few controls make the difference between a clean hole and a stripped screw, split wood or broken bit.</p><div class="byline">Published September 22, 2026 · Workshop Girl</div><ShareButton title="How to Use a Cordless Drill: A Beginner’s Guide" canonical={canonical} />
     <article>
       <figure class="hero"><img src="/images/tutorials/cordless-drill/workshopgirl-cordless-drill-pilot-hole.webp?v=1" alt="WorkshopGirl using a cordless drill to drill a pilot hole in a clamped wooden board" width="1672" height="941" fetchpriority="high" /><figcaption>A securely clamped workpiece gives the drill a stable, controlled starting point.</figcaption></figure>
       <p>A modern drill/driver is really two closely related tools in one: the <strong>drill</strong> makes holes, while the <strong>driver</strong> drives and removes screws. This guide shows how to use both sides of the tool without fighting it.</p>
@@ -52,5 +55,6 @@ const schema = {
       <div class="related"><strong>Keep learning:</strong> <a href="/tutorials/how-to-use-a-torque-wrench/">How to Use a Torque Wrench — A Beginner’s Guide</a></div>
       <div class="closing"><h2>Final Thoughts</h2><p>Good drilling is controlled drilling. Choose the right bit, clamp the work, start slowly, let the tool do the cutting and use the clutch when you are driving. Once those habits become automatic, the cordless drill becomes a remarkably friendly workshop tool.</p></div>
     </article>
+  <JourneyCards />
   </main><SiteFooter /></div></body>
 </html>

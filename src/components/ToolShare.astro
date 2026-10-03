@@ -12,6 +12,14 @@ const { title, description, canonical } = Astro.props;
   <span class="tool-share-status" role="status" aria-live="polite"></span>
 </div>
 
+<style>
+  .tool-share{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .share-tool-button{min-height:44px;padding:10px 14px;cursor:pointer;font:600 .85rem 'DM Sans',sans-serif;border:1px solid #655f59;border-radius:3px;background:#fffaf4;color:#171717}
+  .share-tool-button:hover{background:#171717;color:white}
+  .share-tool-button:focus-visible{outline:3px solid #ab2457;outline-offset:3px}
+  .tool-share-status{font-size:.85rem}
+</style>
+
 <script>
   document.querySelectorAll<HTMLElement>('.tool-share:not([data-ready])').forEach(container => {
     container.dataset.ready = 'true';
@@ -20,12 +28,14 @@ const { title, description, canonical } = Astro.props;
     if (!button || !status) return;
 
     const copyLink = async () => {
-      const url = container.dataset.canonical ?? window.location.href;
+      const url = new URL(container.dataset.canonical ?? window.location.pathname, window.location.origin);
+      url.search = ''; url.hash = '';
+      const publicUrl = url.href;
       try {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(publicUrl);
       } catch {
         const input = document.createElement('textarea');
-        input.value = url;
+        input.value = publicUrl;
         input.setAttribute('readonly', '');
         input.style.position = 'fixed';
         input.style.opacity = '0';

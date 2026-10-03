@@ -1,0 +1,8 @@
+---
+import { subjectsForTutorial, tutorialSubjects } from '../data/tutorial-taxonomy.ts';
+const subjects = subjectsForTutorial(Astro.url.pathname);
+---
+<nav class="tutorial-topics" aria-label="Tutorial subjects"><a href="/tutorials/">Learn</a>{subjects.map(id => <><span aria-hidden="true"> / </span><a href={'/tutorials/#' + tutorialSubjects[id].anchor}>{tutorialSubjects[id].label}</a></>)}</nav>
+<style>
+  .tutorial-topics{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#ab2457;font-size:.8rem;font-weight:700;margin:32px 0 12px}.tutorial-topics a{display:inline-flex;align-items:center;min-height:44px;text-underline-offset:4px}.tutorial-topics a:focus-visible{outline:3px solid #ab2457;outline-offset:3px}
+</style>

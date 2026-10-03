@@ -6,6 +6,7 @@ export type DiarySummary = {
   image: string;
   imageAlt: string;
   published: string;
+  publishedAt: string;
 };
 
 export const diaryEntries: DiarySummary[] = [
@@ -17,5 +18,6 @@ export const diaryEntries: DiarySummary[] = [
     image: '/images/diary/workshopgirl-diary-stubborn-bolt.webp?v=1',
     imageAlt: 'Workshop Girl sitting beside an exposed car suspension with a breaker bar after struggling with a stubborn fastener.',
     published: 'September 22, 2026',
+    publishedAt: '2026-09-22',
   },
 ];

@@ -1,0 +1,15 @@
+---
+import { journeys, journeyForPath, journeyLinks, type Journey } from '../data/journeys.ts';
+import { workshopPages } from '../lib/workshop/navigation.ts';
+const id = journeyForPath(Astro.url.pathname);
+const journey: Journey | undefined = id ? journeys[id] : undefined;
+const links = id ? journeyLinks(id, Astro.url.pathname) : [];
+---
+{journey && <aside class="journey" data-journey={id} aria-labelledby={'journey-' + id}>
+  <p class="journey-label">Continue in WorkshopGirl</p><h2 id={'journey-' + id}>{journey.title}</h2><p>{journey.intro}</p>
+  <ul class="journey-links">{links.map(link => <li><a href={link.href}><span>{link.kind}</span>{link.title}</a></li>)}</ul>
+  {journey.workflow && <details><summary>Continue an existing job through the workflow</summary><p>Choose a saved local job on Inspection or resume it from <a href="/tools/workshop/queue/">Queue</a>. The same job stays selected as you move through its pages. Service History shows completed visits.</p><ul class="journey-links">{journey.workflow.map(id => { const page = workshopPages.find(page => page.id === id)!; return <li><a href={page.href}>{page.label}</a></li>; })}</ul></details>}
+</aside>}
+<style>
+  .journey{background:#fffaf4;border:1px solid #ded8d0;border-top:3px solid #e58445;margin:36px 0;padding:24px;color:#171717}.journey-label{color:#ab2457;font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;margin:0 0 12px}.journey h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.04em;line-height:1.2;margin:0 0 16px}.journey>p:not(.journey-label),.journey details p{color:#655f59;font-size:1rem;line-height:1.65}.journey-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;list-style:none;padding:0;margin:20px 0 0}.journey-links li{margin:0;padding:0;min-width:0}.journey a{color:#171717;text-underline-offset:4px}.journey-links a{display:block;min-height:48px;font-size:.95rem;font-weight:700;line-height:1.5;border:1px solid #ded8d0;padding:12px}.journey-links span{display:block;color:#655f59;font-size:.75rem;font-weight:400}.journey a:hover{color:#ab2457}.journey details{margin-top:20px}.journey summary{min-height:44px;padding:12px 0;cursor:pointer;font-weight:700}.journey :focus-visible{outline:3px solid #ab2457;outline-offset:3px}@media(max-width:520px){.journey{padding:20px}}
+</style>

@@ -1,0 +1,9 @@
+---
+import DiscoveryLayout from '../../components/DiscoveryLayout.astro';
+import { stories, storySections } from '../../data/stories.ts';
+---
+<DiscoveryLayout title="Stories from Workshop Girl | WorkshopGirl" description="Workshop diaries, projects and new adventures: the stories behind the work and a little beyond the bench." canonical="https://workshopgirl.com/stories/">
+  <div class="eyebrow">From the bench and beyond</div><h1>Stories behind the work.</h1><p class="lead">Stubborn bolts, a motorcycle brought back to life, and the next wall to climb. A little patience goes a long way.</p>
+  <nav class="category-links" aria-label="Story sections">{storySections.filter(section => section.items.length).map(section => <a href={section.href}>{section.label}</a>)}</nav>
+  <section aria-label="Recent stories"><div class="card-grid">{stories.map(story => <article class="discovery-card"><img src={story.image} alt={story.imageAlt} width="1672" height="941" loading="lazy" /><p class="eyebrow">{story.kind}</p><h2>{story.title}</h2><p>{story.excerpt}</p><time datetime={story.publishedAt}>{story.published}</time><p><a href={story.slug}>Read the story</a></p></article>)}</div></section>
+</DiscoveryLayout>

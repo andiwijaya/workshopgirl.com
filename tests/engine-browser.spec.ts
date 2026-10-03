@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { syntheticMicrophone, audioState, wav, upload } from './audio-fixtures';
+import { syntheticMicrophone, waitForPendingMicrophone, audioState, wav, upload } from './audio-fixtures';
 
 const route = '/tools/engine-sound-analyzer/';
 async function startLive(page: Page) {
@@ -153,11 +153,11 @@ test('A stalled live worker releases resources and falls back without unbounded 
 
 test('Engine permission cancellation and background cleanup do not revive stale input', async ({ page }) => {
   await syntheticMicrophone(page, true); await page.goto(route); await startLive(page);
-  await expect.poll(async () => (await audioState(page)).calls).toBe(1); await stopLive(page);
+  await waitForPendingMicrophone(page); await stopLive(page);
   await page.evaluate(() => (window as unknown as { audioTest: { resolve: () => void } }).audioTest.resolve());
   await expect.poll(async () => (await audioState(page)).tracks.every(s => s === 'ended')).toBe(true);
   await startLive(page);
-  await expect.poll(async () => (await audioState(page)).calls).toBe(2);
+  await waitForPendingMicrophone(page, 2);
   await page.evaluate(() => (window as unknown as { audioTest: { resolve: () => void } }).audioTest.resolve());
   await expect(page.locator('#analyzer-technical-note')).toContainText('sample-clock capture');
   await page.evaluate(() => { Object.defineProperty(document, 'hidden', { value: true, configurable: true }); document.dispatchEvent(new Event('visibilitychange')); });

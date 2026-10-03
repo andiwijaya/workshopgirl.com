@@ -6,6 +6,7 @@ export type SportActivity = {
   image: string;
   imageAlt: string;
   published: string;
+  publishedAt: string;
 };
 
 export const sportActivities: SportActivity[] = [
@@ -17,5 +18,6 @@ export const sportActivities: SportActivity[] = [
     image: '/images/sport/rock-climbing/workshopgirl-indoor-rock-climbing.webp',
     imageAlt: 'Workshop Girl climbing an indoor wall as a belayer manages the rope below.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
 ];

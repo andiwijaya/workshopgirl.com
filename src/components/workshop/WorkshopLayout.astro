@@ -1,40 +1,47 @@
 ---
+import { workshopPages } from '../../lib/workshop/navigation.ts';
+import { workshopFlow } from '../../data/journeys.ts';
 import SiteHeader from '../SiteHeader.astro';
 import SiteFooter from '../SiteFooter.astro';
 import ToolShare from '../ToolShare.astro';
+import LocalJobContext from '../LocalJobContext.astro';
 import '../../styles/workshop-operations.css';
 interface Props { title: string; description: string; canonical: string; step: string; heading: string; intro: string }
 const { title, description, canonical, step, heading, intro } = Astro.props;
-const steps = [
-  ['intake', 'Vehicle Intake', '/tools/workshop/vehicle-intake/'],
-  ['inspection', 'Inspection & Estimate', '/tools/workshop/inspection-estimate/'],
-  ['work-order', 'Work Order', '/tools/workshop/work-order/'],
-  ['qc', 'QC & Handover', '/tools/workshop/qc-handover/'],
-  ['queue', 'Queue / Job Status', '/tools/workshop/queue/'],
-  ['parts-inventory', 'Parts Inventory', '/tools/workshop/parts-inventory/'],
-  ['service-history', 'Service History & Warranty', '/tools/workshop/service-history/'],
-  ['billing', 'Billing', '/tools/workshop/billing/'],
-  ['procurement', 'Procurement', '/tools/workshop/procurement/'],
-];
+const steps = workshopPages;
+const printKind = steps.find(page => page.id === step)?.print;
 ---
 <!doctype html><html lang="en"><head>
+  <LocalJobContext />
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width" />
   <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head><body>
-  <a class="skip-link" href="#main" tabindex="0">Skip to workshop tool</a><SiteHeader current="tools" />
-  <main id="main" class="workshop-page" tabindex="-1" data-workshop-step={step}>
-    <div class="workshop-hero"><a class="eyebrow" href="/tools/">WorkshopGirl / Digital workbench</a><p class="operation-label">Workshop Operations</p><h1>{heading}</h1><p>{intro}</p><ToolShare title={title} description={description} canonical={canonical} /></div>
-    <nav class="workshop-steps" aria-label="Workshop job pages">
-      {steps.map(([id, label, href], index) => <a href={href} data-step-link={id} aria-current={step === id ? 'step' : undefined} class:list={{ 'is-current': step === id }}><span>{id === 'queue' ? '↗' : index + 1}</span>{label}</a>)}
-    </nav>
+  <a class="skip-link" href="#main" tabindex="0">Skip to workshop tool</a><SiteHeader current="workshop" />
+  <noscript><p>Enable JavaScript to work with local records. Your saved records have not been changed.</p></noscript>
+  <main id="main" class="workshop-page" tabindex="-1" data-workshop-step={step} data-workshop-controls inert aria-busy="true">
+    <div class="workshop-hero"><a class="eyebrow" href="/workshop/">WorkshopGirl / Workshop</a><p class="operation-label">Workshop Operations</p><h1>{heading}</h1><p>{intro}</p><ToolShare title={title} description={description} canonical={canonical} /></div>
+    <div class="workshop-steps">
+      <p class="workflow-label">Service workflow</p>
+      <nav class="workshop-step-group" aria-label="Workshop job pages">
+        {workshopFlow.stages.map((stage, index) => { const page = steps.find(page => page.id === stage.page)!; return <a href={page.href} data-step-link={page.id} aria-current={step === page.id ? 'page' : undefined} class:list={{ 'is-current': step === page.id }} title={stage.description}><span aria-hidden="true">{index + 1}</span>{page.label}</a>; })}
+      </nav>
+      <p class="workflow-label">Supporting operations — use when needed</p>
+      <nav class="workshop-step-group" aria-label="Supporting workshop operations">
+        {workshopFlow.support.map(id => { const page = steps.find(page => page.id === id)!; return <a href={page.href} data-step-link={page.id} aria-current={step === page.id ? 'page' : undefined} class:list={{ 'is-current': step === page.id }}>{page.label}</a>; })}
+      </nav>
+    </div>
     <p class="workshop-status" id="workshop-status" role="status" aria-live="polite" hidden></p>
+    <p class="local-storage-note">Saved records stay in this browser profile on this device. Clearing browser data removes them; there is no server backup or cross-device sync.</p>
+    <section id="workshop-empty" class="workshop-job-context" hidden aria-label="Getting started"></section>
     <div class="workshop-job-context" id="workshop-job-context" hidden></div>
     <div class="workshop-job-picker" id="workshop-job-picker" hidden></div>
+    {['inspection','work-order'].includes(step) && <section id="job-observations" class="workshop-card" aria-label="Observation evidence" hidden></section>}
+    <p id="workshop-loading" role="status">Loading local workshop controls...</p>
     <slot />
     <section class="print-sheet" id="print-sheet" hidden aria-label="Printable workshop document"><div class="print-brand">Workshop<span>Girl</span> · Workshop Operations</div><h2 id="print-title"></h2><div id="print-content"></div></section>
-    <div class="workshop-page-actions"><a class="button-link button-secondary" href="/tools/">All tools</a><button class="button-secondary" type="button" data-print>Print / Save as PDF</button></div>
+    <div class="workshop-page-actions"><a class="button-link button-secondary" href="/workshop/">Workshop home</a>{printKind !== 'record' && <button class="button-secondary" type="button" data-print>{printKind === 'queue' ? 'Print queue summary' : printKind === 'parts' ? 'Print inventory summary' : 'Print / Save as PDF'}</button>}</div>
   </main>
   <SiteFooter />
   <script>import { mountWorkshopPage } from './operations.ts'; mountWorkshopPage(document.querySelector<HTMLElement>('#main')!);</script>

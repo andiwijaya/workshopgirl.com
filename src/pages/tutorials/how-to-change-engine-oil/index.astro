@@ -1,6 +1,9 @@
 ---
+import TutorialTopics from '../../../components/TutorialTopics.astro';
+import { tutorialCategory } from '../../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../../components/ShareButton.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
+import JourneyCards from "../../../components/JourneyCards.astro";
 import SiteFooter from '../../../components/SiteFooter.astro';
 
 const title = 'How to Change Engine Oil: Beginner’s Guide | WorkshopGirl';
@@ -19,7 +22,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/'
     <meta property="og:type" content="article" />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content="https://workshopgirl.com/images/tutorials/engine-oil/workshopgirl-engine-oil-preparation.webp?v=2" />
-    <meta property="article:section" content="Engines" />
+    <meta property="article:section" content={tutorialCategory(canonical)} />
     <meta property="article:published_time" content="2026-09-21" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
@@ -73,7 +76,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/'
       <SiteHeader current="tutorials" />
       <main>
         <a class="back" href="/tutorials/">← Back to tutorials</a>
-        <div class="eyebrow">Tutorials / Engines</div>
+        <TutorialTopics />
         <h1>How to Change Engine Oil — A Beginner’s Guide</h1>
         <p class="dek">Changing engine oil is one of the most useful maintenance skills a beginner can learn. Done carefully, it gives you a better understanding of your vehicle and a solid workshop habit.</p>
         <div class="byline">Published September 21, 2026 · Workshop Girl</div>
@@ -140,7 +143,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/'
 
           <div class="related"><strong>Keep learning:</strong> <a href="/tutorials/how-to-change-a-flat-tire/">How to Change a Flat Tire — A Beginner’s Guide</a> · <a href="/tutorials/how-to-replace-brake-pads/">How to Replace Brake Pads — A Beginner’s Guide</a> · <a href="/tutorials/engine-air-filter/">How to Inspect, Clean or Replace Your Engine Air Filter</a></div>
           <div class="closing"><h2>Final Thoughts</h2><p>An oil change is a practical way to start understanding your machine. The procedure is straightforward, but the details belong to the specific vehicle in front of you. Check the manual, work methodically, and let good workshop habits do the heavy lifting.</p></div>
-        </article>
+        </article><JourneyCards />
       </main><SiteFooter />
     </div>
   </body>

@@ -1,4 +1,7 @@
 ---
+import JourneyCards from '../../components/JourneyCards.astro';
+import TutorialTopics from '../../components/TutorialTopics.astro';
+import { tutorialCategory } from '../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../components/ShareButton.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
@@ -13,7 +16,7 @@ const schema = {
   description, url: canonical, mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }, image: hero,
   datePublished: '2026-09-23', dateModified: '2026-09-23',
   author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
-  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: 'Tools / Drilling / Materials'
+  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: tutorialCategory(canonical)
 };
 ---
 <!doctype html>
@@ -21,7 +24,7 @@ const schema = {
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content="Tools / Drilling / Materials" /><meta property="article:published_time" content="2026-09-23" />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content={tutorialCategory(canonical)} /><meta property="article:published_time" content="2026-09-23" />
     <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
     <style>
@@ -43,7 +46,7 @@ const schema = {
     </style>
   </head>
   <body><div class="shell"><SiteHeader current="tutorials" /><main>
-    <a class="back" href="/tutorials/">← Back to tutorials</a><div class="eyebrow">Tutorials / Tools / Drilling / Materials</div><h1>{title}</h1>
+    <a class="back" href="/tutorials/">← Back to tutorials</a><TutorialTopics /><h1>{title}</h1>
     <p class="dek">Open a drill-bit case and the choices can look unnecessarily complicated. Some bits are long and spiral-shaped. Some are flat. Some look like tiny cutting cups. One looks like a staircase. Another barely resembles a conventional drill bit.</p>
     <p class="dek">Those shapes are not decoration. Geometry changes how a cutter starts, removes material, clears chips and controls the hole. The helpful question is not “what bit fits my drill?” It is “what material am I cutting, and what kind of hole do I need?”</p>
     <div class="byline">Published September 23, 2026 · Workshop Girl</div><ShareButton title={title} canonical={canonical} />
@@ -122,5 +125,6 @@ const schema = {
       </div></section>
       <div class="closing"><h2>Final thoughts</h2><p>A drill bit is a cutter with a particular geometry, not a universal pointed accessory. Start with the material and the hole you need, choose the bit that suits both, secure the work and follow the maker’s guidance. Once you recognize why the shapes differ, that crowded bit case gets a lot less mysterious.</p></div>
     </article>
+  <JourneyCards />
   </main><SiteFooter /></div></body>
 </html>

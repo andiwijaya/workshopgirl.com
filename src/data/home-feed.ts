@@ -1,23 +1,9 @@
-export type HomeContentKind = 'TUTORIAL' | 'DIARY' | 'PROJECT' | 'SPORT' | 'OUTDOOR';
+import { tutorials } from './tutorials.ts';
+import { stories } from './stories.ts';
+import { newestFirst } from './content-order.ts';
 
-export type HomeContentItem = {
-  kind: HomeContentKind;
-  title: string;
-  slug: string;
-  excerpt: string;
-  image: string;
-  imageAlt: string;
-  actionLabel: string;
-};
-
-export const latestFromWorkshopGirl: HomeContentItem[] = [
-  {
-    kind: 'SPORT',
-    title: 'Workshop Girl Tries Indoor Rock Climbing',
-    slug: '/sport/indoor-rock-climbing/',
-    excerpt: 'Up the wall, one hold at a time. A new challenge in balance, patience and trying again.',
-    image: '/images/sport/rock-climbing/workshopgirl-indoor-rock-climbing.webp',
-    imageAlt: 'Workshop Girl reaching for a hold while climbing an indoor wall.',
-    actionLabel: 'See the activity',
-  },
-];
+export const featuredLearning = ['/tutorials/how-to-replace-brake-pads/', '/tutorials/how-to-use-a-cordless-drill/', '/tutorials/how-to-use-a-multimeter'].map(slug => tutorials.find(item => item.slug === slug)!);
+export const latestContent = newestFirst([
+  ...tutorials.map(item => ({ ...item, excerpt: item.description, kind: 'Learn', actionLabel: 'Read the guide' })),
+  ...stories.map(item => ({ ...item, actionLabel: 'Read the story' })),
+]).slice(0, 3);
