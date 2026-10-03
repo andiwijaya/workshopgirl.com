@@ -1,6 +1,6 @@
 # WorkshopGirl V2 execution report
 
-Status: Phases 0-3 complete and tested. Phase 4 in progress; Phases 5-11 pending.
+Status: Phases 0-4 complete and tested. Phases 5-11 remain pending for the parent orchestrator.
 This is a sequential implementation checkpoint for the parent orchestrator, not completion of the master program.
 
 Authoritative scope: [complete master program](WORKSHOPGIRL_V2_MASTER_PROGRAM.md).
@@ -31,7 +31,7 @@ The master-program transcription retains all requirements; example code fences u
 | 1 Structure | Complete | Job context, valid/invalid/neutral states, print, Sport/current-state, canonicals, tools metadata, opening-soon | Typed workshop navigation + shared client context; existing controllers; header/footer; exact Cloudflare proxies |
 | 2 IA | Complete | Home/Learn/Tools/Workshop/Stories/About; nonempty real categories; preserve existing routes; desktop/mobile keyboard menus | Shared navigation config; label /tutorials/ as Learn; new /workshop/ and /stories/ discovery hubs; retain old sections and /tools/workshop/* |
 | 3 Homepage | Complete | Three action journeys, direct Engine/Sound/Speaker links, Start Job, useful recent learning, sorted dates, character/mobile performance | src/pages/index.astro, typed content arrays and existing character artwork; sort by ISO date with stable ties |
-| 4 Journeys | Pending | Engine observation → learning → optional inspection; maintenance → workflow; distinguish stages/support | src/data/journeys.ts and reusable JourneyCards.astro with validated route IDs and bounded contextual CTAs |
+| 4 Journeys | Complete | Engine observation → learning → optional inspection; maintenance → workflow; distinguish stages/support | src/data/journeys.ts and reusable JourneyCards.astro with validated route IDs and bounded contextual CTAs |
 | 5 Workshop | Pending | One local application dashboard; Start/Resume/waiting/parts/billing/history; four-stage progress; useful empty states/local clarity | Existing lib/workshop queue/parts/billing/history projections, new hub controller, WorkshopLayout and all nine existing views |
 | 6 Measurement bridge | Pending | Existing/new job attachment, structured observations only, visible inspection/work evidence; safe versioned migration and tests | model/store plus dedicated observation domain; MeasurementTools capture/export reuse; bounded summary, no audio/binaries/customer data in share URLs |
 | 7 Photo Lab | Pending | Local JPEG/PNG/WebP, calibration mm/cm/m/inch, optional four-corner perspective, distance/angle/polyline/area/circle, annotations/select/move/delete, undo/redo, zoom/pan, PNG/JSON, touch/a11y/help/privacy/math tests | New /tools/photo-measurement/ with pure geometry/state/export modules, Canvas UI and lazy module worker; no backend/framework |
@@ -62,20 +62,19 @@ The parent must continue automatically through the pending phases after reviewin
 
 ## Remaining sequential implementation tasks
 
-1. Phase 2: create one navigation configuration for header/footer and legacy current aliases. Learn keeps /tutorials/; group actual content without fake empty categories. Add /stories/ aggregate and /workshop/ entry, preserve old indexes/details/anchors. Adjust navigation expectations, validate keyboard/Escape/touch at all six requested widths.
-2. Phase 3: action-first homepage, keep character image, direct analyzer launches, Start Intake/Queue, compact recent learning using date sorting. Measure image weight/crop and initial JS; screenshot six sizes.
-3. Phase 4: typed journey registry using existing canonical tutorial and tool routes; shared context-aware card component. Implement Engine observations/limitations → spark plugs/filter/oil → optional inspection and brake/oil/spark maintenance paths without diagnosis claims.
-4. Phase 5: local Workshop hub projections, separate Intake/Inspection/Work/QC progress from support navigation, useful empty states and local data copy across every operations module.
-5. Phase 6a: observation attachment model/schema and migration. Inspect every store validator before changes; version attachments, bound numeric summaries, retain existing valid entities. Unsupported/malformed data must be preserved and must not be silently wiped on a migration/save. Add load/save/version/backward-compatibility tests.
-6. Phase 6b: Engine captured result attachment to existing job or deliberate new intake, timestamp/context/manual RPM/peaks/quality/repeatability/notes/source/version. Render evidence in inspection/work views; no raw audio or automatic fault findings. Test attach/retrieve/reload and share privacy.
-7. Phase 7a: Photo input and deterministic geometry core. Consistent internal mm, image-coordinate transforms, reference scale; distance/angle/polyline/polygon/circle math and bounds. Generated 1000px grid with 100px=10mm fixtures.
-8. Phase 7b: Canvas editor, accessible labeled controls/help, touch handles, wheel and pointer/pinch zoom/pan, selection/text/arrow/labels, bounded immutable undo/redo with image buffers excluded from history.
-9. Phase 7c: perspective rectification with known planar rectangle/aspect inputs and four checked nondegenerate corners, tested homography/inverse mapping, lazy worker for expensive raster work. Prefer pure TS worker implementation if stable and adequate; only choose OpenCV/WASM after bundle/performance evaluation. Calibration resets/revalidates after coordinate-space change.
-10. Phase 7d: annotated PNG + versioned JSON, image decode/type/size/corruption/orientation handling, bounded interaction resolution with correct mappings, worker cancellation, URL/bitmap cleanup. Optional printable report if clean. Connect to actual clamps/drilling/woodworking content. Exercise all six viewports and all measurement/export gestures.
-11. Phase 8: reusable category IDs/display metadata, reference discovery and contextual related journeys; preserve all routes and editorial truth. Future review IA may be prepared but publish no fake reviews/testing/affiliate links.
-12. Phase 9: full quality/privacy/link regression, existing DSP/speaker benchmarks and startup/large-image/bundle metrics, dependency audit where available. Resolve attributable failures; physical-phone certification is not implied by browser emulation.
-13. Phase 10: inspect remote head and normal branch/deployment protection, review all changes, integrate safely, normal push and observe existing deployment. Original main has the user audit untracked while this branch now tracks the preserved copy; if Git blocks overwrite during integration, preserve/verify it in an ignored backup before the normal merge. Do not reset/discard it. If truly missing credentials/infrastructure, report exact operation/target/error while completing independent work.
-14. Phase 11: intended commit/deployment identity, every important route/alias/canonical/sitemap/robots/noindex, isolated desktop/mobile synthetic workflow and Photo fixture/calibration/export, remove synthetic browser data, clean checkout, final metrics/report.
+Phases 2-4 are now complete. Reuse siteNavigation, learnCategories, newestFirst, journeys/JourneyCards and workshopFlow in the remaining work. Phase 5 still needs live local projections, useful empty states and actual selected-job progress; the four-stage/support navigation separation is already implemented.
+
+1. Phase 5: local Workshop hub projections, separate Intake/Inspection/Work/QC progress from support navigation, useful empty states and local data copy across every operations module.
+2. Phase 6a: observation attachment model/schema and migration. Inspect every store validator before changes; version attachments, bound numeric summaries, retain existing valid entities. Unsupported/malformed data must be preserved and must not be silently wiped on a migration/save. Add load/save/version/backward-compatibility tests.
+3. Phase 6b: Engine captured result attachment to existing job or deliberate new intake, timestamp/context/manual RPM/peaks/quality/repeatability/notes/source/version. Render evidence in inspection/work views; no raw audio or automatic fault findings. Test attach/retrieve/reload and share privacy.
+4. Phase 7a: Photo input and deterministic geometry core. Consistent internal mm, image-coordinate transforms, reference scale; distance/angle/polyline/polygon/circle math and bounds. Generated 1000px grid with 100px=10mm fixtures.
+5. Phase 7b: Canvas editor, accessible labeled controls/help, touch handles, wheel and pointer/pinch zoom/pan, selection/text/arrow/labels, bounded immutable undo/redo with image buffers excluded from history.
+6. Phase 7c: perspective rectification with known planar rectangle/aspect inputs and four checked nondegenerate corners, tested homography/inverse mapping, lazy worker for expensive raster work. Prefer pure TS worker implementation if stable and adequate; only choose OpenCV/WASM after bundle/performance evaluation. Calibration resets/revalidates after coordinate-space change.
+7. Phase 7d: annotated PNG + versioned JSON, image decode/type/size/corruption/orientation handling, bounded interaction resolution with correct mappings, worker cancellation, URL/bitmap cleanup. Optional printable report if clean. Connect to actual clamps/drilling/woodworking content. Exercise all six viewports and all measurement/export gestures.
+8. Phase 8: reusable category IDs/display metadata, reference discovery and contextual related journeys; preserve all routes and editorial truth. Future review IA may be prepared but publish no fake reviews/testing/affiliate links.
+9. Phase 9: full quality/privacy/link regression, existing DSP/speaker benchmarks and startup/large-image/bundle metrics, dependency audit where available. Resolve attributable failures; physical-phone certification is not implied by browser emulation.
+10. Phase 10: inspect remote head and normal branch/deployment protection, review all changes, integrate safely, normal push and observe existing deployment. Original main has the user audit untracked while this branch now tracks the preserved copy; if Git blocks overwrite during integration, preserve/verify it in an ignored backup before the normal merge. Do not reset/discard it. If truly missing credentials/infrastructure, report exact operation/target/error while completing independent work.
+11. Phase 11: intended commit/deployment identity, every important route/alias/canonical/sitemap/robots/noindex, isolated desktop/mobile synthetic workflow and Photo fixture/calibration/export, remove synthetic browser data, clean checkout, final metrics/report.
 
 ## Phase 0 — baseline verification
 
@@ -156,7 +155,7 @@ Problems found and fixed:
 Commit: structural checkpoint containing this report, subject “Fix WorkshopGirl job context, printing and navigation structure”; resolve its exact hash with git log -1 --format=%H on codex/workshopgirl-v2. The parent handoff includes that hash.
 Deployment state: not attempted in this first checkpoint.
 
-## Phase entry template (required for phases 2–11)
+## Phase entry template (required for phases 5-11)
 
 For each pending phase, replace its plan state and append:
 - Objective
@@ -173,8 +172,8 @@ For each pending phase, replace its plan state and append:
 ## Final summary — reserved for completion of the entire program
 
 Starting commit: 3bc271260bc2f191db403ea3f57fa2acbe256b7f.
-Final deployed commit, total changed files, routes added/preserved, final six-item navigation, journey architecture, Workshop attachments/migration, Photo math/editor/worker/WASM strategy, tests/results, performance, six-viewport mobile evidence, deployment ID/URL and exact commit, production HTTP/browser results, known limitations and future ideas: PENDING PHASES 2–11.
-Do not describe this structural checkpoint as WorkshopGirl V2 implemented/deployed/verified.
+Final deployed commit, total changed files, routes added/preserved, final six-item navigation, journey architecture, Workshop attachments/migration, Photo math/editor/worker/WASM strategy, tests/results, performance, six-viewport mobile evidence, deployment ID/URL and exact commit, production HTTP/browser results, known limitations and future ideas: PENDING PHASES 5-11.
+Do not describe this Phases 2-4 checkpoint as the entire WorkshopGirl V2 implemented/deployed/verified.
 
 ## Phase 2 - information architecture
 
@@ -182,7 +181,7 @@ Objective: six clear destinations with real learning subjects and separate Works
 Files changed: SiteHeader/SiteFooter, shared DiscoveryLayout/discovery.css; navigation/learn/content-order/stories and editorial date metadata; Learn/Tools indexes, new /stories/ and /workshop/; sitemap; WorkshopLayout current section; discovery domain/browser tests and updated structural/sitemap expectations.
 Architecture decisions: a single typed header/footer registry maps legacy tutorial/story routes and /tools/workshop/* to their conceptual section. No mega menu; the existing mobile disclosure gets 44px links, Escape return, focus-out and resize handling. Learn groups are explicit many-to-many memberships over existing guide URLs (all five groups are nonempty). Tools keeps the old #workshop-operations anchor as a Workshop bridge, not nine primary tool cards. Photo Measure & Build discovery waits for the actual Phase 7 tool. Existing URLs, canonical values and local job context logic remain intact. New hubs extend the sitemap from 41 to 43 pages. ISO date fields derive from existing publication metadata; the project date is verified against its existing article:published_time 2026-09-22.
 Implementation completed: Home/Learn/Tools/Workshop/Stories/About; Learn has 18 unique guides, Stories unifies all three existing sections, Workshop offers start/resume and separates four service stages from five support modules.
-Tests executed 2026-10-03 around 08:19-08:24 UTC:
+Tests executed 2026-10-03 around 01:19-01:24 UTC:
 - npm run check: PASS, 150 files, zero errors/warnings, two unchanged execCommand hints; test-results/v2-phase2/check.log.
 - npm run lint: PASS; test-results/v2-phase2/lint.log.
 - npm test: PASS 193/193, zero skips; test-results/v2-phase2/unit.log.
@@ -199,7 +198,7 @@ Objective: useful next actions while retaining Workshop Girl's practical charact
 Files changed: src/pages/index.astro, src/data/home-feed.ts, DiscoveryLayout social metadata, two responsive hero WebP assets, tests/browser.spec.ts and discovery.test.ts, this report.
 Architecture decisions: keep the existing illustration/PNG/social image; derive 480px and 800px WebP variants locally with existing Sharp (no dependency change). Hero actions link straight to Engine, Learn and Intake. Three analyzer cards link directly to Engine/Sound/Speaker; three deliberately selected practical guides cover maintenance/drilling/electrical; Workshop start, Queue and support links follow. Latest content uses shared ISO dates across tutorials and all story types, stable canonical-slug ties, then an explicit three-card presentation limit. No duplicated activity-feed facts or array-position latest selection. Existing conditional GA configuration is retained; no tool bundle is loaded on Home.
 Implementation completed: responsive action-first hero, direct tool entry, limited learning categories/cards, connected Start/Resume operations entry and date-sorted recent discovery.
-Tests executed 2026-10-03 around 08:26-08:33 UTC:
+Tests executed 2026-10-03 around 01:26-01:33 UTC:
 - npm run lint: PASS; test-results/v2-phase3/lint.log.
 - npm run check: PASS, 150 files, zero errors/warnings, two existing hints; test-results/v2-phase3/check.log.
 - npm test: PASS 194/194, zero skips; test-results/v2-phase3/unit.log.
@@ -209,3 +208,48 @@ Results: six final Home screenshots and discovery hub screenshots in test-result
 Problems found/fixed: initial mobile object-position cropped the face; moved to 8% vertical positioning, rebuilt and reran all eight selected browser cases. Legacy two-family homepage assertions replaced with the implemented direct-action behavior and retained index anchors.
 Commit: homepage checkpoint, subject Make WorkshopGirl home action-first with direct tools and local jobs. Phase 2 commit is fed85286a03fb774b7376ad0478e5e5bf5f157d8.
 Deployment state: not attempted; Phase 10 remains pending.
+
+## Phase 4 - reusable contextual journeys
+
+Objective: connect relevant learning, observations and local work without implying automatic mechanical diagnosis or nine mandatory service stages.
+Files changed:
+- src/data/journeys.ts and src/components/JourneyCards.astro (new typed registry, contextual mapping and reusable presentation).
+- Engine Sound Analyzer; engine-air-filter, brake-pad, oil and spark-plug tutorial pages (one shared component per page).
+- WorkshopLayout.astro, /workshop/ entry and workshop-operations.css (four stages and five support modules from the same typed workflow).
+- tests/journeys.test.ts and journeys-browser.spec.ts; existing structural-browser.spec.ts and workshop-browser.spec.ts expectations for Stories/Workshop discovery.
+- This execution report.
+
+Architecture decisions:
+- Tools use typed IDs, workshop actions use existing page IDs, learning references resolve real tutorial metadata. The registry is rendered at build time; no extra journey runtime, database, framework or storage migration is introduced.
+- Engine explains comparable conditions, observation limits and that the maintenance guides are not analyzer repair recommendations. It offers Spark Plug, Air Filter and Oil learning plus optional intake for an inspection job. Spark Plug offers the analyzer, torque learning and optional inspection. Brake links torque learning and an inspection job; Oil offers a maintenance job. Existing-job workflow links are behind a native keyboard-accessible disclosure, with instructions to choose a local job or resume Queue. No implicit job is created or selected by a learning link.
+- Visible contextual recommendations are bounded to four and omit the current page. Unsupported fault claims and irrelevant tool CTAs are absent. Start inspection/maintenance deliberately begins at the existing Intake form, so records and vehicle identity can be created before the actual Inspection page.
+- workshopFlow has four explicit service stages; estimate/approval remain inside Inspection, QC/handover inside their real form. Queue/Parts/Procurement/Billing/History are separate unnumbered support navigation. All nine data-step-link IDs remain available within the shared navigation event boundary; Phase 1 validation, neutral links, selected-job context and canonical-only sharing remain unchanged.
+
+Implementation completed: all Phase 4 engine/brake/oil/spark/operator paths and reusable components. The static Workshop hub is ready for Phase 5 local projections and actual job progress; analyzer attachments remain Phase 6.
+
+Final tests executed 2026-10-03, approximately 01:36-01:50 UTC. Astro logs display host UTC+7; UTC timestamps here were checked against file LastWriteTimeUtc and Get-Date -AsUTC. Phase 2/3 timestamps above are corrected to UTC.
+
+| Command | Final result | Evidence |
+|---|---|---|
+| npm run lint | PASS, exit 0 after legacy assertion updates | test-results/v2-phase4/lint-release.log |
+| npm run check | PASS, exit 0; 154 files, zero errors/warnings, two unchanged hints | test-results/v2-phase4/check-release.log |
+| npm test | PASS, exit 0; 199/199, zero skips | test-results/v2-phase4/unit-release.log |
+| npm run build | PASS, exit 0; all 43 HTML pages, reported 1.39s | test-results/v2-phase4/build-release.log |
+| npm run test:browser -- --output=test-results/v2-phase4-browser-release --reporter=line | PASS, exit 0; 220 passed, 48 existing WebKit Web Audio skips, 268 total, 7.5m; finished 01:48:36 UTC | test-results/v2-phase4/browser-release.log |
+
+Results:
+- Nine additional domain cases across Phases 2-4 (190 to 199). Four new browser scenarios across four projects add 16 passing cases (204 to 220); no new skips.
+- Full legacy diagnostic regression (Sound/Engine/Speaker/DSP, PCM/worker cleanup, quality/repeatability/export) and workshop intake/approval/work/QC, Queue, context validation/deletion/change, printing/sharing, inventory, billing/payment/reversal, history/warranty and procurement/receiving passed.
+- Required 390x844, 430x932, 768x1024, 1024x768, 1280x720 and 1440x900 layouts, menu Enter/Space/Tab/focus/Escape, current sections, no horizontal overflow, real taxonomy links and operator context passed in Chromium/WebKit desktop/mobile. Existing suites retain additional 320/375px checks.
+- Final discovery/Home and selected Inspection screenshots are beneath test-results/v2-phase4-browser-release/discovery-browser-* and structural-browser-*. Six operator screenshots are beneath journeys-browser-operator-*; 390px/1280px visual inspection confirms separated navigation. Isolated engine-390.png and brakes-1280.png under test-results/v2-phase4 were visually reviewed for readable copy, bounded CTAs and disclosure layout. All evidence is ignored, not committed.
+- Home build HTML is 17,905 bytes with one 911-byte inline menu module, no external analyzer/operations JS. Responsive hero assets remain 81,742/170,282 bytes; no dependency/lockfile changes or heavy processing assets. Full runtime/performance benchmarking remains Phase 9.
+- Rechecked original C:\WorkShopGirl: main still 3bc271260bc2f191db403ea3f57fa2acbe256b7f, only original user audit untracked. Original/preserved audit SHA256 remains 4BD2BAE97ED0062E2A879C75D4E21EF8AEAA7ECC3DD15C9C8F08D489D1CC8A9C. No cleanup targets the parent test-results directory or worktree.
+
+Problems found/fixed: first full run encountered three stale navigation expectations (top-level Sport and support cards on Tools). It was interrupted, the assertions were changed to Stories and the actual Tools-to-Workshop bridge, and the entire 268-case suite was rerun successfully. Application source was unchanged by those assertion corrections. Final lint/check/unit/build were rerun after the corrections. Visual crop correction is recorded in Phase 3. No unresolved new regression or blocker.
+
+Commits:
+- Phase 2: fed85286a03fb774b7376ad0478e5e5bf5f157d8.
+- Phase 3: a3e2afdd4ea4e6add575e5d89944818d0be3db54.
+- Phase 4: checkpoint containing this report, subject Connect WorkshopGirl maintenance journeys and separate service stages; exact hash is supplied in the parent handoff and can be resolved with git log -1 --format=%H at this checkpoint.
+
+Deployment state: no push, integration or deployment in this task. Stop here for the parent review as explicitly delegated; parent continues Phases 5-11 autonomously. Remaining gates include Workshop local dashboard/empty states/progress, measurement attachments/migration, Photo Measurement Lab, wider editorial polish, performance/privacy hardening, deployment and live verification. Existing Windows WebKit audio limitations, two deprecated clipboard fallback hints, physical-device certification and live Cloudflare rewrite verification remain separately documented limitations/gates, not claims of completed V2 production delivery.

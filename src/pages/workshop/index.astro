@@ -1,8 +1,9 @@
 ---
 import DiscoveryLayout from '../../components/DiscoveryLayout.astro';
 import { workshopPages } from '../../lib/workshop/navigation.ts';
-const stages = workshopPages.slice(0, 4);
-const support = workshopPages.slice(4);
+import { workshopFlow } from '../../data/journeys.ts';
+const stages = workshopFlow.stages.map(stage => workshopPages.find(page => page.id === stage.page)!);
+const support = workshopFlow.support.map(id => workshopPages.find(page => page.id === id)!);
 ---
 <DiscoveryLayout title="Workshop - Start or Resume a Job | WorkshopGirl" description="One connected local workshop workflow: intake, inspection and estimate, work order, QC and handover, with parts, procurement, billing and service history." canonical="https://workshopgirl.com/workshop/">
   <div class="eyebrow">One job, from arrival to handover</div><h1>Keep the work moving.</h1><p class="lead">Capture the concern, inspect and agree the work, record what you did, then check and hand over. Your workshop records stay in this browser, without an account or cloud sync.</p>

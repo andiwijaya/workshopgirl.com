@@ -1,5 +1,6 @@
 ---
 import { workshopPages } from '../../lib/workshop/navigation.ts';
+import { workshopFlow } from '../../data/journeys.ts';
 import SiteHeader from '../SiteHeader.astro';
 import SiteFooter from '../SiteFooter.astro';
 import ToolShare from '../ToolShare.astro';
@@ -18,9 +19,16 @@ const printKind = steps.find(page => page.id === step)?.print;
   <a class="skip-link" href="#main" tabindex="0">Skip to workshop tool</a><SiteHeader current="workshop" />
   <main id="main" class="workshop-page" tabindex="-1" data-workshop-step={step}>
     <div class="workshop-hero"><a class="eyebrow" href="/workshop/">WorkshopGirl / Workshop</a><p class="operation-label">Workshop Operations</p><h1>{heading}</h1><p>{intro}</p><ToolShare title={title} description={description} canonical={canonical} /></div>
-    <nav class="workshop-steps" aria-label="Workshop job pages">
-      {steps.map(({id, label, href}, index) => <a href={href} data-step-link={id} aria-current={step === id ? 'page' : undefined} class:list={{ 'is-current': step === id }}><span>{id === 'queue' ? '↗' : index + 1}</span>{label}</a>)}
-    </nav>
+    <div class="workshop-steps">
+      <p class="workflow-label">Service workflow</p>
+      <nav class="workshop-step-group" aria-label="Workshop job pages">
+        {workshopFlow.stages.map((stage, index) => { const page = steps.find(page => page.id === stage.page)!; return <a href={page.href} data-step-link={page.id} aria-current={step === page.id ? 'page' : undefined} class:list={{ 'is-current': step === page.id }} title={stage.description}><span aria-hidden="true">{index + 1}</span>{page.label}</a>; })}
+      </nav>
+      <p class="workflow-label">Supporting operations — use when needed</p>
+      <nav class="workshop-step-group" aria-label="Supporting workshop operations">
+        {workshopFlow.support.map(id => { const page = steps.find(page => page.id === id)!; return <a href={page.href} data-step-link={page.id} aria-current={step === page.id ? 'page' : undefined} class:list={{ 'is-current': step === page.id }}>{page.label}</a>; })}
+      </nav>
+    </div>
     <p class="workshop-status" id="workshop-status" role="status" aria-live="polite" hidden></p>
     <div class="workshop-job-context" id="workshop-job-context" hidden></div>
     <div class="workshop-job-picker" id="workshop-job-picker" hidden></div>

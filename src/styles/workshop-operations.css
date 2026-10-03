@@ -9,7 +9,9 @@
 .workshop-hero h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2.4rem,7vw,4.5rem); letter-spacing:-.065em; line-height:1.03; margin:0 0 12px; overflow-wrap:anywhere; }
 .workshop-hero>p:not(.operation-label) { color:#655f59; line-height:1.65; max-width:720px; }
 .workshop-hero .tool-share { margin-top:20px; }
-.workshop-steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr)); gap:8px; margin:18px 0 24px; }
+.workshop-steps { display:block; margin:18px 0 24px; }
+.workshop-step-group { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr)); gap:8px; }
+.workflow-label { color:#655f59; font-size:.8rem; font-weight:700; margin:16px 0 8px; }
 .workshop-steps a { align-items:center; background:#fffaf4; border:1px solid #ded8d0; color:#514a45; display:flex; gap:9px; min-height:48px; min-width:0; padding:8px 10px; text-decoration:none; }
 .workshop-steps a span { align-items:center; background:#eee7df; border-radius:50%; display:inline-flex; flex:0 0 27px; height:27px; justify-content:center; font-size:.8rem; font-weight:700; }
 .workshop-steps a.is-current { border-color:#e53b7d; color:#171717; font-weight:700; }

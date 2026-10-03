@@ -142,7 +142,7 @@ test('Header/footer, mobile Escape focus, copy and structural layouts work at ev
         const toggle = page.getByRole('button', { name: 'Menu', exact: true });
         await toggle.click();
         await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-        const sport = page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Sport', exact: true });
+        const sport = page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Stories', exact: true });
         await sport.focus();
         await page.keyboard.press('Escape');
         await expect(toggle).toBeFocused();
