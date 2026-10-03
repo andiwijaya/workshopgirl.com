@@ -1,0 +1,520 @@
+{
+  "generatedUtc": "2026-10-03T07:03:26.368Z",
+  "startingCommit": "3bc271260bc2f191db403ea3f57fa2acbe256b7f",
+  "implementationHead": "cc5532770ebd10cc5c16dd9368cf2570b5181236",
+  "codeIntegrationSha": "6b934e425ced2726ab7082490cc814f9301025cc",
+  "pullRequest": "https://github.com/andiwijaya/workshopgirl.com/pull/1",
+  "deployment": {
+    "id": "a4d7f667-5098-432a-9cc7-3de0eb603906",
+    "url": "https://a4d7f667.workshopgirl-com.pages.dev",
+    "customDomain": "https://workshopgirl.com",
+    "checkURL": "https://github.com/andiwijaya/workshopgirl.com/runs/111149020776"
+  },
+  "finalPublicationIdentity": "Documentation-only follow-up PR merge SHA/deployment and final rechecks are recorded in test-results/v2-production/completion-receipt.json and the final handoff after committing this receipt; no self-referential SHA is fabricated.",
+  "scope": {
+    "changedFilesIncludingThisReceipt": 127,
+    "addedRoutes": [
+      "/workshop/",
+      "/stories/",
+      "/tools/photo-measurement/"
+    ],
+    "preservedBaselineHTMLRoutes": 41,
+    "finalHTMLRoutes": 44
+  },
+  "localReleaseGates": {
+    "lint": "pass",
+    "astroCheck": "pass",
+    "unitPassed": 238,
+    "browserPassed": 397,
+    "establishedWebKitAudioSkipped": 48,
+    "failed": 0,
+    "flaky": 0,
+    "freshBuildPages": 44
+  },
+  "production": {
+    "http": {
+      "pages": 44,
+      "sitemapEntries": 44,
+      "preservedBaselineRoutes": 41,
+      "reachablePages": 44,
+      "internalLinks": 1087,
+      "assetsMatchingLocalAndDeployment": 109,
+      "aliasChecks": 22,
+      "failures": []
+    },
+    "browser": {
+      "initialBroadStats": {
+        "startTime": "2026-10-03T06:46:52.347Z",
+        "duration": 796825.5,
+        "expected": 92,
+        "skipped": 0,
+        "unexpected": 13,
+        "flaky": 0
+      },
+      "initialHostAdapterStats": {
+        "startTime": "2026-10-03T06:51:17.595Z",
+        "duration": 161305.45,
+        "expected": 9,
+        "skipped": 0,
+        "unexpected": 6,
+        "flaky": 0
+      },
+      "finalHostPayloadVerificationStats": {
+        "startTime": "2026-10-03T06:55:59.687Z",
+        "duration": 125296.35800000001,
+        "expected": 20,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "uniquePassingScenarioProjectCombinations": 105,
+      "projects": {
+        "chromium-desktop": 21,
+        "chromium-mobile": 21,
+        "firefox-desktop": 21,
+        "webkit-desktop": 21,
+        "webkit-mobile": 21
+      },
+      "unresolved": [],
+      "scope": "21 scenarios across five isolated projects. Local-preview predicates initially failed on public Cloudflare RUM and HTTP/3 initial :path; production-only adapter validates payloads, keeps all private-marker assertions and leaves native requests intact. No source test or application code changed. Failed attempts are retained, not represented as passes."
+    },
+    "privacy": {
+      "generated": {
+        "requests": 466,
+        "privateMarkerRequests": 0,
+        "nonGets": 8
+      },
+      "legacy": {
+        "requests": 168,
+        "initialMarkerRequests": 5,
+        "markerReferers": 0
+      },
+      "hostBeaconBodiesObserved": 46,
+      "privateMarkerBeaconBodies": 0,
+      "traces": [
+        {
+          "project": "chromium-desktop",
+          "name": "generated-context-network.json",
+          "sha256": "339c50a27e9311a71247c7a7055fb36d538582bc872654514faa965a598586b9",
+          "requests": 97,
+          "nonGets": 1,
+          "jobMarkerRequests": 0,
+          "markerReferers": 0
+        },
+        {
+          "project": "chromium-desktop",
+          "name": "legacy-context-network.json",
+          "sha256": "af1ca268071579df0a81e9093e9be388cf2b30f0cf724f63c2a2bc898337abc0",
+          "requests": 34,
+          "nonGets": 1,
+          "jobMarkerRequests": 1,
+          "markerReferers": 0
+        },
+        {
+          "project": "chromium-mobile",
+          "name": "generated-context-network.json",
+          "sha256": "bfe2dba159ee10a597fc8d5f0a55f6d771a571b046490a7debd123f79725e129",
+          "requests": 97,
+          "nonGets": 1,
+          "jobMarkerRequests": 0,
+          "markerReferers": 0
+        },
+        {
+          "project": "chromium-mobile",
+          "name": "legacy-context-network.json",
+          "sha256": "5beceaed96b7817c2ac7a5e7b50cc2b01a7849a35f9e9483caac87a6b7eabee8",
+          "requests": 34,
+          "nonGets": 1,
+          "jobMarkerRequests": 1,
+          "markerReferers": 0
+        },
+        {
+          "project": "firefox-desktop",
+          "name": "generated-context-network.json",
+          "sha256": "24e2dfcdedd251086deb5f05160482c80a12719c36be6251a9e3c505010c259a",
+          "requests": 82,
+          "nonGets": 2,
+          "jobMarkerRequests": 0,
+          "markerReferers": 0
+        },
+        {
+          "project": "firefox-desktop",
+          "name": "legacy-context-network.json",
+          "sha256": "7bd4d7d35381a8b4df603af939b2fb6c2e86e4b80775e05fe5cd64d739fae7b3",
+          "requests": 30,
+          "nonGets": 2,
+          "jobMarkerRequests": 1,
+          "markerReferers": 0
+        },
+        {
+          "project": "webkit-desktop",
+          "name": "generated-context-network.json",
+          "sha256": "26e53bdb738ca8232aebef3ae420c863ac489c7591572e863dee715f9299c506",
+          "requests": 95,
+          "nonGets": 2,
+          "jobMarkerRequests": 0,
+          "markerReferers": 0
+        },
+        {
+          "project": "webkit-desktop",
+          "name": "legacy-context-network.json",
+          "sha256": "3b4a96ab5cd62ac983bc929eb1f453849425cea8f2be78922fbbfaa88cbd2e0e",
+          "requests": 35,
+          "nonGets": 2,
+          "jobMarkerRequests": 1,
+          "markerReferers": 0
+        },
+        {
+          "project": "webkit-mobile",
+          "name": "generated-context-network.json",
+          "sha256": "149c92b515103f3e095a89d9fb05fadc1e28f95b478e1c330c32cd260106a433",
+          "requests": 95,
+          "nonGets": 2,
+          "jobMarkerRequests": 0,
+          "markerReferers": 0
+        },
+        {
+          "project": "webkit-mobile",
+          "name": "legacy-context-network.json",
+          "sha256": "f36cd0033e5585cd4ebfa837471cae4e92d4df5abb80dfe29099f2e5f5237152",
+          "requests": 35,
+          "nonGets": 2,
+          "jobMarkerRequests": 1,
+          "markerReferers": 0
+        }
+      ],
+      "beaconEvidence": [
+        {
+          "project": "chromium-desktop",
+          "title": "Generated job navigation across every operations module has no HTTP/referrer/share/print marker",
+          "sha256": "3dc038f335e997ac24cb7b6172d101ab918c6ff1f7ce23987772a737d5f76823",
+          "count": 3,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "chromium-desktop",
+          "title": "Legacy query entry sends only its unavoidable document request then sanitizes resources and future navigation",
+          "sha256": "923b34cefdc4273aa8b6c3e8e4a67168767d2a44520347a151e47ed11f8c4f9e",
+          "count": 3,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "chromium-mobile",
+          "title": "Generated job navigation across every operations module has no HTTP/referrer/share/print marker",
+          "sha256": "b0d3eb4e834eaa272d6197c65516ae600fb7aafeb68c19f6a24f9e1bcfde7157",
+          "count": 3,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "chromium-mobile",
+          "title": "Legacy query entry sends only its unavoidable document request then sanitizes resources and future navigation",
+          "sha256": "3f4989c79eed118e7acfe00100d74a10e49ac848d34f9267d2f6064b9693d4d4",
+          "count": 3,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "firefox-desktop",
+          "title": "Generated job navigation across every operations module has no HTTP/referrer/share/print marker",
+          "sha256": "1e9002b30acd3bfdeb606fa4caed07e5a25a200e74b67add51c9ba4b9f2d9b4d",
+          "count": 4,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "firefox-desktop",
+          "title": "Legacy query entry sends only its unavoidable document request then sanitizes resources and future navigation",
+          "sha256": "1f2e4523e1633efd4f68caf3e0f939d2f17ea431521777b6163f74856a554b42",
+          "count": 3,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "webkit-desktop",
+          "title": "Generated job navigation across every operations module has no HTTP/referrer/share/print marker",
+          "sha256": "8fadb68baee1641588153f4675ce5607f0517866567837b9154a5c6259e22242",
+          "count": 3,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "webkit-desktop",
+          "title": "Legacy query entry sends only its unavoidable document request then sanitizes resources and future navigation",
+          "sha256": "91c5f1c608f4f22c843c3bc029f7fddb0b9b107dacc818dd6cd2a4115038664a",
+          "count": 3,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "webkit-mobile",
+          "title": "Generated job navigation across every operations module has no HTTP/referrer/share/print marker",
+          "sha256": "b71b682433257c1b5b61295c4cc7777220f89c17beedf331cfa048aefc048124",
+          "count": 3,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "webkit-mobile",
+          "title": "Legacy query entry sends only its unavoidable document request then sanitizes resources and future navigation",
+          "sha256": "ec4940573612cab7f84464060c9c1f7f100039a16b9c9a47580be629d3044e37",
+          "count": 3,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "chromium-desktop",
+          "title": "Private synthetic records, observations, image and audio names/notes never reach requests or canonical shares",
+          "sha256": "2343f68f5b6bc23148fb6b5996c5439abeb6264a5616fb38bb4ec565995349e5",
+          "count": 2,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "chromium-mobile",
+          "title": "Private synthetic records, observations, image and audio names/notes never reach requests or canonical shares",
+          "sha256": "f6d580f232f81161d686a97a55fde353d39942f66ff6a5edbad13782037f1610",
+          "count": 2,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "firefox-desktop",
+          "title": "Private synthetic records, observations, image and audio names/notes never reach requests or canonical shares",
+          "sha256": "74ab4436ad7d41ba57533ab04ff873ecc583f38c8359c95b37b0d874e6f1e23e",
+          "count": 2,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "webkit-desktop",
+          "title": "Private synthetic records, observations, image and audio names/notes never reach requests or canonical shares",
+          "sha256": "f7be7fe47f1e5278665af85836143e8bb5e38c3922c767df11d93be40dc1273f",
+          "count": 2,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "webkit-mobile",
+          "title": "Private synthetic records, observations, image and audio names/notes never reach requests or canonical shares",
+          "sha256": "0607e3cf4e21782c6931bae4c87e35755febbcfb59cf743226fab2233dbad57e",
+          "count": 2,
+          "locations": [
+            "https://workshopgirl.com/workshop/",
+            "https://workshopgirl.com/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "chromium-desktop",
+          "title": "Engine actual file observation attaches existing and new jobs only on explicit save at six viewports",
+          "sha256": "78f453f6eb6e6499655c2d756dfdad3a55d088dbacc9d37904f2d9c28f6c2a24",
+          "count": 1,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "chromium-mobile",
+          "title": "Engine actual file observation attaches existing and new jobs only on explicit save at six viewports",
+          "sha256": "5b8351ffc6aae246d34a7d1c57d9cdc72cbdf1779ff264b2c17164f7a04a8d12",
+          "count": 1,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "firefox-desktop",
+          "title": "Engine actual file observation attaches existing and new jobs only on explicit save at six viewports",
+          "sha256": "794f69004833116999910318c2aed5a08b80802006ba468264d5d7b9e2168e1c",
+          "count": 1,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "webkit-desktop",
+          "title": "Engine actual file observation attaches existing and new jobs only on explicit save at six viewports",
+          "sha256": "cfdfd16b96cb6066c4e52a09d759b428590be96d6ba395a5ab2c30d0be1dbbdd",
+          "count": 1,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        },
+        {
+          "project": "webkit-mobile",
+          "title": "Engine actual file observation attaches existing and new jobs only on explicit save at six viewports",
+          "sha256": "30c65e5856ffe9786f28074b74dec36faf3f0577032a8ffd8a51ff7851cda1b7",
+          "count": 1,
+          "locations": [
+            "https://workshopgirl.com/workshop/"
+          ],
+          "privateMarkerBodies": 0
+        }
+      ],
+      "hostTelemetry": "Observed public Home/Workshop entry performance beacons; static location without query/hash, timing/selector metadata only. Private image/audio/records/observation sentinels absent. HTTP/3 initial :path mirrors the unavoidable incoming query target. No generated marker is present in URL/header/body.",
+      "profiles": "Fresh isolated profiles only; all owned contexts closed/discarded. No real browser profile or user data accessed."
+    },
+    "startup": {
+      "trials": 36,
+      "errors": 0,
+      "initialWorkers": 0,
+      "scope": "Custom-domain production on Windows, three new isolated desktop contexts per route/engine; concurrent browser QA; no network/CPU throttling; external Google fonts remain live. DCL/load/FCP/LCP use Performance APIs where supported; LCP and long tasks sampled through 500 ms after load (null means unsupported/unobserved). Node loadWallMS includes automation. Resource transferSize zero can mean cross-origin timing restrictions, not zero traffic. JS heap is Chromium page heap after forced GC; excludes workers/native/GPU/RSS. Node action/load timing includes production latency and concurrent QA; no physical phone, Web Audio certification or Lighthouse score is claimed.",
+      "ranges": [
+        {
+          "engine": "chromium",
+          "route": "/",
+          "minLoadMs": 932.7546000000002,
+          "maxLoadMs": 1069.1903000000002
+        },
+        {
+          "engine": "chromium",
+          "route": "/tools/",
+          "minLoadMs": 561.5375000000004,
+          "maxLoadMs": 770.4198999999999
+        },
+        {
+          "engine": "chromium",
+          "route": "/tools/engine-sound-analyzer/",
+          "minLoadMs": 704.9851999999992,
+          "maxLoadMs": 810.5776999999998
+        },
+        {
+          "engine": "chromium",
+          "route": "/tools/photo-measurement/",
+          "minLoadMs": 586.4092000000019,
+          "maxLoadMs": 765.6908000000021
+        },
+        {
+          "engine": "firefox",
+          "route": "/",
+          "minLoadMs": 527.906500000001,
+          "maxLoadMs": 1656.3499999999985
+        },
+        {
+          "engine": "firefox",
+          "route": "/tools/",
+          "minLoadMs": 788.5363999999972,
+          "maxLoadMs": 874.3732000000018
+        },
+        {
+          "engine": "firefox",
+          "route": "/tools/engine-sound-analyzer/",
+          "minLoadMs": 774.4461999999985,
+          "maxLoadMs": 1011.0906999999934
+        },
+        {
+          "engine": "firefox",
+          "route": "/tools/photo-measurement/",
+          "minLoadMs": 741.7170000000042,
+          "maxLoadMs": 826.4015999999974
+        },
+        {
+          "engine": "webkit",
+          "route": "/",
+          "minLoadMs": 209.4247000000032,
+          "maxLoadMs": 391.23109999999724
+        },
+        {
+          "engine": "webkit",
+          "route": "/tools/",
+          "minLoadMs": 161.52130000000034,
+          "maxLoadMs": 181.24429999999847
+        },
+        {
+          "engine": "webkit",
+          "route": "/tools/engine-sound-analyzer/",
+          "minLoadMs": 501.5362000000023,
+          "maxLoadMs": 559.1157999999996
+        },
+        {
+          "engine": "webkit",
+          "route": "/tools/photo-measurement/",
+          "minLoadMs": 282.125,
+          "maxLoadMs": 310.59739999999874
+        }
+      ]
+    },
+    "visualReview": [
+      "Chromium desktop Home 1280px",
+      "Chromium mobile Home 390px",
+      "Chromium mobile rectified Photo"
+    ],
+    "assetPropagation": "All 109 public asset hashes match the exact deployment and local dist. HTTP pages also match deployment bytes for this client. CDN status/ETag/ray headers retained; browser-specific host-injected RUM separately observed. This verifies the available vantage, not every worldwide POP."
+  },
+  "dependencyAudit": {
+    "rawHighTreeFindings": 7,
+    "critical": 0,
+    "advisories": 2,
+    "disposition": "Unpatched upstream, documented nonapplicable current static-release/trusted-build inputs; audit is not clean.",
+    "reference": "WORKSHOPGIRL_V2_RELEASE_GATES.md"
+  },
+  "preserved": {
+    "originalRootMain": "3bc271260bc2f191db403ea3f57fa2acbe256b7f",
+    "originalAuditSha256": "4BD2BAE97ED0062E2A879C75D4E21EF8AEAA7ECC3DD15C9C8F08D489D1CC8A9C",
+    "worktree": "Retained; enclosing test-results untouched",
+    "history": "Normal branch push and GitHub merge; no force push, history rewrite or protection bypass"
+  },
+  "notRun": [
+    "Physical Android/iOS and actual Safari hardware",
+    "Physical microphones/engine audio",
+    "Native/GPU/process peak-memory certification",
+    "Physical print/OS PDF certification",
+    "Every worldwide CDN POP"
+  ],
+  "evidenceDirectory": "test-results/v2-production",
+  "evidenceHashes": {
+    "review.json": "88661ee6e8c9a49e06ca3994fc8e641036e0888fc7d3f84e3deb6f8e13eec253",
+    "build-final.log": "bfa9674185c280566c9a4abae0d5e45c1bcfa60d3dca566f0087f44725f90058",
+    "integration-checks.json": "b818a65ad0ded09c1a48479462668bfcb0eba61f3c84b4bab1966249838ee688",
+    "http-production.json": "8838d3b82265b4c0237c9da0b0250b5066c4eb6573d29257aaea8425823811e7",
+    "browser-results.json": "d284999537d29816aa6e6189e4abb411a6e3f18ce2cb2cf9daafe040daf26b2d",
+    "browser-host-adapted-results.json": "475ca3fac31ea024e5f2b4ba1a19d94113f3334b1c42b55e942cbd4fbc18c4c7",
+    "browser-host-verified-results.json": "2dd7cba3e83828956e55e4e058dff0d96842c5c1ac1d5d45e95df6488a7b28c1",
+    "privacy-production-summary.json": "cc3a96f0f26fbcc25897ed92ec9f0c4d2fd2bf4244511591a561ad59a36835ef",
+    "startup-benchmark.json": "f07c42b1121fd68c25ee0167035633fdb093d9d3e929cfd5e89cf78506447ab0"
+  }
+}
