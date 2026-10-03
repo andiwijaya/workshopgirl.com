@@ -1,12 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { syntheticObservation, syntheticSnapshot, syntheticWorkshop } from './observation-fixtures.ts';
-import { loadStore, saveStore, STORAGE_KEY, emptyStore, type StorageLike } from '../src/lib/workshop/store.ts';
+import { cloneStore, loadStore, saveStore, STORAGE_KEY, emptyStore, type StorageLike } from '../src/lib/workshop/store.ts';
 import { attachEngineObservation } from '../src/lib/workshop/observations.ts';
 import { isEngineObservation, summarizeEngineObservation, MAX_OBSERVATIONS } from '../src/lib/workshop/observation-summary.ts';
 import { emptyInspection } from '../src/lib/workshop/rules.ts';
 
 function memory(raw: string | null = null) { let value = raw; return { getItem: () => value, setItem: (_key: string, next: string) => { value = next; }, get value() { return value; } }; }
+
+test('rollback clones preserve stale-tab and unreadable-record guards after a failed mutation', () => {
+  const storage = memory(JSON.stringify(syntheticWorkshop().store));
+  const first = loadStore(storage).store, rollback = cloneStore(first);
+  const other = loadStore(storage).store; other.customers[0].name = 'Other tab saved';
+  assert.equal(saveStore(other, storage).ok, true);
+  const latest = storage.value;
+  assert.equal(saveStore(rollback, storage).ok, false);
+  assert.equal(storage.value, latest);
+  const corrupt = memory('{broken');
+  const blocked = cloneStore(loadStore(corrupt).store);
+  corrupt.setItem(STORAGE_KEY, JSON.stringify(emptyStore()));
+  assert.equal(saveStore(blocked, corrupt).ok, false);
+});
 
 test('bounded observation reuses actual serialization, keeps manual context and excludes arrays/audio/identifiers', () => {
   const snapshot = syntheticSnapshot(), observation = summarizeEngineObservation(snapshot), raw = JSON.stringify(observation);

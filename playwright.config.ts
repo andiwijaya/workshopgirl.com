@@ -8,7 +8,7 @@ export default defineConfig({
   projects: [
     { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'] } },
     { name: 'chromium-mobile', use: { ...devices['Pixel 7'] } },
-    { name: 'firefox-photo', testMatch: '**/photo-measurement-browser.spec.ts', use: { ...devices['Desktop Firefox'] } },
+    { name: 'firefox-desktop', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit-desktop', workers: 1, use: { ...devices['Desktop Safari'] } },
     { name: 'webkit-mobile', workers: 1, use: { ...devices['iPhone 13'] } },
   ],

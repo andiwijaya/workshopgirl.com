@@ -32,6 +32,7 @@ export async function syntheticMicrophone(page: Page, delayed = false, frequenci
     window.AudioContext = class extends OriginalContext { constructor(options?: AudioContextOptions) { super(options); state.contexts.push(this); } };
     Object.defineProperty(navigator.mediaDevices, 'getUserMedia', { configurable: true, value: async () => {
       state.calls++;
+      state.resolve = undefined;
       const context = new OriginalContext();
       const gain = context.createGain(), destination = context.createMediaStreamDestination();
       gain.gain.value = 0.3 / frequencies.length; gain.connect(destination);
@@ -44,6 +45,12 @@ export async function syntheticMicrophone(page: Page, delayed = false, frequenci
       return destination.stream;
     } });
   }, { delayed, frequencies });
+}
+export async function waitForPendingMicrophone(page: Page, calls = 1) {
+  await expect.poll(() => page.evaluate(expected => {
+    const state = Reflect.get(window, 'audioTest');
+    return state.calls === expected && state.tracks.length === expected && typeof state.resolve === 'function';
+  }, calls)).toBe(true);
 }
 export const audioState = (page: Page) => page.evaluate(() => {
   const state = (window as unknown as { audioTest: { calls: number; contexts: AudioContext[]; tracks: MediaStreamTrack[] } }).audioTest;

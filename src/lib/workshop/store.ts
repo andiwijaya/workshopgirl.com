@@ -10,6 +10,13 @@ export interface StoreLoad { store: WorkshopStore; recovered: boolean; message: 
 export const emptyStore = (): WorkshopStore => ({ version: STORE_VERSION, customers: [], vehicles: [], jobs: [], parts: [], partMovements: [], warranties: [], warrantyClaims: [], nextServices: [], invoices: [], payments: [], suppliers: [], purchaseNeeds: [], purchaseOrders: [], goodsReceipts: [] });
 const origins = new WeakMap<WorkshopStore, { raw: string | null; blocked: boolean; storage: StorageLike }>();
 
+/** A rollback snapshot keeps the original concurrency/read-only guard. */
+export function cloneStore(store: WorkshopStore): WorkshopStore {
+  const clone = structuredClone(store), origin = origins.get(store);
+  if (origin) origins.set(clone, { ...origin });
+  return clone;
+}
+
 export function makeId(prefix: string): string {
   const uuid = globalThis.crypto?.randomUUID?.();
   return `${prefix}_${uuid ?? `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`}`;

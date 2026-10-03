@@ -1,7 +1,7 @@
 import { selectedWorkshopJob } from '../../lib/workshop/navigation.ts';
 import { selectWorkshopJob } from './navigation.ts';
 import type { NextService, WorkshopStore, WorkshopWarranty } from '../../lib/workshop/model.ts';
-import { loadStore, saveStore } from '../../lib/workshop/store.ts';
+import { cloneStore, loadStore, saveStore } from '../../lib/workshop/store.ts';
 import { completedService, createWarranty, createWarrantyClaim, latestKnownOdometer, localDate, nextServiceForVehicle, nextServiceStatus, saveNextService, serviceHistory, vehicleHistorySearch, warrantyStatusForVehicle } from '../../lib/workshop/history.ts';
 
 const $=<T extends HTMLElement>(root:ParentNode,selector:string)=>root.querySelector<T>(selector)!;
@@ -13,7 +13,7 @@ export function mountServiceHistory(root:HTMLElement):void{
  const search=$<HTMLInputElement>(root,'#history-search'),picker=$<HTMLSelectElement>(root,'#history-vehicle'),content=$<HTMLElement>(root,'#history-content'),feedback=$<HTMLElement>(root,'#history-feedback');let {store}=load(),selectedId=selectedWorkshopJob(store,new URL(location.href).searchParams)?.vehicleId??'';
  if(!store.warranties)store.warranties=[];if(!store.warrantyClaims)store.warrantyClaims=[];if(!store.nextServices)store.nextServices=[];
  const message=(text:string,error=false)=>{feedback.textContent=text;feedback.hidden=!text;feedback.dataset.kind=error?'error':'success';};
- const persistMutation=<T,>(form:HTMLFormElement,mutate:()=>{ok:boolean;value?:T;message?:string})=>{const before=structuredClone(store),result=mutate();if(!result.ok){formError(form,result.message??'The change could not be saved.');return null;}const saved=saveStore(store,window.localStorage);if(!saved.ok){store=before;formError(form,saved.message);return null;}message('Service history information saved in this browser.');return result.value??true;};
+ const persistMutation=<T,>(form:HTMLFormElement,mutate:()=>{ok:boolean;value?:T;message?:string})=>{const before=cloneStore(store),result=mutate();if(!result.ok){formError(form,result.message??'The change could not be saved.');return null;}const saved=saveStore(store,window.localStorage);if(!saved.ok){store=before;formError(form,saved.message);return null;}message('Service history information saved in this browser.');return result.value??true;};
  const choices=()=>vehicleHistorySearch(store,search.value);
  const render=()=>{
   const vehicles=choices();picker.replaceChildren(new Option('Choose a vehicle',''),...vehicles.map(v=>new Option(`${v.plate} · ${[v.make,v.model].filter(Boolean).join(' ')||v.type}`,v.id)));

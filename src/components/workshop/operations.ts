@@ -21,13 +21,37 @@ const value = (root: ParentNode, name: string) => (root.querySelector<HTMLInputE
 const num = (root: ParentNode, name: string): number | null => value(root, name) === '' ? null : Number(value(root, name));
 const localDate = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
 const stamp = () => `${Date.now().toString(36).slice(-5).toUpperCase()}`;
+const savedSnapshots = new WeakMap<ReturnType<typeof loadStore>['store'], ReturnType<typeof loadStore>['store']>();
+function rollbackWorkflow(store: ReturnType<typeof loadStore>['store']) {
+  const snapshot = savedSnapshots.get(store);
+  if (!snapshot) return;
+  // Keep existing object identities held by form closures, remove uncommitted new
+  // records, and restore absent optional fields as well as changed values.
+  for (const field of ['customers', 'vehicles', 'jobs'] as const) {
+    const current = store[field] as unknown as Record<string, unknown>[];
+    const restored = (snapshot[field] as unknown as Record<string, unknown>[]).map(record => {
+      const target = current.find(item => item.id === record.id) ?? {};
+      for (const key of Object.keys(target)) delete target[key];
+      Object.assign(target, structuredClone(record));
+      return target;
+    });
+    current.splice(0, current.length, ...restored);
+  }
+}
 function set(root: ParentNode, name: string, v: unknown) { const node = root.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(`[name="${name}"]`); if (node) node.value = v == null ? '' : String(v); }
 function setError(root: ParentNode, selector: string, message: string) { const node = root.querySelector<HTMLElement>(selector); if (node) { node.textContent = message; node.hidden = !message; } }
 function money(n: number) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n); }
 function rows<T extends {id:string}>(host: HTMLElement, list: T[], render: (row:T)=>HTMLElement) { host.replaceChildren(...list.map(render)); }
 function textRow(parent: HTMLElement, label: string, content: unknown) { const p = el('p'); const b = el('strong', undefined, `${label}: `); p.append(b, document.createTextNode(content == null || content === '' ? '—' : String(content))); parent.append(p); }
 function status(root: HTMLElement, message: string) { const n = $(root, '#workshop-status'); if (n) { n.textContent = message; n.hidden = !message; } }
-function save(root: HTMLElement, store: ReturnType<typeof loadStore>['store']) { try { const result = saveStore(store, window.localStorage); if (!result.ok) status(root, result.message); else setWorkshopJobContext(root, store, getJob(store, root.dataset.selectedJob)); return result.ok; } catch { status(root,'Browser storage is unavailable. Your latest change was not saved.'); return false; } }
+function save(root: HTMLElement, store: ReturnType<typeof loadStore>['store']) {
+  try {
+    const result = saveStore(store, window.localStorage);
+    if (!result.ok) { rollbackWorkflow(store); status(root, result.message); }
+    else { savedSnapshots.set(store, structuredClone(store)); setWorkshopJobContext(root, store, getJob(store, root.dataset.selectedJob)); }
+    return result.ok;
+  } catch { rollbackWorkflow(store); status(root, 'Browser storage is unavailable. Your latest change was not saved.'); return false; }
+}
 function context(root: HTMLElement, job: WorkshopJob | null, store: ReturnType<typeof loadStore>['store']) {
   setWorkshopJobContext(root, store, job);
   const picker = $(root, '#workshop-job-picker'); if (!picker) return;
@@ -181,11 +205,19 @@ function jobHref(id:string,route:string):string{return `${route}?job=${encodeURI
 
 export function mountWorkshopPage(root: HTMLElement) {
   if (root.dataset.workshopMounted === 'true') return;
+  initializeWorkshopPage(root);
+  root.removeAttribute('inert');
+  root.querySelector<HTMLElement>('#workshop-loading')!.hidden = true;
+  root.setAttribute('aria-busy', 'false');
   root.dataset.workshopMounted = 'true';
+}
+
+function initializeWorkshopPage(root: HTMLElement) {
   let loaded;
   try { loaded = loadStore(window.localStorage); }
   catch { loaded = loadStore({ getItem: () => { throw new Error('Storage unavailable'); }, setItem: () => { throw new Error('Storage unavailable'); } }); }
   const { store } = loaded, step = root.dataset.workshopStep;
+  savedSnapshots.set(store, structuredClone(store));
   if (loaded.message) status(root, loaded.message);
   mountWorkshopNavigation(root, store);
   const empty = root.querySelector<HTMLElement>('#workshop-empty')!;

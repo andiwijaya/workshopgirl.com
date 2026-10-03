@@ -17,7 +17,8 @@ const printKind = steps.find(page => page.id === step)?.print;
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head><body>
   <a class="skip-link" href="#main" tabindex="0">Skip to workshop tool</a><SiteHeader current="workshop" />
-  <main id="main" class="workshop-page" tabindex="-1" data-workshop-step={step}>
+  <noscript><p>Enable JavaScript to work with local records. Your saved records have not been changed.</p></noscript>
+  <main id="main" class="workshop-page" tabindex="-1" data-workshop-step={step} data-workshop-controls inert aria-busy="true">
     <div class="workshop-hero"><a class="eyebrow" href="/workshop/">WorkshopGirl / Workshop</a><p class="operation-label">Workshop Operations</p><h1>{heading}</h1><p>{intro}</p><ToolShare title={title} description={description} canonical={canonical} /></div>
     <div class="workshop-steps">
       <p class="workflow-label">Service workflow</p>
@@ -35,6 +36,7 @@ const printKind = steps.find(page => page.id === step)?.print;
     <div class="workshop-job-context" id="workshop-job-context" hidden></div>
     <div class="workshop-job-picker" id="workshop-job-picker" hidden></div>
     {['inspection','work-order'].includes(step) && <section id="job-observations" class="workshop-card" aria-label="Observation evidence" hidden></section>}
+    <p id="workshop-loading" role="status">Loading local workshop controls...</p>
     <slot />
     <section class="print-sheet" id="print-sheet" hidden aria-label="Printable workshop document"><div class="print-brand">Workshop<span>Girl</span> · Workshop Operations</div><h2 id="print-title"></h2><div id="print-content"></div></section>
     <div class="workshop-page-actions"><a class="button-link button-secondary" href="/workshop/">Workshop home</a>{printKind !== 'record' && <button class="button-secondary" type="button" data-print>{printKind === 'queue' ? 'Print queue summary' : printKind === 'parts' ? 'Print inventory summary' : 'Print / Save as PDF'}</button>}</div>

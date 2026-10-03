@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { wav, upload, expectTone, syntheticMicrophone, audioState } from './audio-fixtures';
+import { wav, upload, expectTone, syntheticMicrophone, waitForPendingMicrophone, audioState } from './audio-fixtures';
 
 test.beforeEach(async ({ page }, info) => {
   if (/^(Site navigation|Homepage promotes|Responsive|Missing audio)/.test(info.title)) return;
@@ -129,6 +129,11 @@ test('Cancel pending permission releases a late stream', async ({ page }) => {
   await page.goto('/tools/sound-analyzer/');
   await page.locator('#start-mic').click();
   await expect.poll(async () => (await audioState(page)).calls).toBe(1);
+  // Calls increments before Firefox finishes resuming the synthetic source.
+  // Wait for the delayed permission promise itself, so cancellation tests a
+  // real late stream rather than invoking an uninitialized fixture callback.
+  await waitForPendingMicrophone(page);
+  expect((await audioState(page)).tracks).toHaveLength(1);
   await page.locator('#stop-analysis').click();
   await page.evaluate(() => (window as unknown as { audioTest: { resolve: () => void } }).audioTest.resolve());
   await expect.poll(async () => (await audioState(page)).tracks.every(state => state === 'ended')).toBe(true);

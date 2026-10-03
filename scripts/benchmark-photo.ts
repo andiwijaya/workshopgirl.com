@@ -5,11 +5,13 @@ import path from 'node:path';
 import {gzipSync} from 'node:zlib';
 import {performance} from 'node:perf_hooks';
 import {pngFixture} from '../tests/photo-fixtures.ts';
-const evidence=path.resolve('test-results/v2-phase7');await fs.mkdir(evidence,{recursive:true});
+const evidence=path.resolve(process.env.WG_QA_DIR ?? 'test-results/v2-phase7');await fs.mkdir(evidence,{recursive:true});
 const preview=spawn(process.execPath,['node_modules/astro/bin/astro.mjs','preview','--host','127.0.0.1','--port','4387','--ignore-lock'],{stdio:['ignore','pipe','pipe'],windowsHide:true});
 let previewOutput='';preview.stdout.on('data',data=>{previewOutput+=String(data);});preview.stderr.on('data',data=>{previewOutput+=String(data);});
 const url='http://127.0.0.1:4387';
 const large=pngFixture(6000,4000,false);
+const requestedTrials=Number(process.env.WG_PHOTO_TRIALS ?? 3);
+if(!Number.isInteger(requestedTrials)||requestedTrials<1||requestedTrials>20)throw new Error('WG_PHOTO_TRIALS must be an integer from 1 to 20.');
 const results:unknown[]=[];
 async function exact(page:Page,x:number,y:number){await page.locator('#photo-point-x').fill(String(x));await page.locator('#photo-point-y').fill(String(y));await page.locator('#photo-add-point').click();}
 try{
@@ -26,7 +28,7 @@ try{
     let heapBefore:number|null=null,heapAfter:number|null=null;const session=name==='chromium'?await page.context().newCDPSession(page):null;
     if(session){await session.send('HeapProfiler.collectGarbage');heapBefore=(await session.send('Runtime.getHeapUsage')).usedSize;}
     const trials=[];
-    for(let trial=0;trial<3;trial++){
+    for(let trial=0;trial<requestedTrials;trial++){
       await page.evaluate(()=>{const intervals:number[]=[];let last=performance.now();const timer=setInterval(()=>{const now=performance.now();intervals.push(now-last);last=now;},16);Object.assign(window,{photoBenchmarkTick:()=>{clearInterval(timer);return {maxHeartbeatGapMS:Math.max(0,...intervals),samples:intervals.length};}});});
       const start=performance.now();await page.locator('#photo-file').setInputFiles({name:'large-24mp.png',mimeType:'image/png',buffer:large});await page.locator('#photo-status').filter({hasText:'Image opened locally'}).waitFor();const openMS=performance.now()-start;
       if(!await page.locator('.photo-coordinates').evaluate(node=>(node as HTMLDetailsElement).open))await page.locator('.photo-coordinates summary').click();await exact(page,0,0);await exact(page,2400,0);await page.locator('#photo-known').fill('240');await page.locator('#photo-reference').click();
@@ -45,6 +47,6 @@ try{
   }
   const html=await fs.readFile('dist/tools/photo-measurement/index.html','utf8'),home=await fs.readFile('dist/index.html','utf8');
   const assets=[];for(const name of await fs.readdir('dist/_astro')){if(name.includes('processing.worker')||html.includes(name)){const bytes=await fs.readFile(path.join('dist/_astro',name));assets.push({name,bytes:bytes.length,gzipBytes:gzipSync(bytes).length,initialPhotoHTML:html.includes(name),initialHomeHTML:home.includes(name)});}}
-  const report={timestamp:new Date().toISOString(),definitions:{openMS:'Node wall time from file-input dispatch to rendered success status; includes automation polling and local worker startup/decode/downsample.',correctionMS:'Node wall time from Apply click to rendered success, including snapshot, pixel transfer fallback, worker bilinear warp and bitmap delivery.',pngMS:'Node wall time from Export PNG click to download event.',maxHeartbeatGapMS:'Largest foreground-window 16 ms timer interval during open, setup and correction; includes test automation and scheduling, not an isolated processing-only frame metric.',heap:'Chromium Runtime.getHeapUsage usedSize after forced GC, before first image and after each of three clear cycles in one document. Locator instrumentation is initialized before the empty-page baseline. JS heap only; excludes native decoded bitmap, browser/GPU/process RSS and worker heap. Initialization/JIT/cache/automation overhead can differ from the empty baseline.',cleanup:'No live Playwright Worker objects after each processing/close; export object URLs tracked by create/revoke wrappers return to zero.',nativePixelBudget:'At 24 MP, full decoded raster may reach 96 MB transiently; working bitmap 15.36 MB. Rectification adds source/output RGBA buffers plus a bitmap transiently. Header read bounded to 512 KiB; original encoded File retained until close. This is an estimate, not measured native peak.'},results,assets,photoHTMLBytes:Buffer.byteLength(html),homeHTMLBytes:Buffer.byteLength(home)};
+  const report={timestamp:new Date().toISOString(),trialCount:requestedTrials,definitions:{openMS:'Node wall time from file-input dispatch to rendered success status; includes automation polling and local worker startup/decode/downsample.',correctionMS:'Node wall time from Apply click to rendered success, including snapshot, pixel transfer fallback, worker bilinear warp and bitmap delivery.',pngMS:'Node wall time from Export PNG click to download event.',maxHeartbeatGapMS:'Largest foreground-window 16 ms timer interval during open, setup and correction; includes test automation and scheduling, not an isolated processing-only frame metric.',heap:'Chromium Runtime.getHeapUsage usedSize after forced GC, before first image and after each clear cycle in one document. Locator instrumentation is initialized before the empty-page baseline. JS heap only; excludes native decoded bitmap, browser/GPU/process RSS and worker heap. Initialization/JIT/cache/automation overhead can differ from the empty baseline.',cleanup:'No live Playwright Worker objects after each processing/close; export object URLs tracked by create/revoke wrappers return to zero.',nativePixelBudget:'At 24 MP, full decoded raster may reach 96 MB transiently; working bitmap 15.36 MB. Rectification adds source/output RGBA buffers plus a bitmap transiently. Header read bounded to 512 KiB; original encoded File retained until close. This is an estimate, not measured native peak.'},results,assets,photoHTMLBytes:Buffer.byteLength(html),homeHTMLBytes:Buffer.byteLength(home)};
   await fs.writeFile(path.join(evidence,'benchmark.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
 }finally{preview.kill();}

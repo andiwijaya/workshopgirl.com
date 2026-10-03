@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { syntheticMicrophone, audioState } from './audio-fixtures';
+import { syntheticMicrophone, waitForPendingMicrophone, audioState } from './audio-fixtures';
 import { DspEngine } from '../src/lib/dsp/engine.ts';
 import { speakerScores } from '../src/lib/domains/speaker/profile.ts';
 
@@ -95,7 +95,7 @@ test('Speaker permission errors and unavailable APIs recover without requesting 
 
 test('Speaker audio permission cancellation and navigation stop tracks, worker and late input', async ({ page }) => {
   await syntheticMicrophone(page, true, [100]); await page.goto(route); await page.locator('#speaker-start').click();
-  await expect.poll(async () => (await audioState(page)).calls).toBe(1); await page.locator('#speaker-stop').click();
+  await waitForPendingMicrophone(page); await page.locator('#speaker-stop').click();
   await page.evaluate(() => (window as unknown as { audioTest: { resolve: () => void } }).audioTest.resolve());
   await expect.poll(async () => (await audioState(page)).tracks.every(t => t === 'ended')).toBe(true); await expect(page.locator('#speaker-analyzer')).toHaveAttribute('data-state', 'idle');
   await syntheticMicrophone(page, false, [100]); await page.addInitScript(() => {

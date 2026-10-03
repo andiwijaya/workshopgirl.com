@@ -2,7 +2,7 @@ import { selectedWorkshopJob } from '../../lib/workshop/navigation.ts';
 import { selectWorkshopJob } from './navigation.ts';
 import type { WorkshopInvoice, WorkshopInvoiceLine, WorkshopJob, WorkshopPayment, WorkshopPaymentMethod, WorkshopStore } from '../../lib/workshop/model.ts';
 import { addManualLine, allPaymentsForInvoice, billingSummary, calculateInvoice, createDraft, createReplacementDraft, draftNeedsRefresh, eligibleForDraft, formatQuantity, invoiceDiscrepancies, issueInvoice, netPaid, outstanding, paymentBalanceAfter, paymentStatus, QUANTITY_SCALE, recordPayment, refreshDraft, reversePayment, updateDraftLine, voidInvoice } from '../../lib/workshop/billing.ts';
-import { getCustomer, getVehicle, saveStore } from '../../lib/workshop/store.ts';
+import { cloneStore, getCustomer, getVehicle, saveStore } from '../../lib/workshop/store.ts';
 import { workflowStatus } from '../../lib/workshop/queue.ts';
 
 const $=<T extends HTMLElement>(root:ParentNode,selector:string)=>root.querySelector<T>(selector);
@@ -19,7 +19,7 @@ export function mountBilling(root:HTMLElement,initial:WorkshopStore):void {
   const selected=()=>store.invoices.find(i=>i.invoiceId===selectedId)??null;
   const jobFor=(invoice:WorkshopInvoice)=>store.jobs.find(j=>j.id===invoice.jobId)??null;
   const saveMutation=(action:()=>void,redraw=true):void=>{
-    const before=structuredClone(store);try{action();const result=saveStore(store,window.localStorage);if(!result.ok){store=before;alert(result.message);render();return;}alert('Billing record saved locally.');if(redraw)render();else refreshVisibleCalculations();}catch(error){store=before;alert(error instanceof Error?error.message:'Billing change could not be saved.');render();}
+    const before=cloneStore(store);try{action();const result=saveStore(store,window.localStorage);if(!result.ok){store=before;alert(result.message);render();return;}alert('Billing record saved locally.');if(redraw)render();else refreshVisibleCalculations();}catch(error){store=before;alert(error instanceof Error?error.message:'Billing change could not be saved.');render();}
   };
   const refreshVisibleCalculations=():void=>{const invoice=selected();if(!invoice)return;for(const card of Array.from(detail.querySelectorAll<HTMLElement>('[data-line-id]'))){const line=invoice.lines.find(item=>item.lineId===card.dataset.lineId);const amount=card.querySelector<HTMLElement>('.billing-line-total');if(line&&amount)amount.textContent=`Line total: ${money(line.lineTotal)}`;}for(const row of Array.from(detail.querySelectorAll<HTMLElement>('[data-billing-total]'))){const key=row.dataset.billingTotal as 'Subtotal'|'Discount'|'Tax'|'Total'|undefined,value=key==='Subtotal'?invoice.subtotal:key==='Discount'?invoice.discount:key==='Tax'?invoice.taxAmount:key==='Total'?invoice.grandTotal:undefined;const strong=row.querySelector('strong');if(strong&&value!==undefined)strong.textContent=money(value);}};
   const label=(title:string,control:HTMLElement):HTMLLabelElement=>{const node=document.createElement('label');node.append(make('span',undefined,title),control);return node;};

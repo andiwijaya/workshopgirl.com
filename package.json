@@ -14,7 +14,9 @@
     "benchmark:dsp": "node scripts/benchmark-dsp-v2.ts",
     "benchmark:v3": "node scripts/benchmark-dsp-v3.ts",
     "benchmark:speaker": "node scripts/benchmark-speaker.ts",
-    "benchmark:photo": "node scripts/benchmark-photo.ts"
+    "benchmark:photo": "node scripts/benchmark-photo.ts",
+    "benchmark:release": "node scripts/benchmark-release.ts",
+    "audit:site": "node scripts/audit-site.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",

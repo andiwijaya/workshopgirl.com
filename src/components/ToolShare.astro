@@ -12,6 +12,14 @@ const { title, description, canonical } = Astro.props;
   <span class="tool-share-status" role="status" aria-live="polite"></span>
 </div>
 
+<style>
+  .tool-share{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .share-tool-button{min-height:44px;padding:10px 14px;cursor:pointer;font:600 .85rem 'DM Sans',sans-serif;border:1px solid #655f59;border-radius:3px;background:#fffaf4;color:#171717}
+  .share-tool-button:hover{background:#171717;color:white}
+  .share-tool-button:focus-visible{outline:3px solid #ab2457;outline-offset:3px}
+  .tool-share-status{font-size:.85rem}
+</style>
+
 <script>
   document.querySelectorAll<HTMLElement>('.tool-share:not([data-ready])').forEach(container => {
     container.dataset.ready = 'true';
