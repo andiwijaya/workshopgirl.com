@@ -1,7 +1,7 @@
 ---
-import { journeys, journeyPages, journeyLinks, type Journey } from '../data/journeys.ts';
+import { journeys, journeyForPath, journeyLinks, type Journey } from '../data/journeys.ts';
 import { workshopPages } from '../lib/workshop/navigation.ts';
-const id = journeyPages[Astro.url.pathname];
+const id = journeyForPath(Astro.url.pathname);
 const journey: Journey | undefined = id ? journeys[id] : undefined;
 const links = id ? journeyLinks(id, Astro.url.pathname) : [];
 ---

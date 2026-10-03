@@ -1,4 +1,6 @@
 ---
+import TutorialTopics from '../../../components/TutorialTopics.astro';
+import { tutorialCategory } from '../../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../../components/ShareButton.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
@@ -13,7 +15,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-spark-plugs/
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content="How to Change Spark Plugs: A Beginner’s Step-by-Step Guide" /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content="https://workshopgirl.com/images/tutorials/spark-plugs/workshopgirl-change-spark-plugs.webp?v=1" /><meta property="article:section" content="Cars / Engine / Maintenance" /><meta property="article:published_time" content="2026-09-22" /><meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:title" content="How to Change Spark Plugs: A Beginner’s Step-by-Step Guide" /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content="https://workshopgirl.com/images/tutorials/spark-plugs/workshopgirl-change-spark-plugs.webp?v=1" /><meta property="article:section" content={tutorialCategory(canonical)} /><meta property="article:published_time" content="2026-09-22" /><meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{title}</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
@@ -23,7 +25,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-spark-plugs/
     </style>
   </head>
   <body><div class="shell"><SiteHeader current="tutorials" /><main>
-    <a class="back" href="/tutorials/">← Back to tutorials</a><div class="eyebrow">Tutorials / Cars / Engine / Maintenance</div><h1>How to Change Spark Plugs: A Beginner’s Step-by-Step Guide</h1><p class="dek">Spark plugs are small enough to fit in your hand, but a gasoline engine depends on them thousands of times every minute. This guide explains the system, the careful workflow, and where vehicle-specific information matters.</p><div class="byline">Published September 22, 2026 · Workshop Girl</div><ShareButton title="How to Change Spark Plugs: A Beginner’s Step-by-Step Guide" canonical={canonical} />
+    <a class="back" href="/tutorials/">← Back to tutorials</a><TutorialTopics /><h1>How to Change Spark Plugs: A Beginner’s Step-by-Step Guide</h1><p class="dek">Spark plugs are small enough to fit in your hand, but a gasoline engine depends on them thousands of times every minute. This guide explains the system, the careful workflow, and where vehicle-specific information matters.</p><div class="byline">Published September 22, 2026 · Workshop Girl</div><ShareButton title="How to Change Spark Plugs: A Beginner’s Step-by-Step Guide" canonical={canonical} />
     <article>
       <p>Worn spark plugs can contribute to harder starting, rough running, misfires, reduced performance or increased fuel consumption. Those symptoms can have other causes too, but replacing spark plugs is often a manageable DIY job on an accessible gasoline engine when the correct parts, tools and specifications are used.</p>
       <div class="safety warning"><strong>Verify the exact engine information first</strong><p>Spark-plug gap, torque, socket size, plug type, replacement interval and ignition-coil procedure vary by engine. Check the owner’s manual, manufacturer service information and spark-plug manufacturer’s instructions. Never use this guide for high-voltage EV or hybrid traction systems.</p></div>

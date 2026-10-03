@@ -1,4 +1,5 @@
 ---
+import JourneyCards from '../../../components/JourneyCards.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import ToolShare from '../../../components/ToolShare.astro';
@@ -32,6 +33,7 @@ const canonical = 'https://workshopgirl.com/tools/speaker-sound-analyzer/';
     </section>
     <section class="speaker-guide" aria-labelledby="speaker-guide-heading"><div><span class="eyebrow">Good to know</span><h2 id="speaker-guide-heading">Your sound.<br />Your surroundings.</h2></div><div><p>Keep your microphone in one place and listen at a comfortable volume. Give it at least 10 seconds of active sound; silence and clearly overloaded input do not build the profile.</p><p>Results describe sound captured by this microphone and environment. They are not laboratory speaker frequency-response measurements, a speaker rating or a calibration.</p><details><summary>What does “Balanced” mean?</summary><p>We average power density on a logarithmic frequency scale so wider bands do not win just by having more frequency bins. If one session band is at least 3 dB above the next strongest, it is dominant. Otherwise, we call the captured balance “Balanced.” This is a simple listening guide, not a certification or a claim of a flat speaker response.</p><p>Percentages describe the normalized captured balance, not the proportions of the original song. Music, microphone response, room acoustics, distance and browser processing all influence the result.</p></details><p>Audio and measurements stay in this tab. Nothing is uploaded or recorded. Stop or leave the page to release the microphone. Starting again clears the previous session.</p><ToolShare title={title} description={description} canonical={canonical} /><p class="small">Share a link to this tool. Your listening results are never included.</p></div></section>
     <p class="speaker-links">Want the technical view? <a href="/tools/sound-analyzer/">Open General Sound Analyzer</a> · <a href="/tools/">All tools</a></p>
+  <JourneyCards />
   </main><SiteFooter />
   <script>import { mountSpeaker } from '../../../components/speaker-analyzer/controller'; mountSpeaker(document.querySelector<HTMLElement>('#speaker-analyzer')!);</script>
 </body></html>

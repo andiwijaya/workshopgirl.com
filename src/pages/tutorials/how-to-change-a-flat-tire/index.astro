@@ -1,4 +1,7 @@
 ---
+import JourneyCards from '../../../components/JourneyCards.astro';
+import TutorialTopics from '../../../components/TutorialTopics.astro';
+import { tutorialCategory } from '../../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../../components/ShareButton.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
@@ -19,7 +22,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-a-flat-tire/
     <meta property="og:type" content="article" />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content="https://workshopgirl.com/images/tutorials/flat-tire/workshopgirl-flat-tire-preparation.webp?v=1" />
-    <meta property="article:section" content="Cars / Basic Maintenance" />
+    <meta property="article:section" content={tutorialCategory(canonical)} />
     <meta property="article:published_time" content="2026-09-21" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
@@ -72,7 +75,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-a-flat-tire/
       <SiteHeader current="tutorials" />
       <main>
         <a class="back" href="/tutorials/">← Back to tutorials</a>
-        <div class="eyebrow">Tutorials / Cars / Basic Maintenance</div>
+        <TutorialTopics />
         <h1>How to Change a Flat Tire — A Beginner’s Guide</h1>
         <p class="dek">A flat tire can turn an ordinary drive into an unexpected workshop moment. The good news is that changing a wheel is a manageable basic skill when you have the right equipment, understand the lifting points, and work somewhere safe. Safety comes before getting back on the road.</p>
         <div class="byline">Published September 21, 2026 · Workshop Girl</div>
@@ -156,7 +159,8 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-a-flat-tire/
           <div class="related"><strong>Keep learning:</strong> <a href="/tutorials/how-to-use-a-torque-wrench/">How to Use a Torque Wrench — A Beginner’s Guide</a> · <a href="/tutorials/how-to-change-engine-oil/">How to Change Engine Oil — A Beginner’s Guide</a> · <a href="/tutorials/how-to-replace-brake-pads/">How to Replace Brake Pads — A Beginner’s Guide</a> · <a href="/tutorials/engine-air-filter/">How to Inspect, Clean or Replace Your Engine Air Filter</a></div>
           <div class="closing"><h2>Final Thoughts</h2><p>Changing a flat tire is not about speed. It is about making a series of simple steps safely and correctly. Once you know where your tools and jacking points are, the job becomes much less intimidating.</p></div>
         </article>
-      </main><SiteFooter />
+      <JourneyCards />
+  </main><SiteFooter />
     </div>
   </body>
 </html>

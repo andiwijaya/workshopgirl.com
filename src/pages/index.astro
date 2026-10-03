@@ -10,7 +10,14 @@ const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
   {gaId && <script is:inline define:vars={{ gaId }}>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date()); gtag('config', gaId);
+    // Homepage analytics must not forward local job IDs or arbitrary query data
+    // from a previous tool page (or this page's URL).
+    let publicReferrer = '';
+    try { const referrer = new URL(document.referrer); publicReferrer = referrer.origin + referrer.pathname; } catch { /* No referrer. */ }
+    gtag('js', new Date()); gtag('config', gaId, {
+      page_location: 'https://workshopgirl.com/', page_referrer: publicReferrer,
+      allow_google_signals: false, allow_ad_personalization_signals: false,
+    });
   </script>}
   <section class="home-hero" aria-labelledby="home-title">
     <div class="hero-copy"><div class="eyebrow">Your digital workshop companion</div><h1 id="home-title">What needs<br /><em>working on?</em></h1><p class="lead">Hi, I'm Workshop Girl. I fix things, build things, break things… and sometimes figure out why. Let's make a useful next step.</p>
@@ -28,6 +35,6 @@ const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
   <section id="latest" aria-labelledby="latest-title"><div class="eyebrow">Fresh from the bench and beyond</div><h2 id="latest-title">Latest from Workshop Girl.</h2><div class="card-grid">{latestContent.map(item => <article class="discovery-card"><img src={item.image} alt={item.imageAlt} width="1672" height="941" loading="lazy" /><p class="eyebrow">{item.kind}</p><h3>{item.title}</h3><time datetime={item.publishedAt}>{item.published}</time><p>{item.excerpt}</p><a href={item.slug}>{item.actionLabel}</a></article>)}</div><p><a href="/stories/">More stories and projects</a> · <a href="/tutorials/">All learning guides</a></p></section>
 </DiscoveryLayout>
 <style>
-  .home-hero{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:30px;margin-top:0}.hero-copy{min-width:0}.home-hero h1{font-size:clamp(3.2rem,5.5vw,5.8rem);letter-spacing:-.065em}.home-hero em{color:#ab2457;font-style:normal}.hero-actions{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-top:24px}.portrait{margin:0;position:relative}.portrait img{display:block;width:100%;height:530px;object-fit:cover;object-position:50% 36%;border-radius:100px 100px 6px 6px}.portrait figcaption{position:absolute;bottom:22px;right:12px;background:var(--soft);padding:14px;transform:rotate(-4deg);font-family:'Space Grotesk',sans-serif;font-weight:700}.analyzer-links a{text-decoration:none}.analyzer-links a:hover{border-color:#ab2457}.learning-cards{margin-top:24px}.workshop-entry{padding:30px;background:#fffaf4;border-top:3px solid var(--orange)}
-  @media(max-width:760px){.home-hero{grid-template-columns:1fr;gap:26px}.home-hero h1{font-size:clamp(3rem,12vw,4.5rem)}.hero-actions{align-items:stretch}.portrait{max-width:480px;width:100%;margin:auto}.portrait img{height:290px;object-position:50% 8%;border-radius:65px 65px 6px 6px}.portrait figcaption{font-size:.9rem;bottom:15px}.workshop-entry{padding:22px}.category-links{gap:10px}.category-links a{font-size:.9rem}}
+  .home-hero{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:30px;margin-top:0}.hero-copy{min-width:0}.home-hero h1{font-size:clamp(3.2rem,5.5vw,5.8rem);letter-spacing:-.065em}.home-hero em{color:#ab2457;font-style:normal}.hero-actions{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-top:24px}.portrait{margin:0;position:relative}.portrait img{display:block;width:100%;height:auto;aspect-ratio:2/3;object-fit:contain;border-radius:100px 100px 6px 6px}.portrait figcaption{position:absolute;bottom:22px;right:12px;background:var(--soft);padding:14px;transform:rotate(-4deg);font-family:'Space Grotesk',sans-serif;font-weight:700}.analyzer-links a{text-decoration:none}.analyzer-links a:hover{border-color:#ab2457}.learning-cards{margin-top:24px}.workshop-entry{padding:30px;background:#fffaf4;border-top:3px solid var(--orange)}
+  @media(max-width:760px){.home-hero{grid-template-columns:1fr;gap:26px}.home-hero h1{font-size:clamp(3rem,12vw,4.5rem)}.hero-actions{align-items:stretch}.portrait{max-width:320px;width:100%;margin:auto}.portrait img{height:auto;border-radius:65px 65px 6px 6px}.portrait figcaption{font-size:.9rem;bottom:15px}.workshop-entry{padding:22px}.category-links{gap:10px}.category-links a{font-size:.9rem}}
 </style>

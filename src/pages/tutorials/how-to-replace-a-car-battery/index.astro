@@ -1,4 +1,7 @@
 ---
+import JourneyCards from '../../../components/JourneyCards.astro';
+import TutorialTopics from '../../../components/TutorialTopics.astro';
+import { tutorialCategory } from '../../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../../components/ShareButton.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
@@ -12,7 +15,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-replace-a-car-batte
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content="How to Replace a Car Battery: A Beginner’s Step-by-Step Guide" /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content="https://workshopgirl.com/images/tutorials/car-battery/workshopgirl-car-battery-replacement.webp?v=1" /><meta property="article:section" content="Cars / Electrical / Maintenance" /><meta property="article:published_time" content="2026-09-22" /><meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:title" content="How to Replace a Car Battery: A Beginner’s Step-by-Step Guide" /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content="https://workshopgirl.com/images/tutorials/car-battery/workshopgirl-car-battery-replacement.webp?v=1" /><meta property="article:section" content={tutorialCategory(canonical)} /><meta property="article:published_time" content="2026-09-22" /><meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{title}</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
@@ -22,7 +25,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-replace-a-car-batte
     </style>
   </head>
   <body><div class="shell"><SiteHeader current="tutorials" /><main>
-    <a class="back" href="/tutorials/">← Back to tutorials</a><div class="eyebrow">Tutorials / Cars / Electrical / Maintenance</div><h1>How to Replace a Car Battery: A Beginner’s Step-by-Step Guide</h1><p class="dek">Replacing a conventional 12V car battery can be a manageable DIY job on many vehicles — if you identify the system, use the correct battery, and handle the terminals carefully.</p><div class="byline">Published September 22, 2026 · Workshop Girl</div><ShareButton title="How to Replace a Car Battery: A Beginner’s Step-by-Step Guide" canonical={canonical} />
+    <a class="back" href="/tutorials/">← Back to tutorials</a><TutorialTopics /><h1>How to Replace a Car Battery: A Beginner’s Step-by-Step Guide</h1><p class="dek">Replacing a conventional 12V car battery can be a manageable DIY job on many vehicles — if you identify the system, use the correct battery, and handle the terminals carefully.</p><div class="byline">Published September 22, 2026 · Workshop Girl</div><ShareButton title="How to Replace a Car Battery: A Beginner’s Step-by-Step Guide" canonical={canonical} />
     <article>
       <p>A car that cranks slowly, has weak lights, or finally refuses to start may have reached the end of its battery’s useful life. Mechanically, replacing a conventional 12V battery can look simple. Electrically, careless handling can cause a short circuit, damage, or injury.</p>
       <div class="safety warning"><strong>First, know what this guide covers</strong><p>This is a general workflow for an accessible conventional 12V automotive battery. It is not for an EV or hybrid high-voltage traction battery. Some vehicles use battery monitoring or management systems, require battery registration or coding, have auxiliary batteries, place the battery under a seat or in the trunk, or specify a different disconnect procedure. Check the owner’s manual, service information, and battery instructions first.</p></div>
@@ -51,5 +54,6 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-replace-a-car-batte
       <div class="related"><strong>Keep learning:</strong> <a href="/tutorials/engine-air-filter/">How to Inspect, Clean or Replace Your Engine Air Filter</a> · <a href="/tutorials/how-to-change-engine-oil/">How to Change Engine Oil — A Beginner’s Guide</a> · <a href="/tutorials/how-to-replace-brake-pads/">How to Replace Brake Pads — A Beginner’s Guide</a> · <a href="/tutorials/how-to-change-a-flat-tire/">How to Change a Flat Tire — A Beginner’s Guide</a></div>
       <div class="closing"><h2>Final Thoughts</h2><p>A battery replacement is a useful first electrical-maintenance job because the workflow is understandable — identify the system, disconnect carefully, secure the battery, reconnect in the correct order, and verify the result. The smartest part is knowing when the vehicle needs a more specific procedure.</p></div>
     </article>
+  <JourneyCards />
   </main><SiteFooter /></div></body>
 </html>
