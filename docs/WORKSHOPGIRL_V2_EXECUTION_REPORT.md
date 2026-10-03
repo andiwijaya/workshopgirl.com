@@ -1,6 +1,6 @@
 # WorkshopGirl V2 execution report
 
-Status: Phase 0 complete; Phase 1 implemented, final regression running. Phases 2–11 remain pending.
+Status: Phase 0 and Phase 1 complete and tested. Phases 2–11 remain pending.
 This is the first structural checkpoint for the parent orchestrator, not completion of the master program.
 
 Authoritative scope: [complete master program](WORKSHOPGIRL_V2_MASTER_PROGRAM.md).
@@ -21,13 +21,14 @@ The master-program transcription retains all requirements; example code fences u
 - The sandbox denied Git ref writes and writes to the Git-created worktree. Explicit tool escalations were approved for the authorized worktree, edits and checks. No ACL, security configuration or permissions were changed; no auto-review rejection.
 - Generated builds, browser traces, logs, screenshots and implementation helper scripts are ignored runtime artifacts. None should be committed.
 - No fetch/sync/reset, force push, remote-history rewrite, merge, push or deployment in this turn.
+- Final read-only recheck: original main still 3bc271260bc2f191db403ea3f57fa2acbe256b7f with only the original untracked audit. Its SHA256 and the isolated copy both equal 4BD2BAE97ED0062E2A879C75D4E21EF8AEAA7ECC3DD15C9C8F08D489D1CC8A9C. Git ownership validation for this root read was handled by an approved escalation, without changing safe.directory.
 
 ## Master phase plan and Definition of Done mapping
 
 | Phase | State | Objective / required gates | Codebase-specific implementation boundary |
 |---|---|---|---|
 | 0 Baseline | Complete | Repository, routing, architecture, initial checks and evidence | Audit, explicit Astro pages/XML, package/config, shared components, local store and diagnostic libraries |
-| 1 Structure | Final tests running | Job context, valid/invalid/neutral states, print, Sport/current-state, canonicals, tools metadata, opening-soon | Typed workshop navigation + shared client context; existing controllers; header/footer; exact Cloudflare proxies |
+| 1 Structure | Complete | Job context, valid/invalid/neutral states, print, Sport/current-state, canonicals, tools metadata, opening-soon | Typed workshop navigation + shared client context; existing controllers; header/footer; exact Cloudflare proxies |
 | 2 IA | Pending | Home/Learn/Tools/Workshop/Stories/About; nonempty real categories; preserve existing routes; desktop/mobile keyboard menus | Shared navigation config; label /tutorials/ as Learn; new /workshop/ and /stories/ discovery hubs; retain old sections and /tools/workshop/* |
 | 3 Homepage | Pending | Three action journeys, direct Engine/Sound/Speaker links, Start Job, useful recent learning, sorted dates, character/mobile performance | src/pages/index.astro, typed content arrays and existing character artwork; sort by ISO date with stable ties |
 | 4 Journeys | Pending | Engine observation → learning → optional inspection; maintenance → workflow; distinguish stages/support | src/data/journeys.ts and reusable JourneyCards.astro with validated route IDs and bounded contextual CTAs |
@@ -73,7 +74,7 @@ The parent must continue automatically through the pending phases after reviewin
 10. Phase 7d: annotated PNG + versioned JSON, image decode/type/size/corruption/orientation handling, bounded interaction resolution with correct mappings, worker cancellation, URL/bitmap cleanup. Optional printable report if clean. Connect to actual clamps/drilling/woodworking content. Exercise all six viewports and all measurement/export gestures.
 11. Phase 8: reusable category IDs/display metadata, reference discovery and contextual related journeys; preserve all routes and editorial truth. Future review IA may be prepared but publish no fake reviews/testing/affiliate links.
 12. Phase 9: full quality/privacy/link regression, existing DSP/speaker benchmarks and startup/large-image/bundle metrics, dependency audit where available. Resolve attributable failures; physical-phone certification is not implied by browser emulation.
-13. Phase 10: inspect remote head and normal branch/deployment protection, review all changes, integrate safely, normal push and observe existing deployment. If truly missing credentials/infrastructure, report exact operation/target/error while completing independent work.
+13. Phase 10: inspect remote head and normal branch/deployment protection, review all changes, integrate safely, normal push and observe existing deployment. Original main has the user audit untracked while this branch now tracks the preserved copy; if Git blocks overwrite during integration, preserve/verify it in an ignored backup before the normal merge. Do not reset/discard it. If truly missing credentials/infrastructure, report exact operation/target/error while completing independent work.
 14. Phase 11: intended commit/deployment identity, every important route/alias/canonical/sitemap/robots/noindex, isolated desktop/mobile synthetic workflow and Photo fixture/calibration/export, remove synthetic browser data, clean checkout, final metrics/report.
 
 ## Phase 0 — baseline verification
@@ -95,7 +96,7 @@ Tests executed (baseline before source edits):
 Results: no baseline failing checks. Existing ShareButton/ToolShare execCommand fallback deprecation hints remain unchanged; Astro summary classifies them as hints.
 Problems found: confirmed missing context in shared tabs, dead generic print controls, footer Sport omission, narrow tools metadata, opening-soon copy, missing two exact slashless proxies and one internal clamps slash variant.
 Problems fixed in Phase 0: environment preparation only; no security/ACL changes, no installs, no application feature edits in the baseline build.
-Commit: pending documentation checkpoint.
+Commit: d41bb74f1b65cacf408f4a36db7912f3eeed5c64 — Document WorkshopGirl V2 program and verified baseline.
 Deployment state: not attempted; authorized for later Phase 10 after all program gates.
 
 ## Phase 1 — structural fixes
@@ -108,7 +109,7 @@ Files changed:
 - src/styles/workshop-operations.css
 - src/pages/index.astro, src/pages/tools/index.astro, src/pages/tutorials/angle-grinder-basics.astro
 - public/_redirects
-- tests/workshop-navigation.test.ts, tests/structural-browser.spec.ts
+- tests/workshop-navigation.test.ts, tests/structural-browser.spec.ts; updated existing workshop-browser.spec.ts and workshop-billing-browser.spec.ts
 - this execution report
 
 Architecture decisions:
@@ -116,18 +117,43 @@ Architecture decisions:
 - All nine tabs can carry selected job orientation. Queue highlights it; Parts shows its stock context and selects its movement job; History uses its vehicle for completed-service discovery; Billing resumes its existing active invoice when present. Procurement is a global supplier/order workspace: the context banner carries orientation only, never pre-assigns a PO/need/receipt or filters out other jobs.
 - Explicit Start a new job, All jobs, Clear job context links are neutral. Parts job changes, invoice selection and History vehicle/search/reset changes update or clear context, rather than carrying a stale job.
 - Revalidate links from localStorage on click/pointer/keyboard and cross-tab storage changes; deleted jobs no longer travel in tabs. No store schema change in Phase 1.
-- Intake save immediately updates current context/URL and print target; repeated save edits the same job instead of creating duplicates.
+- Intake save immediately updates current context/URL and print target; repeated save edits the same job and retains its intake number instead of creating duplicates. Identity pickers close/disable after first save, matching the existing-job form.
+- Core printing registers afterprint before opening the dialog, so synchronous browser close events clean up the sheet correctly; browser regression explicitly exercises this ordering.
+- WebKit selected option text overflow at 320px was reproduced with scroll measurements: document width 375px despite 320px viewport, traced to the job select. Scoped Parts select appearance/ellipsis and a visible CSS arrow keep native interaction/semantics while bounding painting; reproduction returned exactly 320px. No document overflow masking.
 - Core print retained. Queue and Parts now print clearly labeled all-local-record summaries, including useful empty-state output. History/Billing/Procurement omit the dead generic action and retain their own record-specific controls.
 - Current Workshop tab uses aria-current=page. Footer matches all seven header destinations and active sections. Mobile Escape returns focus; outside clicks and breakpoint transitions close the menu.
 - Keep nine already indexed slashless tutorial canonicals. Complete existing exact 200 proxies for circular saw and soldering; normalize the clamps internal link. No reverse redirect/broad slash rewrite or canonical change. Both variants render the same unique canonical. Cloudflare proxy behavior must be verified live in Phase 11; Astro preview does not execute _redirects. Official reference: [Cloudflare Pages redirects and proxying](https://developers.cloudflare.com/pages/configuration/redirects/).
 - Tools metadata includes diagnostics, validation and local operations; home status now says Your digital workshop companion, retaining character/layout.
 
 Implementation completed: structural edits plus four pure domain tests and seven browser scenarios (four projects = 28 additional browser cases).
-Tests executed: final lint/check/unit/build passed at 00:32–00:33 UTC. Full browser regression running; see test-results/v2-final.
-Results: 190/190 domain tests; Astro 141 files, 0 errors/0 warnings, same two baseline hints; build 41 pages in 1.39s. Browser/visual results pending.
-Problems found: TypeScript callback narrowing initially flagged nullable job.
-Problems fixed: capture selected ID before lookup, then rerun checks. No new runtime dependency, backend, analytics, diagnosis claim or customer-data sharing.
-Commit: pending structural checkpoint after complete browser/visual verification.
+Tests executed: final production verification 2026-10-03, approximately 00:45–00:52 UTC. All commands used the isolated branch and production build.
+
+| Command | Final result | Evidence |
+|---|---|---|
+| npm run lint | PASS, exit 0 | test-results/v2-release/lint.log |
+| npm run check | PASS, exit 0 on corrected rerun; 141 files, 0 errors, 0 warnings, 2 unchanged hints | test-results/v2-release/check.log |
+| npm test | PASS, exit 0; 190/190, none skipped | test-results/v2-release/unit.log |
+| npm run build | PASS, exit 0; 41 HTML pages, 1.36s reported build time | test-results/v2-release/build.log |
+| npm run test:browser -- --output=test-results/v2-browser-release --reporter=line | PASS, exit 0; 204 passed, 48 explicit WebKit Web Audio skips, 252 total, 6.4m | test-results/v2-release/browser.log |
+
+Results:
+- Four new domain cases and seven new browser scenarios; 28 new browser cases across Chromium/WebKit desktop/mobile. Existing Billing and complete Workshop workflow tests strengthened for changed job selection and History.
+- Baseline analyzers, generated-signal validation, local job workflow, approval/QC, Queue, inventory, warranties/history, Billing/payments/receipts and Procurement/receiving regression suites passed.
+- Homepage/tools/selected Inspection automated responsive and menu checks passed at 390×844, 430×932, 768×1024, 1024×768, 1280×720, 1440×900 in all four projects. Existing operation tests also cover 320/375px; Parts selection now explicitly checks 320/390/430px.
+- Eighteen Chromium desktop profile screenshots (six viewports × three pages) captured under test-results/v2-browser-release/structural-browser-Header--0066d-at-every-requested-viewport-chromium-desktop/. Human visual inspection covered 390px Workshop, 1280px Workshop and 430px Home. Character/palette/forms/footer were preserved. Long mobile checklists remain a Phase 5 orientation/UX concern, not a newly squeezed desktop form.
+- Canonical aliases tested locally both slash variants for all nine legacy slashless tutorials; domain checks confirm 41 unique sitemap entries and no reciprocal redirect cycles. Cloudflare platform proxy behavior remains a deliberate Phase 11 live gate.
+- No runtime dependency or heavy asset added. Build timing is an observed run, not a performance benchmark. Largest existing operations JS bundle remains approximately 167KB uncompressed; full startup/load/benchmark/bundle hardening is Phase 9.
+- Tool sharing with a selected job still sends only the canonical page URL, with no job or customer payload.
+
+Problems found and fixed:
+- Initial nullable-job narrowing error: capture selected ID before lookup; final static checks pass.
+- First full changed browser run: 198 passed, 48 skipped, six failures. Four were outdated neutral Billing URL assertions; changed to require the selected synthetic job ID and matching continuation tab. Two were real WebKit 320px Parts select overflow; measured and fixed as described above.
+- Review found intake number/identity pickers needed to match the now-selected saved job and afterprint needed registration before print; fixed and covered.
+- A moved ignored diagnostic .ts script was included by the existing broad tsconfig scan and caused two unresolved-relative-import check errors. Renamed the scratch source to .txt, then reran check and lint successfully. No tsconfig/security setting change. One intermediate browser run was explicitly interrupted before completion to avoid proceeding with the known overflow; it is not counted as passed.
+- Final full browser run: zero failures. The final release runner initially printed check exit=1 before scratch cleanup; the subsequent independent check rerun returned exit=0 and the evidence log above is that successful final check. Application sources were unchanged by scratch cleanup.
+- No new backend, schema change, analytics, diagnosis claim, raw audio attachment or customer-data sharing.
+
+Commit: structural checkpoint containing this report, subject “Fix WorkshopGirl job context, printing and navigation structure”; resolve its exact hash with git log -1 --format=%H on codex/workshopgirl-v2. The parent handoff includes that hash.
 Deployment state: not attempted in this first checkpoint.
 
 ## Phase entry template (required for phases 2–11)

@@ -1,3 +1,5 @@
+import { selectedWorkshopJob } from '../../lib/workshop/navigation.ts';
+import { selectWorkshopJob } from './navigation.ts';
 import type { WorkshopInvoice, WorkshopInvoiceLine, WorkshopJob, WorkshopPayment, WorkshopPaymentMethod, WorkshopStore } from '../../lib/workshop/model.ts';
 import { addManualLine, allPaymentsForInvoice, billingSummary, calculateInvoice, createDraft, createReplacementDraft, draftNeedsRefresh, eligibleForDraft, formatQuantity, invoiceDiscrepancies, issueInvoice, netPaid, outstanding, paymentBalanceAfter, paymentStatus, QUANTITY_SCALE, recordPayment, refreshDraft, reversePayment, updateDraftLine, voidInvoice } from '../../lib/workshop/billing.ts';
 import { getCustomer, getVehicle, saveStore } from '../../lib/workshop/store.ts';
@@ -11,7 +13,7 @@ const make=(tag:string,className?:string,text?:string):HTMLElement=>{const node=
 const controlId=()=>idText('billing-control');
 
 export function mountBilling(root:HTMLElement,initial:WorkshopStore):void {
-  let store=initial,selectedId='',query='',filter='All';
+  let store=initial,selectedId=initial.invoices.find(invoice=>invoice.jobId===selectedWorkshopJob(initial,new URL(location.href).searchParams)?.id&&invoice.status!=='Void')?.invoiceId??'',query='',filter='All';
   const status=$<HTMLElement>(root,'#billing-message')!,summary=$<HTMLElement>(root,'#billing-summary')!,jobs=$<HTMLElement>(root,'#billing-jobs')!,list=$<HTMLElement>(root,'#billing-list')!,detail=$<HTMLElement>(root,'#billing-detail')!;
   const alert=(message:string)=>{status.textContent=message;status.hidden=!message;};
   const selected=()=>store.invoices.find(i=>i.invoiceId===selectedId)??null;
@@ -24,6 +26,7 @@ export function mountBilling(root:HTMLElement,initial:WorkshopStore):void {
   const input=(type:string,value:string,attrs:Record<string,string>={}):HTMLInputElement=>{const node=document.createElement('input');node.type=type;node.value=value;for(const [key,val]of Object.entries(attrs))node.setAttribute(key,val);return node;};
   const button=(text:string,action:()=>void,kind='secondary'):HTMLButtonElement=>{const node=document.createElement('button');node.type='button';node.className=kind==='danger'?'button-danger':kind==='primary'?'':'button-secondary';node.textContent=text;node.addEventListener('click',action);return node;};
   function render():void {
+    const invoice=selected();if(invoice)selectWorkshopJob(root,invoice.jobId);
     renderSummary();renderJobs();renderInvoices();renderDetail();
   }
   function renderSummary():void {
