@@ -1,6 +1,6 @@
 # WorkshopGirl V2 execution report
 
-Status: Phases 0-4 complete and tested. Phases 5-11 remain pending for the parent orchestrator.
+Status: Phases 0-5 complete and tested. Phase 6 is next; Phases 7-11 remain pending for the parent orchestrator.
 This is a sequential implementation checkpoint for the parent orchestrator, not completion of the master program.
 
 Authoritative scope: [complete master program](WORKSHOPGIRL_V2_MASTER_PROGRAM.md).
@@ -32,7 +32,7 @@ The master-program transcription retains all requirements; example code fences u
 | 2 IA | Complete | Home/Learn/Tools/Workshop/Stories/About; nonempty real categories; preserve existing routes; desktop/mobile keyboard menus | Shared navigation config; label /tutorials/ as Learn; new /workshop/ and /stories/ discovery hubs; retain old sections and /tools/workshop/* |
 | 3 Homepage | Complete | Three action journeys, direct Engine/Sound/Speaker links, Start Job, useful recent learning, sorted dates, character/mobile performance | src/pages/index.astro, typed content arrays and existing character artwork; sort by ISO date with stable ties |
 | 4 Journeys | Complete | Engine observation → learning → optional inspection; maintenance → workflow; distinguish stages/support | src/data/journeys.ts and reusable JourneyCards.astro with validated route IDs and bounded contextual CTAs |
-| 5 Workshop | Pending | One local application dashboard; Start/Resume/waiting/parts/billing/history; four-stage progress; useful empty states/local clarity | Existing lib/workshop queue/parts/billing/history projections, new hub controller, WorkshopLayout and all nine existing views |
+| 5 Workshop | Complete | One local application dashboard; Start/Resume/waiting/parts/billing/history; four-stage progress; useful empty states/local clarity | Existing lib/workshop queue/parts/billing/history projections, new hub controller, WorkshopLayout and all nine existing views |
 | 6 Measurement bridge | Pending | Existing/new job attachment, structured observations only, visible inspection/work evidence; safe versioned migration and tests | model/store plus dedicated observation domain; MeasurementTools capture/export reuse; bounded summary, no audio/binaries/customer data in share URLs |
 | 7 Photo Lab | Pending | Local JPEG/PNG/WebP, calibration mm/cm/m/inch, optional four-corner perspective, distance/angle/polyline/area/circle, annotations/select/move/delete, undo/redo, zoom/pan, PNG/JSON, touch/a11y/help/privacy/math tests | New /tools/photo-measurement/ with pure geometry/state/export modules, Canvas UI and lazy module worker; no backend/framework |
 | 8 Content | Pending | Contextual journeys, reusable taxonomy/reference discovery, metadata/link polish; no invented reviews/affiliate claims | Existing 18 tutorial routes and real metadata; existing Diary/Project/Sport destinations; reuse journey component |
@@ -253,3 +253,20 @@ Commits:
 - Phase 4: checkpoint containing this report, subject Connect WorkshopGirl maintenance journeys and separate service stages; exact hash is supplied in the parent handoff and can be resolved with git log -1 --format=%H at this checkpoint.
 
 Deployment state: no push, integration or deployment in this task. Stop here for the parent review as explicitly delegated; parent continues Phases 5-11 autonomously. Remaining gates include Workshop local dashboard/empty states/progress, measurement attachments/migration, Photo Measurement Lab, wider editorial polish, performance/privacy hardening, deployment and live verification. Existing Windows WebKit audio limitations, two deprecated clipboard fallback hints, physical-device certification and live Cloudflare rewrite verification remain separately documented limitations/gates, not claims of completed V2 production delivery.
+
+## Phase 5 - local Workshop application cohesion
+
+Objective: make the existing Workshop hub and nine operations pages one understandable browser-local workflow.
+Files changed: lib/workshop/dashboard.ts; components/workshop/dashboard.ts, navigation.ts, operations.ts, WorkshopLayout.astro; pages/workshop/index.astro; workshop-operations.css; playwright.config.ts; workshop-dashboard.test.ts; workshop-cohesion-browser.spec.ts; this report.
+Architecture decisions: read-only dashboard projections reuse operationalStatus/nextWorkflowRoute, stockState, eligibleForDraft/outstanding and serviceHistory. Resume shows six most recently updated active jobs, with all jobs and waiting reasons in Queue. Cancelled and completed jobs are excluded from active counts; billing state remains independent of handover. Saved progress reports four actual stages, including incomplete checks and pending approval; supporting modules remain unnumbered. Clear/start/list links remain neutral. Browser profile/device-only storage and clearing-data consequences are visible throughout operations. Empty states give actionable next steps without invented records or cloud capabilities. Playwright default output is explicitly scoped to this checkout's test-results/playwright so cleanup cannot target the parent worktree.
+Implementation completed: Start/Resume, active/waiting/stock-attention/draft/unpaid/ready-to-bill/history counts, stage progress, eight context-appropriate empty states plus existing Intake creation form, local storage notices. No domain status/approval/QC/payment rules changed.
+Tests executed 2026-10-03 approximately 02:00-02:07 UTC:
+- npm run lint: PASS; test-results/v2-phase5/lint.log.
+- npm run check: PASS, 158 files, zero errors/warnings, two existing deprecated clipboard hints; test-results/v2-phase5/check.log.
+- npm test: PASS 201/201, zero skips; test-results/v2-phase5/unit.log.
+- npm run build: PASS 43 pages; test-results/v2-phase5/build.log.
+- npm run test:browser -- tests/workshop-cohesion-browser.spec.ts tests/journeys-browser.spec.ts tests/structural-browser.spec.ts --output=test-results/v2-phase5-browser-pass --reporter=line: PASS 40/40, zero skips, 1.5m; test-results/v2-phase5/browser-pass.log. Four Chromium/WebKit desktop/mobile projects; six requested viewports, real synthetic Intake/resume, Enter navigation, neutral context, every empty view, legacy context/deleted IDs, print, sharing and menu accessibility. Full diagnostic/operations regression follows in Phase 6.
+Results/evidence: six workshop screenshots beneath test-results/v2-phase5-browser-pass/workshop-cohesion-browser-*/. Visual review of 390px and 1280px confirms readable stacked/grid layout and no horizontal overflow. Only isolated synthetic browser profiles used.
+Problems found/fixed: first 40-case run had four failures on duplicate empty-state links in Billing (36 passed). Source inspection found layout plus Billing both mounted operations; an idempotent mount guard prevents duplicate controls and event handlers. Rebuilt and reran all 40 successfully, then static/unit checks. Initial non-escalated Astro generation/evidence writes were denied by filesystem sandbox; authorized tool escalation succeeded without changing ACLs. No auto-review rejection.
+Commit: checkpoint containing this entry, subject Unify local Workshop dashboard, progress and empty states; exact hash recorded by Phase 6 and parent handoff.
+Deployment state: no push or deploy. Phases 6-11 remain open.

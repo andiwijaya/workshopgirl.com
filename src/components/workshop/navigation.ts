@@ -1,6 +1,8 @@
 import type { WorkshopJob, WorkshopStore } from '../../lib/workshop/model.ts';
 import { selectedWorkshopJob, workshopPageHref } from '../../lib/workshop/navigation.ts';
 import { loadStore, getCustomer, getVehicle } from '../../lib/workshop/store.ts';
+import { workshopProgress } from '../../lib/workshop/dashboard.ts';
+import { operationalStatus } from '../../lib/workshop/queue.ts';
 
 export function setWorkshopJobContext(root: HTMLElement, store: WorkshopStore, job: WorkshopJob | null, updateUrl = false): void {
   const selectedId = job?.id;
@@ -23,7 +25,7 @@ export function setWorkshopJobContext(root: HTMLElement, store: WorkshopStore, j
   if (!job) return;
   const customer = getCustomer(store, job), vehicle = getVehicle(store, job);
   const title = document.createElement('strong');
-  title.textContent = `Selected job: ${job.number} · ${job.status.replace('-', ' ')}`;
+  title.textContent = `Selected job: ${job.number} · ${operationalStatus(job)}`;
   const details = document.createElement('span');
   details.textContent = `${customer?.name ?? 'Customer'} · ${vehicle?.plate ?? 'Vehicle'} · ${[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}`;
   const actions = document.createElement('div');
@@ -39,7 +41,15 @@ export function setWorkshopJobContext(root: HTMLElement, store: WorkshopStore, j
     link.href = href;
     actions.append(link);
   }
-  node.append(title, details, actions);
+  const progress = document.createElement('ol'); progress.className = 'job-progress'; progress.setAttribute('aria-label', 'Saved job progress');
+  for (const stage of workshopProgress(job)) {
+    const item = document.createElement('li'), link = document.createElement('a');
+    link.href = workshopPageHref(stage.page, job)!;
+    link.textContent = `${stage.label}: ${stage.state}`;
+    if (root.dataset.workshopStep === stage.page) link.setAttribute('aria-current', 'page');
+    item.append(link); progress.append(item);
+  }
+  node.append(title, details, progress, actions);
 }
 
 export function mountWorkshopNavigation(root: HTMLElement, store: WorkshopStore): void {

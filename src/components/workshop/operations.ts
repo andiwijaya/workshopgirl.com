@@ -27,7 +27,7 @@ function money(n: number) { return new Intl.NumberFormat('id-ID', { style: 'curr
 function rows<T extends {id:string}>(host: HTMLElement, list: T[], render: (row:T)=>HTMLElement) { host.replaceChildren(...list.map(render)); }
 function textRow(parent: HTMLElement, label: string, content: unknown) { const p = el('p'); const b = el('strong', undefined, `${label}: `); p.append(b, document.createTextNode(content == null || content === '' ? '—' : String(content))); parent.append(p); }
 function status(root: HTMLElement, message: string) { const n = $(root, '#workshop-status'); if (n) { n.textContent = message; n.hidden = !message; } }
-function save(root: HTMLElement, store: ReturnType<typeof loadStore>['store']) { try { const result = saveStore(store, window.localStorage); if (!result.ok) status(root, result.message); return result.ok; } catch { status(root,'Browser storage is unavailable. Your latest change was not saved.'); return false; } }
+function save(root: HTMLElement, store: ReturnType<typeof loadStore>['store']) { try { const result = saveStore(store, window.localStorage); if (!result.ok) status(root, result.message); else setWorkshopJobContext(root, store, getJob(store, root.dataset.selectedJob)); return result.ok; } catch { status(root,'Browser storage is unavailable. Your latest change was not saved.'); return false; } }
 function context(root: HTMLElement, job: WorkshopJob | null, store: ReturnType<typeof loadStore>['store']) {
   setWorkshopJobContext(root, store, job);
   const picker = $(root, '#workshop-job-picker'); if (!picker) return;
@@ -180,12 +180,21 @@ function nextAction(route: string, status: OperationalStatus): string {
 function jobHref(id:string,route:string):string{return `${route}?job=${encodeURIComponent(id)}`;}
 
 export function mountWorkshopPage(root: HTMLElement) {
+  if (root.dataset.workshopMounted === 'true') return;
+  root.dataset.workshopMounted = 'true';
   let loaded;
   try { loaded = loadStore(window.localStorage); }
   catch { loaded = loadStore({ getItem: () => { throw new Error('Storage unavailable'); }, setItem: () => { throw new Error('Storage unavailable'); } }); }
   const { store } = loaded, step = root.dataset.workshopStep;
   if (loaded.message) status(root, loaded.message);
   mountWorkshopNavigation(root, store);
+  const empty = root.querySelector<HTMLElement>('#workshop-empty')!;
+  const noRecords = step === 'parts-inventory' ? !store.parts.length : step === 'procurement' ? !store.purchaseNeeds.length && !store.purchaseOrders.length : step === 'billing' ? !store.invoices.length : step === 'service-history' ? !store.jobs.some(job => workflowStatus(job) === 'Completed') : step !== 'intake' && !store.jobs.length;
+  if (noRecords) {
+    empty.hidden = false;
+    const message = el('p', undefined, step === 'parts-inventory' ? 'No parts yet. Add a part below to begin your local inventory.' : step === 'procurement' ? 'No purchase needs or orders yet. Add a need below or review shortages in Parts Inventory.' : step === 'billing' ? 'No invoices yet. Billing starts from jobs ready for pickup or completed after QC.' : step === 'service-history' ? 'No service history yet. Completed jobs appear here after QC and handover.' : 'No local jobs yet. Start intake before continuing the service workflow.');
+    const link = el('a', 'button-link', 'Start a Workshop Job'); link.href = '/tools/workshop/vehicle-intake/'; empty.append(message, link);
+  }
   const print = $<HTMLButtonElement>(root, '[data-print]');
   if (step === 'queue' || step === 'parts-inventory') {
     print?.addEventListener('click', () => printOperationalSummary(root, store, step));

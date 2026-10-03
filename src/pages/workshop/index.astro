@@ -8,8 +8,24 @@ const support = workshopFlow.support.map(id => workshopPages.find(page => page.i
 <DiscoveryLayout title="Workshop - Start or Resume a Job | WorkshopGirl" description="One connected local workshop workflow: intake, inspection and estimate, work order, QC and handover, with parts, procurement, billing and service history." canonical="https://workshopgirl.com/workshop/">
   <div class="eyebrow">One job, from arrival to handover</div><h1>Keep the work moving.</h1><p class="lead">Capture the concern, inspect and agree the work, record what you did, then check and hand over. Your workshop records stay in this browser, without an account or cloud sync.</p>
   <div class="actions"><a class="action" href="/tools/workshop/vehicle-intake/">Start a Workshop Job</a><a class="action secondary" href="/tools/workshop/queue/">Resume Queue</a></div>
+  <section id="local-workshop" aria-labelledby="local-title">
+    <h2 id="local-title">Your local workshop</h2>
+    <p>Records are stored only in this browser profile on this device. Clearing browser data removes them. There is no server backup or cross-device sync.</p>
+    <p id="dashboard-status" role="status" hidden></p>
+    <div class="local-summary">
+      <a href="/tools/workshop/queue/"><strong data-local-count="active">0</strong> active jobs · <span data-local-count="waiting">0</span> waiting for approval, parts or pickup</a>
+      <a href="/tools/workshop/parts-inventory/"><strong data-local-count="parts">0</strong> parts needing attention</a>
+      <a href="/tools/workshop/billing/"><strong data-local-count="drafts">0</strong> draft invoices · <span data-local-count="unpaid">0</span> issued with balance · <span data-local-count="ready">0</span> jobs ready to bill</a>
+      <a href="/tools/workshop/service-history/"><strong data-local-count="history">0</strong> completed services</a>
+    </div>
+    <h3>Resume a job</h3><ul id="resume-jobs"><li>Open this page with JavaScript enabled to read local jobs.</li></ul>
+    <p>Showing the six most recently updated active jobs. <a href="/tools/workshop/queue/">View all jobs and waiting reasons in Queue</a>.</p>
+    <p id="parts-attention"></p>
+  </section>
   <section aria-labelledby="stages-title"><h2 id="stages-title">Service workflow</h2><p>Inspection includes the estimate and approval. Complete the work before QC and handover.</p><ol class="workflow-list">{stages.map(page => <li><a href={page.href}>{page.label}</a></li>)}</ol></section>
   <section aria-labelledby="support-title"><h2 id="support-title">Operations that support the job</h2><p>Open these when the work needs them. They are not additional required service stages.</p><div class="category-links">{support.map(page => <a href={page.href}>{page.label}</a>)}</div></section>
   <p>Need to investigate a sound first? <a href="/tools/">Open the analysis tools</a>. Learning a repair? <a href="/tutorials/#automotive">Browse maintenance guides</a>.</p>
 </DiscoveryLayout>
+<script>import { mountWorkshopDashboard } from '../../components/workshop/dashboard.ts'; mountWorkshopDashboard(document.querySelector<HTMLElement>('#local-workshop')!);</script>
+<style>.local-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px}.local-summary a{padding:16px;border:1px solid var(--line);background:var(--soft);line-height:1.7;overflow-wrap:anywhere}#resume-jobs li{margin:12px 0}#resume-jobs a{display:inline-block;min-height:44px;padding:10px 0}#dashboard-status{border:1px solid var(--line);padding:12px}</style>
 <style>.workflow-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;padding-left:22px}.workflow-list li{padding:14px;background:var(--soft);border:1px solid var(--line);margin-left:8px}.workflow-list a{font-weight:700;text-underline-offset:4px}</style>

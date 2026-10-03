@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+  // Keep default cleanup inside this checkout, including when it is under test-results.
+  outputDir: './test-results/playwright',
   testDir: './tests', testMatch: '**/*.spec.ts', timeout: 30000, workers: 2,
   use: { baseURL: 'http://127.0.0.1:4379', trace: 'retain-on-failure' },
   projects: [

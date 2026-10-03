@@ -30,6 +30,8 @@ const printKind = steps.find(page => page.id === step)?.print;
       </nav>
     </div>
     <p class="workshop-status" id="workshop-status" role="status" aria-live="polite" hidden></p>
+    <p class="local-storage-note">Saved records stay in this browser profile on this device. Clearing browser data removes them; there is no server backup or cross-device sync.</p>
+    <section id="workshop-empty" class="workshop-job-context" hidden aria-label="Getting started"></section>
     <div class="workshop-job-context" id="workshop-job-context" hidden></div>
     <div class="workshop-job-picker" id="workshop-job-picker" hidden></div>
     <slot />
