@@ -6,6 +6,7 @@ export const analysisTools = {
   sound: { title: 'Sound Analyzer', href: '/tools/sound-analyzer/' },
   speaker: { title: 'Speaker Sound Analyzer', href: '/tools/speaker-sound-analyzer/' },
   validation: { title: 'DSP Validation Workbench', href: '/tools/dsp-validation/' },
+  photo: { title: 'Photo Measurement Lab', href: '/tools/photo-measurement/' },
 } as const;
 export type WorkshopPageId = typeof workshopPages[number]['id'];
 type ToolId = keyof typeof analysisTools;
@@ -20,6 +21,12 @@ export interface Journey {
 }
 
 export const journeys = {
+  photoMeasurement: {
+    title: 'From a photo estimate to careful work.',
+    intro: 'Check important dimensions directly before cutting or drilling. These guides help you hold a workpiece securely and choose a suitable cutting or drilling approach.',
+    learn: ['/tutorials/types-of-clamps-explained', '/tutorials/how-to-use-a-jigsaw/', '/tutorials/drill-bit-types-explained'],
+    tools: ['photo'], workshop: [],
+  },
   engineSound: {
     title: 'Engine sounds unusual? Observe, then investigate.',
     intro: 'Compare captures under similar conditions and note what changed. Spectral peaks do not prove a specific fault. These maintenance guides explain checks you may choose after inspection; they are not repairs recommended by the analyzer.',
@@ -50,6 +57,7 @@ export const journeys = {
 export type JourneyId = keyof typeof journeys;
 
 export const journeyPages: Record<string, JourneyId> = {
+  '/tools/photo-measurement/': 'photoMeasurement',
   '/tools/engine-sound-analyzer/': 'engineSound',
   '/tutorials/engine-air-filter/': 'engineSound',
   '/tutorials/how-to-replace-brake-pads/': 'brakes',

@@ -8,6 +8,7 @@ export function GET() {
     'https://workshopgirl.com/tools/engine-sound-analyzer/',
     'https://workshopgirl.com/tools/speaker-sound-analyzer/',
     'https://workshopgirl.com/tools/dsp-validation/',
+    'https://workshopgirl.com/tools/photo-measurement/',
     'https://workshopgirl.com/tools/workshop/vehicle-intake/',
     'https://workshopgirl.com/tools/workshop/inspection-estimate/',
     'https://workshopgirl.com/tools/workshop/work-order/',
