@@ -53,8 +53,8 @@ test('canonical slashless tutorial URLs have exact internal proxies without redi
     .trim().split(/\r?\n/).filter(line => !line.startsWith('#')).map(line => line.split(/\s+/));
   const xml = await sitemap().text();
   const paths = [...xml.matchAll(/<loc>https:\/\/workshopgirl.com(.*?)<\/loc>/g)].map(match => match[1]);
-  assert.equal(paths.length, 41);
-  assert.equal(new Set(paths).size, 41);
+  assert.equal(paths.length, 43);
+  assert.equal(new Set(paths).size, 43);
   const slashless = paths.filter(path => path.startsWith('/tutorials/') && !path.endsWith('/'));
   assert.equal(slashless.length, 9);
   for (const path of slashless) {

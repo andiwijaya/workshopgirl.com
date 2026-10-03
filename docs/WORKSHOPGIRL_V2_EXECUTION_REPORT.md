@@ -1,7 +1,7 @@
 # WorkshopGirl V2 execution report
 
 Status: Phase 0 and Phase 1 complete and tested. Phases 2–11 remain pending.
-This is the first structural checkpoint for the parent orchestrator, not completion of the master program.
+This is a sequential implementation checkpoint for the parent orchestrator, not completion of the master program.
 
 Authoritative scope: [complete master program](WORKSHOPGIRL_V2_MASTER_PROGRAM.md).
 Baseline source: [user-supplied AS-IS audit](WORKSHOPGIRL_AS_IS_SITE_AUDIT.md).
@@ -29,7 +29,7 @@ The master-program transcription retains all requirements; example code fences u
 |---|---|---|---|
 | 0 Baseline | Complete | Repository, routing, architecture, initial checks and evidence | Audit, explicit Astro pages/XML, package/config, shared components, local store and diagnostic libraries |
 | 1 Structure | Complete | Job context, valid/invalid/neutral states, print, Sport/current-state, canonicals, tools metadata, opening-soon | Typed workshop navigation + shared client context; existing controllers; header/footer; exact Cloudflare proxies |
-| 2 IA | Pending | Home/Learn/Tools/Workshop/Stories/About; nonempty real categories; preserve existing routes; desktop/mobile keyboard menus | Shared navigation config; label /tutorials/ as Learn; new /workshop/ and /stories/ discovery hubs; retain old sections and /tools/workshop/* |
+| 2 IA | Complete | Home/Learn/Tools/Workshop/Stories/About; nonempty real categories; preserve existing routes; desktop/mobile keyboard menus | Shared navigation config; label /tutorials/ as Learn; new /workshop/ and /stories/ discovery hubs; retain old sections and /tools/workshop/* |
 | 3 Homepage | Pending | Three action journeys, direct Engine/Sound/Speaker links, Start Job, useful recent learning, sorted dates, character/mobile performance | src/pages/index.astro, typed content arrays and existing character artwork; sort by ISO date with stable ties |
 | 4 Journeys | Pending | Engine observation → learning → optional inspection; maintenance → workflow; distinguish stages/support | src/data/journeys.ts and reusable JourneyCards.astro with validated route IDs and bounded contextual CTAs |
 | 5 Workshop | Pending | One local application dashboard; Start/Resume/waiting/parts/billing/history; four-stage progress; useful empty states/local clarity | Existing lib/workshop queue/parts/billing/history projections, new hub controller, WorkshopLayout and all nine existing views |
@@ -175,3 +175,20 @@ For each pending phase, replace its plan state and append:
 Starting commit: 3bc271260bc2f191db403ea3f57fa2acbe256b7f.
 Final deployed commit, total changed files, routes added/preserved, final six-item navigation, journey architecture, Workshop attachments/migration, Photo math/editor/worker/WASM strategy, tests/results, performance, six-viewport mobile evidence, deployment ID/URL and exact commit, production HTTP/browser results, known limitations and future ideas: PENDING PHASES 2–11.
 Do not describe this structural checkpoint as WorkshopGirl V2 implemented/deployed/verified.
+
+## Phase 2 - information architecture
+
+Objective: six clear destinations with real learning subjects and separate Workshop discovery, preserving every existing route.
+Files changed: SiteHeader/SiteFooter, shared DiscoveryLayout/discovery.css; navigation/learn/content-order/stories and editorial date metadata; Learn/Tools indexes, new /stories/ and /workshop/; sitemap; WorkshopLayout current section; discovery domain/browser tests and updated structural/sitemap expectations.
+Architecture decisions: a single typed header/footer registry maps legacy tutorial/story routes and /tools/workshop/* to their conceptual section. No mega menu; the existing mobile disclosure gets 44px links, Escape return, focus-out and resize handling. Learn groups are explicit many-to-many memberships over existing guide URLs (all five groups are nonempty). Tools keeps the old #workshop-operations anchor as a Workshop bridge, not nine primary tool cards. Photo Measure & Build discovery waits for the actual Phase 7 tool. Existing URLs, canonical values and local job context logic remain intact. New hubs extend the sitemap from 41 to 43 pages. ISO date fields derive from existing publication metadata; the project date is verified against its existing article:published_time 2026-09-22.
+Implementation completed: Home/Learn/Tools/Workshop/Stories/About; Learn has 18 unique guides, Stories unifies all three existing sections, Workshop offers start/resume and separates four service stages from five support modules.
+Tests executed 2026-10-03 around 08:19-08:24 UTC:
+- npm run check: PASS, 150 files, zero errors/warnings, two unchanged execCommand hints; test-results/v2-phase2/check.log.
+- npm run lint: PASS; test-results/v2-phase2/lint.log.
+- npm test: PASS 193/193, zero skips; test-results/v2-phase2/unit.log.
+- npm run build: PASS, 43 HTML pages, reported 1.84s; test-results/v2-phase2/build.log.
+- npm run test:browser -- tests/discovery-browser.spec.ts --output=test-results/v2-phase2-browser-pass --reporter=line: PASS 8/8, no skips, 1.2m; test-results/v2-phase2/browser-pass.log. All six requested viewport sizes across Chromium/WebKit desktop/mobile, hidden/open menu, Enter/Space, focus/Tab (explicit focus for Windows WebKit system link-tab behavior), Escape, outside click/focus, current states, overflow, real Learn/Stories links and Workshop start.
+Results: zero final failures, all 41 baseline routes retained; discovery screenshots saved beneath v2-phase2-browser-pass for Chromium desktop at all six sizes.
+Problems found/fixed: sandbox denied generated Astro/file writes; authorized escalation used without ACL changes. Initial browser test used a role locator that omitted the collapsed mobile nav; corrected to its stable ID and reran all eight cases successfully. No application failure on that initial run. Existing legacy homepage expectations will be updated with the Phase 3 design and retested.
+Commit: IA checkpoint, subject Organize WorkshopGirl discovery into Learn, Tools, Workshop and Stories; exact hash recorded by following phase.
+Deployment state: not attempted; Phase 10 remains pending.

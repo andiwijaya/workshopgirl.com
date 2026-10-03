@@ -6,6 +6,7 @@ export type TutorialSummary = {
   image: string;
   imageAlt: string;
   published: string;
+  publishedAt: string;
 };
 
 export const tutorials: TutorialSummary[] = [
@@ -17,6 +18,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/jigsaw/workshopgirl-cutting-plywood-with-jigsaw.webp',
     imageAlt: 'Workshop Girl guiding a cordless jigsaw through a curved plywood cut.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'How to Use a Circular Saw: A Beginner’s Guide',
@@ -26,6 +28,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/circular-saw/workshopgirl-circular-saw-preparation.webp',
     imageAlt: 'Workshop Girl preparing a circular saw and measuring a wooden board before cutting.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'Angle Grinder Basics: Cutting Disc vs Grinding Wheel vs Flap Disc',
@@ -35,6 +38,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/angle-grinder-basics/angle-grinder-accessory-basics.png',
     imageAlt: 'WorkshopGirl comparing an angle grinder with a cutting disc, grinding wheel, and flap disc.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'How to Use a Multimeter: Voltage, Resistance & Continuity for Beginners',
@@ -44,6 +48,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/how-to-use-a-multimeter/multimeter-basics-workshopgirl.webp',
     imageAlt: 'WorkshopGirl learning the controls and test leads of a digital multimeter.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'How to Solder Wires: A Beginner’s Guide',
@@ -53,6 +58,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/soldering-wires/workshopgirl-soldering-wire-preparation-v2.webp',
     imageAlt: 'Workshop Girl preparing stripped low-voltage wires at an electronics workbench.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'Types of Clamps Explained: Which Clamp Should You Use?',
@@ -62,6 +68,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/types-of-clamps-explained/workshopgirl-types-of-clamps.webp',
     imageAlt: 'WorkshopGirl comparing common woodworking clamp types on a workshop bench.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'Jigsaw vs Circular Saw: Which One Should a Beginner Use?',
@@ -71,6 +78,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/jigsaw-vs-circular-saw/workshopgirl-jigsaw-vs-circular-saw.webp',
     imageAlt: 'WorkshopGirl comparing a cordless jigsaw and circular saw on a workshop bench.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'Socket & Ratchet Sizes Explained: 1/4", 3/8" & 1/2" Drive',
@@ -80,6 +88,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/socket-ratchet-sizes/workshopgirl-ratchet-drive-sizes.webp',
     imageAlt: 'WorkshopGirl comparing 1/4-inch, 3/8-inch and 1/2-inch drive ratchets and sockets on a workbench.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'Drill Bit Types Explained: Which Bit Should You Use?',
@@ -89,6 +98,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/drill-bit-types/workshopgirl-drill-bit-types.webp',
     imageAlt: 'WorkshopGirl comparing different types of drill bits and hole-making tools on a workshop bench.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'Cordless Drill vs Impact Driver: What’s the Difference?',
@@ -98,6 +108,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/drill-vs-impact-driver/workshopgirl-drill-vs-impact-driver.webp',
     imageAlt: 'WorkshopGirl comparing a cordless drill driver and a compact impact driver.',
     published: 'September 23, 2026',
+    publishedAt: '2026-09-23',
   },
   {
     title: 'How to Use a Cordless Drill: A Beginner’s Guide',
@@ -107,6 +118,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/cordless-drill/workshopgirl-cordless-drill-pilot-hole.webp?v=1',
     imageAlt: 'Workshop Girl using a cordless drill to drill a pilot hole in a clamped wooden board.',
     published: 'September 22, 2026',
+    publishedAt: '2026-09-22',
   },
   {
     title: 'How to Use a Torque Wrench: A Beginner’s Guide',
@@ -116,6 +128,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/torque-wrench/workshopgirl-use-torque-wrench.webp?v=1',
     imageAlt: 'Workshop Girl using a click-type torque wrench to tighten a wheel lug nut.',
     published: 'September 22, 2026',
+    publishedAt: '2026-09-22',
   },
   {
     title: 'How to Change Spark Plugs: A Beginner’s Step-by-Step Guide',
@@ -125,6 +138,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/spark-plugs/workshopgirl-change-spark-plugs.webp?v=1',
     imageAlt: 'Workshop Girl replacing spark plugs on a gasoline engine.',
     published: 'September 22, 2026',
+    publishedAt: '2026-09-22',
   },
   {
     title: 'How to Replace a Car Battery: A Beginner’s Step-by-Step Guide',
@@ -134,6 +148,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/car-battery/workshopgirl-car-battery-replacement.webp?v=1',
     imageAlt: 'Workshop Girl replacing a 12V car battery in a home garage.',
     published: 'September 22, 2026',
+    publishedAt: '2026-09-22',
   },
   {
     title: 'How to Inspect, Clean or Replace Your Engine Air Filter',
@@ -143,6 +158,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/engine-air-filter/workshopgirl-engine-air-filter-inspection.webp?v=1',
     imageAlt: 'Workshop Girl removing a dusty engine air filter from the open airbox of a car.',
     published: 'September 22, 2026',
+    publishedAt: '2026-09-22',
   },
   {
     title: 'How to Replace Brake Pads — A Beginner’s Guide',
@@ -152,6 +168,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/brake-pads/workshopgirl-brake-pad-inspection.webp?v=1',
     imageAlt: 'Workshop Girl inspecting the exposed front brake rotor and caliper before replacing the brake pads.',
     published: 'September 22, 2026',
+    publishedAt: '2026-09-22',
   },
   {
     title: 'How to Change a Flat Tire — A Beginner’s Guide',
@@ -161,6 +178,7 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/flat-tire/workshopgirl-flat-tire-preparation.webp?v=1',
     imageAlt: 'Workshop Girl preparing tools beside a car with a flat front tire.',
     published: 'September 21, 2026',
+    publishedAt: '2026-09-21',
   },
   {
     title: 'How to Change Engine Oil — A Beginner’s Guide',
@@ -170,5 +188,6 @@ export const tutorials: TutorialSummary[] = [
     image: '/images/tutorials/engine-oil/workshopgirl-engine-oil-preparation.webp?v=2',
     imageAlt: 'Workshop Girl preparing tools and supplies for an engine oil change beside a car.',
     published: 'September 21, 2026',
+    publishedAt: '2026-09-21',
   },
 ];

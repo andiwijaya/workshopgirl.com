@@ -1,9 +1,7 @@
 ---
-interface Props {
-  current?: 'home' | 'tutorials' | 'diary' | 'projects' | 'sport' | 'about' | 'tools';
-}
-
-const { current } = Astro.props;
+import { siteNavigation, siteSection, normalizeSection, type LegacySection } from '../data/navigation.ts';
+interface Props { current?: LegacySection }
+const current = siteSection(Astro.url.pathname) ?? normalizeSection(Astro.props.current);
 ---
 <header class="site-header">
   <a class="site-brand" href="/" aria-label="Workshop Girl home">Workshop<span>Girl</span><sup>™</sup></a>
@@ -12,13 +10,7 @@ const { current } = Astro.props;
     <span class="menu-label">Menu</span>
   </button>
   <nav id="site-navigation" class="site-nav" aria-label="Primary navigation" data-site-nav>
-    <a href="/" aria-current={current === 'home' ? 'page' : undefined}>Home</a>
-    <a href="/tutorials/" aria-current={current === 'tutorials' ? 'page' : undefined}>Tutorials</a>
-    <a href="/tools/" aria-current={current === 'tools' ? 'page' : undefined}>Tools</a>
-    <a href="/diary/" aria-current={current === 'diary' ? 'page' : undefined}>Diary</a>
-    <a href="/projects/" aria-current={current === 'projects' ? 'page' : undefined}>Projects</a>
-    <a href="/sport/" aria-current={current === 'sport' ? 'page' : undefined}>Sport</a>
-    <a href="/about/" aria-current={current === 'about' ? 'page' : undefined}>About</a>
+    {siteNavigation.map(link => <a href={link.href} aria-current={current === link.id ? 'page' : undefined}>{link.label}</a>)}
   </nav>
 </header>
 
@@ -39,7 +31,8 @@ const { current } = Astro.props;
     });
 
     const desktop = window.matchMedia('(min-width:761px)');
-    desktop.addEventListener('change', () => closeMenu());
+    desktop.addEventListener('change', () => { const restoreFocus = navigation.contains(document.activeElement) && !desktop.matches; closeMenu(); if (restoreFocus) toggle.focus(); });
+    document.addEventListener('focusin', event => { if (event.target instanceof Node && !navigation.contains(event.target) && !toggle.contains(event.target)) closeMenu(); });
     document.addEventListener('click', event => { if (event.target instanceof Node && !navigation.contains(event.target) && !toggle.contains(event.target)) closeMenu(); });
     navigation.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
     document.addEventListener('keydown', (event) => {
@@ -55,7 +48,7 @@ const { current } = Astro.props;
   .site-nav { display:flex; gap:24px; }
   .site-nav a { color:var(--muted, #655f59); font-size:.9rem; text-decoration:none; }
   .site-nav a:hover, .site-nav a:focus-visible, .site-nav a[aria-current='page'] { color:var(--pink, #e53b7d); }
-  .menu-toggle { align-items:center; background:transparent; border:0; color:var(--ink, #171717); cursor:pointer; display:none; font:inherit; gap:9px; padding:8px 0 8px 12px; }
+  .menu-toggle { align-items:center; background:transparent; border:0; color:var(--ink, #171717); cursor:pointer; display:none; font:inherit; gap:9px; min-height:44px; padding:8px 0 8px 12px; }
   .menu-label { font-size:.86rem; font-weight:700; }
   .menu-icon { display:grid; gap:4px; width:22px; }
   .menu-icon span { background:currentColor; display:block; height:2px; transition:transform .2s ease, opacity .2s ease; width:22px; }
@@ -63,9 +56,9 @@ const { current } = Astro.props;
   @media (max-width:760px) {
     .site-header { padding:22px 7vw; }
     .menu-toggle { display:flex; }
-    .site-nav { background:var(--soft, #fffaf4); border:1px solid var(--line, #ded8d0); box-shadow:0 12px 24px rgba(23,23,23,.08); display:none; flex-direction:column; gap:0; min-width:180px; padding:8px; position:absolute; right:7vw; top:calc(100% - 8px); }
+    .site-nav { background:var(--soft, #fffaf4); border:1px solid var(--line, #ded8d0); box-shadow:0 12px 24px rgba(23,23,23,.08); display:none; flex-direction:column; gap:0; min-width:210px; max-width:86vw; padding:8px; position:absolute; right:7vw; top:calc(100% - 8px); }
     .site-nav.is-open { display:flex; }
-    .site-nav a { padding:12px 13px; }
+    .site-nav a { display:flex; align-items:center; min-height:44px; padding:12px 13px; }
     .site-nav a:hover, .site-nav a:focus-visible { background:rgba(229,59,125,.09); }
     .menu-toggle[aria-expanded='true'] .menu-icon span:first-child { transform:translateY(6px) rotate(45deg); }
     .menu-toggle[aria-expanded='true'] .menu-icon span:nth-child(2) { opacity:0; }

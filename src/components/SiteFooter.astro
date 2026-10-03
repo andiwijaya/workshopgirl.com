@@ -1,10 +1,10 @@
 ---
-const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
-const isCurrent = (href: string) => href === '/' ? currentPath === '/' : currentPath === href.slice(0, -1) || currentPath.startsWith(href);
+import { siteNavigation, siteSection } from '../data/navigation.ts';
+const current = siteSection(Astro.url.pathname);
 ---
 <footer class="site-footer">
   <div class="footer-brand"><a href="/">Workshop<span>Girl</span><sup>™</sup></a><p>Real machines. Real skills. Better days.</p></div>
-  <nav aria-label="Footer navigation"><a href="/" aria-current={isCurrent('/') ? 'page' : undefined}>Home</a><a href="/tutorials/" aria-current={isCurrent('/tutorials/') ? 'page' : undefined}>Tutorials</a><a href="/tools/" aria-current={isCurrent('/tools/') ? 'page' : undefined}>Tools</a><a href="/diary/" aria-current={isCurrent('/diary/') ? 'page' : undefined}>Diary</a><a href="/projects/" aria-current={isCurrent('/projects/') ? 'page' : undefined}>Projects</a><a href="/sport/" aria-current={isCurrent('/sport/') ? 'page' : undefined}>Sport</a><a href="/about/" aria-current={isCurrent('/about/') ? 'page' : undefined}>About</a></nav>
+  <nav aria-label="Footer navigation">{siteNavigation.map(link => <a href={link.href} aria-current={current === link.id ? 'page' : undefined}>{link.label}</a>)}</nav>
 </footer>
 
 <style>

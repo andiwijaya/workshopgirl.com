@@ -135,8 +135,8 @@ test('Header/footer, mobile Escape focus, copy and structural layouts work at ev
       await page.goto(route);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), route + ' at ' + width).toBe(true);
       const footer = page.getByRole('navigation', { name: 'Footer navigation' });
-      await expect(footer.getByRole('link', { name: 'Sport', exact: true })).toHaveAttribute('href', '/sport/');
-      const current = route === '/' ? 'Home' : 'Tools';
+      await expect(footer.getByRole('link', { name: 'Stories', exact: true })).toHaveAttribute('href', '/stories/');
+      const current = route === '/' ? 'Home' : route === '/tools/' ? 'Tools' : 'Workshop';
       await expect(footer.getByRole('link', { name: current, exact: true })).toHaveAttribute('aria-current', 'page');
       if (width < 761) {
         const toggle = page.getByRole('button', { name: 'Menu', exact: true });
