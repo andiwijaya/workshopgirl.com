@@ -206,7 +206,7 @@ export function mountWorkshopPage(root: HTMLElement) {
   if (step === 'queue') { mountWorkshopQueue(root, store); return; }
   let job = jobFromUrl(store);
   context(root, job, store);
-  if (step !== 'intake' && !job) status(root, 'Choose a saved local job below or open this page with a valid job link.');
+  if (step !== 'intake' && !job && !loaded.message) status(root, 'Choose a saved local job below or open this page with a valid job link.');
   if (step === 'intake') mountIntake(root, store, job, saved => {
     job = saved;
     context(root, saved, store);

@@ -104,10 +104,10 @@ test('automatic timeline records each derived state transition once with reasons
 
 test('Phase 1 v1 jobs without Queue metadata load in place and get a safe local timeline baseline', () => {
   const store=emptyStore(), job=createJob(store,{customer,vehicle,intake},p=>`${p}_old`,now); job.status='inspection'; job.inspection=emptyInspection(vehicle.type);
-  const legacy=structuredClone(store); delete legacy.jobs[0]!.operations;
+  const legacy={...structuredClone(store),version:1}; delete legacy.jobs[0]!.operations;
   let raw=JSON.stringify(legacy); const storage={getItem:()=>raw,setItem:(_key:string,value:string)=>{raw=value;}};
   const loaded=loadStore(storage);
-  assert.equal(loaded.recovered,false); assert.equal(loaded.store.version,1); assert.equal(loaded.store.jobs[0]?.id,job.id);
+  assert.equal(loaded.recovered,false); assert.equal(loaded.store.version,2); assert.equal(loaded.store.jobs[0]?.id,job.id);
   assert.equal(loaded.store.jobs[0]?.inspection?.checklist.length,job.inspection.checklist.length);
   assert.deepEqual(loaded.store.jobs[0]?.operations?.history.map(entry=>entry.status),['Inspection']);
   assert.equal(JSON.parse(raw).jobs[0].operations,undefined,'load must not silently rewrite existing local storage');

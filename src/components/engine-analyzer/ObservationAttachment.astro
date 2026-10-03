@@ -1,0 +1,21 @@
+<section class="observation-attachment" aria-labelledby="attachment-heading">
+  <h3 id="attachment-heading">Keep an observation with a local job</h3>
+  <p class="small">Capture a summary, review it, then choose a job. Only timestamp, reference settings, peaks, quality, repeatability and your notes are saved. Audio, filenames and full spectrum arrays are excluded. Avoid personal information in measurement notes.</p>
+  <button id="capture-job-observation" type="button" disabled aria-controls="observation-attach-form" aria-expanded="false">Capture observation for a job</button>
+  <form id="observation-attach-form" aria-label="Attach engine observation" hidden>
+    <h4>Review the captured summary</h4><div id="observation-preview"></div>
+    <p class="small">This capture is frozen. Cancel and capture again to use different settings or a later measurement. Repeatability summarizes the separate repeat snapshots captured so far.</p>
+    <label for="observation-job">Local job</label><select id="observation-job" required><option value="">Choose an active local job</option></select>
+    <fieldset id="observation-new-intake" hidden><legend>Start a new local intake</legend>
+      <p class="small">These details create the new intake only when you save. Complete the rest of the vehicle intake before inspection.</p>
+      <label for="observation-customer">Customer name *<input id="observation-customer" maxlength="120" autocomplete="off" /></label>
+      <label for="observation-plate">License plate *<input id="observation-plate" maxlength="40" autocomplete="off" /></label>
+      <label for="observation-vehicle-type">Vehicle type<select id="observation-vehicle-type"><option>Car</option><option>Motorcycle</option></select></label>
+      <label for="observation-complaint">Reason for visit<textarea id="observation-complaint" maxlength="1000" rows="2">Inspect and compare an engine sound observation.</textarea></label>
+    </fieldset>
+    <p class="small">Saved in this browser profile on this device. No server backup or cross-device sync. Nothing is attached until you press Save.</p>
+    <div class="controls"><button type="submit" id="save-job-observation">Save observation to local job</button><button type="button" id="cancel-job-observation">Cancel attachment</button></div>
+  </form>
+  <p id="observation-attach-status" role="status" aria-live="polite"></p>
+  <div id="observation-saved-links" class="controls" hidden><a id="observation-open-intake" href="/tools/workshop/vehicle-intake/">Review intake</a><a id="observation-open-inspection" href="/tools/workshop/inspection-estimate/">Open inspection evidence</a></div>
+</section>

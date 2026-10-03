@@ -1,3 +1,6 @@
+---
+import ObservationAttachment from './ObservationAttachment.astro';
+---
 <section class="measurement-quality" aria-labelledby="quality-heading">
   <h3 id="quality-heading">Measurement quality</h3>
   <p id="measurement-quality-summary">Start analysis to collect quality observations.</p>
@@ -22,3 +25,4 @@
     <div class="controls export-controls"><button id="export-measurements" type="button" disabled>Export measurements JSON</button></div><p id="measurement-export-status" role="status" class="small">Exports current measurement, A/B, repeats and your validation notes. No raw audio. Data remains local; reload clears this tab’s measurements.</p>
   </details>
 </section>
+<ObservationAttachment />

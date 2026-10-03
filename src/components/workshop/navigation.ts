@@ -3,11 +3,13 @@ import { selectedWorkshopJob, workshopPageHref } from '../../lib/workshop/naviga
 import { loadStore, getCustomer, getVehicle } from '../../lib/workshop/store.ts';
 import { workshopProgress } from '../../lib/workshop/dashboard.ts';
 import { operationalStatus } from '../../lib/workshop/queue.ts';
+import { renderJobObservations } from './observation-view.ts';
 
 export function setWorkshopJobContext(root: HTMLElement, store: WorkshopStore, job: WorkshopJob | null, updateUrl = false): void {
   const selectedId = job?.id;
   job = selectedId ? store.jobs.find(item => item.id === selectedId) ?? null : null;
   root.dataset.selectedJob = job?.id ?? '';
+  renderJobObservations(root, job);
   for (const link of root.querySelectorAll<HTMLAnchorElement>('[data-step-link]')) {
     const href = workshopPageHref(link.dataset.stepLink ?? '', job);
     if (href) link.setAttribute('href', href);

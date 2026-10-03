@@ -34,6 +34,7 @@ const printKind = steps.find(page => page.id === step)?.print;
     <section id="workshop-empty" class="workshop-job-context" hidden aria-label="Getting started"></section>
     <div class="workshop-job-context" id="workshop-job-context" hidden></div>
     <div class="workshop-job-picker" id="workshop-job-picker" hidden></div>
+    {['inspection','work-order'].includes(step) && <section id="job-observations" class="workshop-card" aria-label="Observation evidence" hidden></section>}
     <slot />
     <section class="print-sheet" id="print-sheet" hidden aria-label="Printable workshop document"><div class="print-brand">Workshop<span>Girl</span> · Workshop Operations</div><h2 id="print-title"></h2><div id="print-content"></div></section>
     <div class="workshop-page-actions"><a class="button-link button-secondary" href="/workshop/">Workshop home</a>{printKind !== 'record' && <button class="button-secondary" type="button" data-print>{printKind === 'queue' ? 'Print queue summary' : printKind === 'parts' ? 'Print inventory summary' : 'Print / Save as PDF'}</button>}</div>

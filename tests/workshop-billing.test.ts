@@ -72,7 +72,7 @@ test('late return before Issue requires reconcile; late return after Issue is a 
 });
 
 test('store loads old production data without Billing arrays and persists new collections additively',()=>{
-  const old=emptyStore();delete (old as Partial<typeof old>).invoices;delete (old as Partial<typeof old>).payments;const legacy={...old};const disk=memory(JSON.stringify(legacy));const loaded=loadStore(disk);assert.equal(loaded.recovered,false);assert.deepEqual(loaded.store.invoices,[]);assert.deepEqual(loaded.store.payments,[]);(loaded.store.invoices as WorkshopInvoice[]).push({invoiceId:'i',jobId:'j',status:'Draft',lines:[],subtotal:0,discount:0,taxRateBps:0,taxAmount:0,grandTotal:0,currency:'IDR',noCharge:false,createdAt:'',updatedAt:''});assert.equal(saveStore(loaded.store,disk).ok,true);const reloaded=loadStore(disk);assert.equal(reloaded.store.invoices.length,1);
+  const old=emptyStore();delete (old as Partial<typeof old>).invoices;delete (old as Partial<typeof old>).payments;const legacy={...old,version:1};const disk=memory(JSON.stringify(legacy));const loaded=loadStore(disk);assert.equal(loaded.recovered,false);assert.deepEqual(loaded.store.invoices,[]);assert.deepEqual(loaded.store.payments,[]);(loaded.store.invoices as WorkshopInvoice[]).push({invoiceId:'i',jobId:'j',status:'Draft',lines:[],subtotal:0,discount:0,taxRateBps:0,taxAmount:0,grandTotal:0,currency:'IDR',noCharge:false,createdAt:'',updatedAt:''});assert.equal(saveStore(loaded.store,disk).ok,true);const reloaded=loadStore(disk);assert.equal(reloaded.store.invoices.length,1);
 });
 
 test('invoice and receipt document numbers collision-check and are not random three-digit identifiers',()=>{

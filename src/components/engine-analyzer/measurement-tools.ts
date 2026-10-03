@@ -6,6 +6,8 @@ import type { CaptureMetadata } from '../../lib/audio/live-types.ts';
 import { createMeasurementExport } from '../../lib/measurement/export.ts';
 import { LocalDownload } from '../../lib/audio/local-download.ts';
 import type { RepeatabilityResult } from '../../lib/measurement/repeatability.ts';
+import { summarizeEngineObservation } from '../../lib/workshop/observation-summary.ts';
+import { ObservationAttachment } from './observation-attachment.ts';
 
 export class MeasurementTools {
   private quality = new QualityTracker();
@@ -14,8 +16,13 @@ export class MeasurementTools {
   private spectrum: Spectrum | undefined; private capture: CaptureMetadata | undefined; private unresolved = false;
   private download = new LocalDownload(); private events = new AbortController();
   private root: HTMLElement; private current: () => MeasuredEngineSnapshot | undefined;
+  private attachment: ObservationAttachment;
   constructor(root: HTMLElement, current: () => MeasuredEngineSnapshot | undefined) {
     this.root = root; this.current = current;
+    this.attachment = new ObservationAttachment(root, () => {
+      const snapshot = this.current(); if (!snapshot) throw new Error('Capture a valid measurement first. Nothing was attached.');
+      return summarizeEngineObservation(snapshot, this.repeats);
+    });
     this.el('capture-repeat').addEventListener('click', () => { const snapshot = this.current(); if (snapshot && this.repeats.length < 6) this.repeats.push(snapshot); this.renderRepeats(); }, { signal: this.events.signal });
     this.el('clear-repeats').addEventListener('click', () => { this.repeats = []; this.renderRepeats(); }, { signal: this.events.signal });
     this.el('export-measurements').addEventListener('click', () => this.export(), { signal: this.events.signal });
@@ -55,6 +62,7 @@ export class MeasurementTools {
     this.el<HTMLButtonElement>('export-measurements').disabled = this.el<HTMLButtonElement>('save-a').disabled && !this.a && !this.b && !this.repeats.length;
   }
   render(valid: boolean, unresolved = this.unresolved) {
+    this.attachment.setAvailable(valid && !!this.spectrum);
     this.unresolved = unresolved;
     if (!this.spectrum || !this.capture) { this.el('measurement-quality-summary').textContent = 'Start analysis to collect quality observations.'; this.list('measurement-quality-issues', []); }
     else {
