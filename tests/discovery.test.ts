@@ -5,6 +5,7 @@ import { tutorials } from '../src/data/tutorials.ts';
 import { learnCategories, availableLearnCategories, tutorialsForCategory } from '../src/data/learn.ts';
 import { newestFirst } from '../src/data/content-order.ts';
 import { stories, storySections } from '../src/data/stories.ts';
+import { featuredLearning, latestContent } from '../src/data/home-feed.ts';
 
 test('six navigation destinations classify legacy routes without treating operations as analysis tools', () => {
   assert.deepEqual(siteNavigation.map(item => item.label), ['Home', 'Learn', 'Tools', 'Workshop', 'Stories', 'About']);
@@ -42,4 +43,14 @@ test('content date ordering is deterministic, immutable and independent of autho
   for (const item of [...tutorials, ...stories]) assert.match(item.publishedAt, /^2026-09-2[123]$/);
   assert.equal(stories.length, 3);
   assert.equal(stories[0].kind, 'Sport');
+});
+
+test('home has a limited practical selection and a recent feed sorted from shared publication metadata', () => {
+  assert.equal(featuredLearning.length, 3);
+  assert.ok(featuredLearning.every(item => tutorials.includes(item)));
+  assert.ok(featuredLearning.some(item => item.slug.includes('brake')));
+  assert.ok(featuredLearning.some(item => item.slug.includes('multimeter')));
+  assert.equal(latestContent.length, 3);
+  assert.deepEqual(latestContent, newestFirst(latestContent));
+  assert.equal(latestContent[0].slug, '/sport/indoor-rock-climbing/');
 });

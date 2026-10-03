@@ -1,249 +1,33 @@
 ---
-import { tutorials } from '../data/tutorials';
-import { diaryEntries } from '../data/diary';
-import { projects } from '../data/projects';
-import { latestFromWorkshopGirl } from '../data/home-feed';
-import SiteHeader from '../components/SiteHeader.astro';
-import SiteFooter from '../components/SiteFooter.astro';
-
-const title = 'Workshop Girl — Build. Fix. Learn.';
-const description = 'Follow Workshop Girl as she builds, fixes, explores and learns through practical projects, workshop skills and new adventures.';
+import DiscoveryLayout from '../components/DiscoveryLayout.astro';
+import { featuredLearning, latestContent } from '../data/home-feed.ts';
+import { availableLearnCategories } from '../data/learn.ts';
+const categories = availableLearnCategories();
 const gaId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID;
-const latestTutorials = tutorials.slice(0, 2);
-const latestDiary = diaryEntries[0];
-const latestProject = projects[0];
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <link rel="canonical" href="https://workshopgirl.com/" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://workshopgirl.com/" />
-    <meta property="og:image" content="https://workshopgirl.com/images/workshop-girl/workshop-girl-hero.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
-    {gaId && <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>}
-    {gaId && <script is:inline define:vars={{ gaId }}>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', gaId);
-    </script>}
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
-      :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --orange:#e58445; --line:#ded8d0; }
-      * { box-sizing:border-box; }
-      html { background:var(--paper); color:var(--ink); font-family:'DM Sans', sans-serif; }
-      body { margin:0; min-width:320px; }
-      a { color:inherit; }
-      .shell { min-height:100vh; overflow:hidden; position:relative; }
-      .shell::before { content:''; position:absolute; inset:0; pointer-events:none; opacity:.22; background-image:radial-gradient(#b8afa4 0.7px,transparent .7px); background-size:18px 18px; mask-image:linear-gradient(to bottom,black,transparent 75%); }
-      header { align-items:center; display:flex; justify-content:space-between; margin:0 auto; max-width:1280px; padding:30px 5vw; position:relative; z-index:2; }
-      .brand { font-family:'Space Grotesk',sans-serif; font-size:1.2rem; font-weight:700; letter-spacing:-.04em; text-decoration:none; }
-      .brand span { color:var(--pink); }
-      nav { display:flex; gap:24px; }
-      nav a { color:var(--muted); font-size:.9rem; text-decoration:none; }
-      nav a:hover, nav a:focus-visible { color:var(--pink); }
-      main { display:grid; grid-template-columns:minmax(320px, .82fr) minmax(420px, 1.18fr); gap:clamp(16px,5vw,90px); margin:0 auto; max-width:1280px; min-height:calc(100vh - 94px); padding:5vh 5vw 7vh; position:relative; z-index:1; }
-      .copy { align-self:center; max-width:510px; padding-bottom:5vh; }
-      .eyebrow { align-items:center; color:var(--pink); display:flex; font-size:.83rem; font-weight:700; gap:10px; letter-spacing:.14em; text-transform:uppercase; }
-      .eyebrow::before { background:var(--pink); content:''; height:2px; width:34px; }
-      h1 { font-family:'Space Grotesk',sans-serif; font-size:clamp(3.5rem,6.4vw,6.8rem); letter-spacing:-.075em; line-height:.92; margin:28px 0 26px; max-width:650px; }
-      h1 em { color:var(--pink); font-style:normal; }
-      .intro { color:var(--muted); font-size:clamp(1.05rem,1.5vw,1.3rem); line-height:1.65; max-width:420px; }
-      .intro strong { color:var(--ink); font-weight:600; }
-      .status { align-items:center; border-top:1px solid var(--line); display:flex; gap:14px; margin-top:42px; max-width:400px; padding-top:18px; }
-      .dot { background:var(--pink); border-radius:50%; box-shadow:0 0 0 6px #f5d8e4; height:11px; width:11px; }
-      .status div { font-size:.95rem; font-weight:600; }
-      .status small { color:var(--muted); display:block; font-size:.8rem; font-weight:400; margin-top:3px; }
-      .portrait { align-self:end; justify-self:center; max-height:calc(100vh - 115px); position:relative; }
-      .portrait::after { background:var(--orange); border-radius:50%; content:''; height:clamp(200px,25vw,370px); opacity:.23; position:absolute; right:-12%; top:15%; width:clamp(200px,25vw,370px); z-index:-1; }
-      .portrait img { display:block; filter:saturate(.95); height:auto; max-height:calc(100vh - 115px); max-width:100%; object-fit:contain; width:auto; }
-      .note { bottom:8%; color:var(--muted); font-family:'Space Grotesk',sans-serif; font-size:.86rem; position:absolute; right:7%; transform:rotate(-7deg); }
-      .note span { color:var(--pink); font-size:1.4rem; }
-      .tool-promotion { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:40px 5vw 56px; position:relative; z-index:1; }
-      .tool-promotion-heading { margin-bottom:22px; }
-      .tool-promotion-heading h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.2rem); letter-spacing:-.06em; line-height:1; margin:8px 0 0; }
-      .tool-promo-grid { display:grid; gap:20px; grid-template-columns:repeat(2,minmax(0,1fr)); }
-      .tool-promo-card { background:#fffaf4; border:1px solid var(--line); border-top:4px solid var(--pink); display:flex; flex-direction:column; min-width:0; padding:clamp(22px,3vw,34px); }
-      .tool-promo-card[data-family="operations"] { border-top-color:var(--orange); }
-      .tool-promo-card h3 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.5rem,2.5vw,2.1rem); letter-spacing:-.045em; line-height:1.08; margin:10px 0; overflow-wrap:anywhere; }
-      .tool-promo-card p { color:var(--muted); line-height:1.6; margin:0; max-width:56ch; }
-      .tool-promo-examples { font-size:.88rem; margin-top:12px!important; }
-      .tool-promo-cta { align-self:flex-start; background:var(--ink); color:#fff; display:inline-flex; font-size:.9rem; font-weight:700; margin-top:auto; padding:12px 16px; text-decoration:none; }
-      .tool-promo-cta:hover,.tool-promo-cta:focus-visible { background:var(--pink); }
-      .tool-promo-card[data-family="operations"] .tool-promo-cta:hover,.tool-promo-card[data-family="operations"] .tool-promo-cta:focus-visible { background:#a9531d; }
-      .featured { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:32px 5vw 72px; position:relative; z-index:1; }
-      .featured-heading { margin-bottom:24px; }
-      .featured-heading h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.2rem); letter-spacing:-.06em; line-height:1; margin:8px 0 0; }
-      .featured-grid { display:grid; gap:22px; grid-template-columns:repeat(2,minmax(0,1fr)); }
-      .featured-card { background:#fffaf4; border:1px solid var(--line); min-width:0; }
-      .featured-card img { aspect-ratio:16/9; display:block; height:auto; object-fit:cover; width:100%; }
-      .featured-card-copy { padding:clamp(20px,3vw,34px); }
-      .featured-label { color:var(--pink); font-size:.74rem; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
-      .featured-card h3 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.35rem,2.2vw,2rem); letter-spacing:-.045em; line-height:1.08; margin:9px 0 12px; }
-      .featured p { color:var(--muted); line-height:1.5; margin:0; max-width:560px; }
-      .featured-date { color:var(--muted); font-size:.83rem; margin-top:13px; }
-      .featured-cta { background:var(--ink); color:#fff; display:inline-block; font-size:.9rem; font-weight:700; margin-top:17px; padding:12px 16px; text-decoration:none; }
-      .featured-cta:hover, .featured-cta:focus-visible { background:var(--pink); }
-      .all-tutorials { display:flex; justify-content:center; margin-top:24px; }
-      .all-tutorials a { color:var(--ink); font-size:.95rem; font-weight:700; padding:12px 16px; text-decoration:underline; text-underline-offset:4px; }
-      .all-tutorials a:hover, .all-tutorials a:focus-visible { color:var(--pink); }
-      .from-workshop { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:64px 5vw 96px; position:relative; z-index:1; }
-      .from-workshop-heading { align-items:end; display:flex; justify-content:space-between; gap:24px; margin-bottom:24px; }
-      .from-workshop-heading h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.6rem); letter-spacing:-.06em; line-height:1; margin:8px 0 0; }
-      .from-workshop-heading p { color:var(--muted); margin:0 0 5px; }
-      .diary-card { background:#fffaf4; border:1px solid var(--line); display:block; }
-      .diary-card img { aspect-ratio:16/9; display:block; height:auto; object-fit:contain; width:100%; }
-      .diary-card-copy { align-self:center; padding:clamp(26px,5vw,68px); }
-      .diary-card h3 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.4rem); letter-spacing:-.06em; line-height:1; margin:14px 0; }
-      .diary-card p { color:var(--muted); font-size:1.05rem; line-height:1.65; }
-      .diary-card a { background:var(--ink); color:#fff; display:inline-block; font-weight:700; margin-top:14px; padding:13px 18px; text-decoration:none; }
-      .diary-card a:hover, .diary-card a:focus-visible { background:var(--pink); }
-      .project-feature { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:64px 5vw 96px; position:relative; z-index:1; }
-      .project-card { background:#fffaf4; border:1px solid var(--line); display:block; }
-      .project-card img { aspect-ratio:16/9; display:block; height:auto; object-fit:contain; width:100%; }
-      .project-card-copy { align-self:center; padding:clamp(26px,5vw,68px); }
-      .project-card h2 { font-family:'Space Grotesk',sans-serif; font-size:clamp(2rem,4vw,3.5rem); letter-spacing:-.06em; line-height:1; margin:14px 0; }
-      .project-card p { color:var(--muted); font-size:1.05rem; line-height:1.65; }
-      .project-status { color:var(--muted); font-size:.78rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
-      .project-card a { background:var(--ink); color:#fff; display:inline-block; font-weight:700; margin-top:14px; padding:13px 18px; text-decoration:none; }
-      .project-card a:hover, .project-card a:focus-visible { background:var(--pink); }
-      .latest-activity { border-top:1px solid var(--line); margin:0 auto; max-width:1280px; padding:64px 5vw 76px; position:relative; z-index:1; }
-      .activity-grid { display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr)); margin-top:24px; }
-      .activity-card { background:#fffaf4; border:1px solid var(--line); color:inherit; display:block; text-decoration:none; }
-      .activity-card img { aspect-ratio:16/9; display:block; height:auto; width:100%; }
-      .activity-card-copy { padding:22px; }
-      .activity-card h3 { font-family:'Space Grotesk',sans-serif; font-size:clamp(1.5rem,3vw,2.2rem); letter-spacing:-.05em; line-height:1.05; margin:10px 0; }
-      .activity-card p { color:var(--muted); line-height:1.6; margin:0; }
-      .activity-cta { color:var(--ink); display:inline-block; font-weight:700; margin-top:17px; text-decoration:underline; text-underline-offset:4px; }
-      @media (max-width: 760px) {
-        header { padding:22px 7vw; }
-        main { display:flex; flex-direction:column; gap:10px; min-height:auto; padding:7vh 7vw 0; }
-        .copy { padding:0; }
-        h1 { font-size:clamp(3.5rem,16vw,5.6rem); margin-top:22px; }
-        .intro { font-size:1.05rem; }
-        .status { margin-top:28px; }
-        .portrait { align-self:center; margin-top:20px; max-height:none; width:min(100%,460px); }
-        .portrait img { max-height:none; width:100%; }
-        .note { bottom:9%; right:2%; }
-        .tool-promotion { padding:30px 7vw 42px; }
-        .tool-promotion-heading { margin-bottom:18px; }
-        .tool-promo-grid { grid-template-columns:minmax(0,1fr); }
-        .tool-promo-card { min-height:0; padding:22px; }
-        .tool-promo-card h3 { font-size:1.65rem; }
-        .tool-promo-cta { margin-top:20px; }
-        .featured { padding:28px 7vw 56px; }
-        .featured-grid { grid-template-columns:minmax(0,1fr); }
-        .featured-card-copy { padding:22px; }
-        .featured-card h3 { font-size:1.7rem; line-height:1.05; }
-        .featured p { font-size:.98rem; }
-        .from-workshop { padding:34px 7vw 64px; }
-        .from-workshop-heading { display:block; }
-        .from-workshop-heading p { margin-top:12px; }
-        .diary-card { display:block; }
-        .diary-card img { height:auto; min-height:0; }
-        .diary-card-copy { padding:28px 22px 30px; }
-        .diary-card h3 { font-size:2rem; }
-        .project-feature { padding:34px 7vw 64px; }
-        .project-card { display:block; }
-        .project-card img { height:auto; min-height:0; }
-        .project-card-copy { padding:28px 22px 30px; }
-        .project-card h2 { font-size:2rem; }
-        .latest-activity { padding:34px 7vw 64px; }
-      }
-      @media (prefers-reduced-motion: no-preference) {
-        .portrait img { animation: arrive .8s cubic-bezier(.2,.8,.2,1) both; }
-        @keyframes arrive { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
-      }
-      :focus-visible { outline:3px solid var(--pink); outline-offset:4px; }
-    </style>
-  </head>
-  <body>
-    <div class="shell">
-      <SiteHeader current="home" />
-      <main>
-        <section class="copy" id="coming-soon">
-          <div class="eyebrow">Your digital workshop companion</div>
-          <h1>Hi, I'm<br /><em>Workshop Girl.</em></h1>
-          <p class="intro"><strong>I fix things, build things, break things...</strong><br />and sometimes figure out why.</p>
-          <div class="status"><span class="dot" aria-hidden="true"></span><div>WorkshopGirl.com<small>Engines, electrical, woodworking & new adventures.</small></div></div>
-        </section>
-        <figure class="portrait">
-          <img src="/images/workshop-girl/workshop-girl-hero.png" alt="Workshop Girl in her workshop holding a wrench and toolbox" width="1024" height="1536" fetchpriority="high" />
-          <figcaption class="note">Real machines.<br />Real skills.<br /><span>♥</span></figcaption>
-        </figure>
-      </main>
-      <section class="tool-promotion" id="tool-promotion" aria-labelledby="tool-promotion-title">
-        <div class="tool-promotion-heading"><div class="featured-label">Useful browser-based tools</div><h2 id="tool-promotion-title">The digital workbench.</h2></div>
-        <div class="tool-promo-grid">
-          <article class="tool-promo-card" data-family="diagnostics">
-            <div class="featured-label">Diagnose</div>
-            <h3>Analyze sound, right here.</h3>
-            <p>Explore sound, engines, speakers and DSP directly in your browser.</p>
-            <p class="tool-promo-examples">Sound Analyzer · Engine Analyzer · Speaker Analyzer</p>
-            <a class="tool-promo-cta" href="/tools/#diagnostics">Explore Diagnostics <span aria-hidden="true">→</span></a>
-          </article>
-          <article class="tool-promo-card" data-family="operations">
-            <div class="featured-label">Run your workshop</div>
-            <h3>Keep workshop jobs moving.</h3>
-            <p>Manage work from vehicle intake through work orders, parts, billing, procurement and service history.</p>
-            <p class="tool-promo-examples">Intake · Work Orders · Parts · Billing · Procurement</p>
-            <a class="tool-promo-cta" href="/tools/#workshop-operations">Explore Workshop Operations <span aria-hidden="true">→</span></a>
-          </article>
-        </div>
-      </section>
-      <section class="featured" aria-labelledby="featured-title">
-        <div class="featured-heading"><div class="featured-label">Workshop skills, fresh from the bench</div><h2 id="featured-title">Latest tutorials.</h2></div>
-        <div class="featured-grid">
-          {latestTutorials.map((tutorial) => <article class="featured-card">
-            <img src={tutorial.image} alt={tutorial.imageAlt} width="1672" height="941" loading="lazy" />
-            <div class="featured-card-copy">
-              <div class="featured-label">{tutorial.category}</div>
-              <h3>{tutorial.title}</h3>
-              <p>{tutorial.description}</p>
-              <div class="featured-date">{tutorial.published}</div>
-              <a class="featured-cta" href={tutorial.slug}>Read tutorial</a>
-            </div>
-          </article>)}
-        </div>
-        <div class="all-tutorials"><a href="/tutorials/">View all tutorials →</a></div>
-      </section>
-      <section class="latest-activity" aria-labelledby="latest-activity-title">
-        <div class="from-workshop-heading"><div><div class="featured-label">A little beyond the workshop</div><h2 id="latest-activity-title">Latest from Workshop Girl.</h2></div><p>New skills aren't only learned at a workbench.</p></div>
-        <div class="activity-grid">
-          {latestFromWorkshopGirl.map((item) => <a class="activity-card" href={item.slug}>
-            <img src={item.image} alt={item.imageAlt} width="1672" height="941" loading="lazy" />
-            <div class="activity-card-copy"><div class="featured-label">{item.kind}</div><h3>{item.title}</h3><p>{item.excerpt}</p><span class="activity-cta">{item.actionLabel} →</span></div>
-          </a>)}
-        </div>
-      </section>
-      <section class="from-workshop" aria-labelledby="diary-title">
-        <div class="from-workshop-heading">
-          <div><div class="featured-label">From the workshop</div><h2 id="diary-title">Stories behind the work.</h2></div>
-          <p>Not every repair goes according to plan.</p>
-        </div>
-        <article class="diary-card">
-          <img src={latestDiary.image} alt={latestDiary.imageAlt} width="1672" height="941" loading="lazy" />
-          <div class="diary-card-copy"><div class="featured-label">Diary · {latestDiary.published}</div><h3>{latestDiary.title}</h3><p>{latestDiary.excerpt}</p><a href={latestDiary.slug}>Read the diary</a></div>
-        </article>
-      </section>
-      <section class="project-feature" aria-labelledby="project-title">
-        <div class="featured-label">Latest project</div>
-        <article class="project-card">
-          <img src={latestProject.image} alt={latestProject.imageAlt} width="1672" height="941" loading="lazy" />
-          <div class="project-card-copy"><div class="featured-label">{latestProject.category}</div><h2 id="project-title">{latestProject.title}</h2><p>{latestProject.excerpt}</p><div class="project-status">Status · {latestProject.status}</div><a href={latestProject.slug}>View project</a></div>
-        </article>
-      </section>
-      <SiteFooter />
+<DiscoveryLayout title="Workshop Girl - Build. Fix. Learn." description="What do you need to do today? Observe a sound, learn a practical repair, or start a local workshop job with Workshop Girl." canonical="https://workshopgirl.com/" image="https://workshopgirl.com/images/workshop-girl/workshop-girl-hero.png">
+  {gaId && <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>}
+  {gaId && <script is:inline define:vars={{ gaId }}>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date()); gtag('config', gaId);
+  </script>}
+  <section class="home-hero" aria-labelledby="home-title">
+    <div class="hero-copy"><div class="eyebrow">Your digital workshop companion</div><h1 id="home-title">What needs<br /><em>working on?</em></h1><p class="lead">Hi, I'm Workshop Girl. I fix things, build things, break things… and sometimes figure out why. Let's make a useful next step.</p>
+      <div class="hero-actions"><a class="action" href="/tools/engine-sound-analyzer/">Observe an engine sound</a><a class="action secondary" href="/tutorials/">Learn / fix something</a><a class="action secondary" href="/tools/workshop/vehicle-intake/">Start a Workshop Job</a></div>
     </div>
-  </body>
-</html>
+    <figure class="portrait"><img src="/images/workshop-girl/workshop-girl-hero-800.webp" srcset="/images/workshop-girl/workshop-girl-hero-480.webp 480w, /images/workshop-girl/workshop-girl-hero-800.webp 800w" sizes="(max-width: 760px) 86vw, 42vw" alt="Workshop Girl in her workshop holding a wrench and toolbox" width="800" height="1200" fetchpriority="high" /><figcaption>Real machines. Real skills.</figcaption></figure>
+  </section>
+  <section id="analyze" aria-labelledby="analyze-title"><div class="eyebrow">Listen. Compare. Investigate.</div><h2 id="analyze-title">Take a closer look at a sound.</h2><p>Browser tools for observations and comparisons. A spectrum does not identify a mechanical fault.</p><div class="card-grid analyzer-links">
+    <a class="discovery-card" href="/tools/engine-sound-analyzer/"><h3>Engine Sound Analyzer</h3><p>Engine sounds unusual? Observe peaks and compare captures with optional RPM references.</p><strong>Open Engine Sound Analyzer →</strong></a>
+    <a class="discovery-card" href="/tools/sound-analyzer/"><h3>Sound Analyzer</h3><p>Inspect a live sound or local audio file through its waveform, spectrum and spectrogram.</p><strong>Open Sound Analyzer →</strong></a>
+    <a class="discovery-card" href="/tools/speaker-sound-analyzer/"><h3>Speaker Sound Analyzer</h3><p>Explore the bass, mid and treble balance of the sound your microphone captures.</p><strong>Open Speaker Sound Analyzer →</strong></a>
+  </div></section>
+  <section id="learn" aria-labelledby="learn-title"><div class="eyebrow">A useful skill for the next job</div><h2 id="learn-title">Learn / fix something.</h2><nav class="category-links" aria-label="Practical learning categories">{categories.map(category => <a href={'/tutorials/#' + category.id}>{category.label}</a>)}</nav><div class="card-grid learning-cards">{featuredLearning.map(item => <article class="discovery-card"><img src={item.image} alt={item.imageAlt} width="1672" height="941" loading="lazy" /><h3>{item.title}</h3><p>{item.description}</p><a href={item.slug}>Read the guide</a></article>)}</div></section>
+  <section class="workshop-entry" id="workshop" aria-labelledby="workshop-title"><div class="eyebrow">Run a workshop job</div><h2 id="workshop-title">One job. Keep it connected.</h2><p>From arrival and inspection to agreed work, QC and handover. Local records, right here in your browser.</p><div class="actions"><a class="action" href="/tools/workshop/vehicle-intake/">Start a Workshop Job</a><a class="action secondary" href="/tools/workshop/queue/">Resume Queue</a></div><div class="category-links"><a href="/workshop/">Explore Workshop</a><a href="/tools/workshop/parts-inventory/">Parts</a><a href="/tools/workshop/billing/">Billing</a><a href="/tools/workshop/service-history/">Service History</a></div></section>
+  <section id="latest" aria-labelledby="latest-title"><div class="eyebrow">Fresh from the bench and beyond</div><h2 id="latest-title">Latest from Workshop Girl.</h2><div class="card-grid">{latestContent.map(item => <article class="discovery-card"><img src={item.image} alt={item.imageAlt} width="1672" height="941" loading="lazy" /><p class="eyebrow">{item.kind}</p><h3>{item.title}</h3><time datetime={item.publishedAt}>{item.published}</time><p>{item.excerpt}</p><a href={item.slug}>{item.actionLabel}</a></article>)}</div><p><a href="/stories/">More stories and projects</a> · <a href="/tutorials/">All learning guides</a></p></section>
+</DiscoveryLayout>
+<style>
+  .home-hero{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:30px;margin-top:0}.hero-copy{min-width:0}.home-hero h1{font-size:clamp(3.2rem,5.5vw,5.8rem);letter-spacing:-.065em}.home-hero em{color:#ab2457;font-style:normal}.hero-actions{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-top:24px}.portrait{margin:0;position:relative}.portrait img{display:block;width:100%;height:530px;object-fit:cover;object-position:50% 36%;border-radius:100px 100px 6px 6px}.portrait figcaption{position:absolute;bottom:22px;right:12px;background:var(--soft);padding:14px;transform:rotate(-4deg);font-family:'Space Grotesk',sans-serif;font-weight:700}.analyzer-links a{text-decoration:none}.analyzer-links a:hover{border-color:#ab2457}.learning-cards{margin-top:24px}.workshop-entry{padding:30px;background:#fffaf4;border-top:3px solid var(--orange)}
+  @media(max-width:760px){.home-hero{grid-template-columns:1fr;gap:26px}.home-hero h1{font-size:clamp(3rem,12vw,4.5rem)}.hero-actions{align-items:stretch}.portrait{max-width:480px;width:100%;margin:auto}.portrait img{height:290px;object-position:50% 8%;border-radius:65px 65px 6px 6px}.portrait figcaption{font-size:.9rem;bottom:15px}.workshop-entry{padding:22px}.category-links{gap:10px}.category-links a{font-size:.9rem}}
+</style>

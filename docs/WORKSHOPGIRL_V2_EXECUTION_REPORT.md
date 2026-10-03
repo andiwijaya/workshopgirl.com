@@ -1,6 +1,6 @@
 # WorkshopGirl V2 execution report
 
-Status: Phase 0 and Phase 1 complete and tested. Phases 2–11 remain pending.
+Status: Phases 0-3 complete and tested. Phase 4 in progress; Phases 5-11 pending.
 This is a sequential implementation checkpoint for the parent orchestrator, not completion of the master program.
 
 Authoritative scope: [complete master program](WORKSHOPGIRL_V2_MASTER_PROGRAM.md).
@@ -30,7 +30,7 @@ The master-program transcription retains all requirements; example code fences u
 | 0 Baseline | Complete | Repository, routing, architecture, initial checks and evidence | Audit, explicit Astro pages/XML, package/config, shared components, local store and diagnostic libraries |
 | 1 Structure | Complete | Job context, valid/invalid/neutral states, print, Sport/current-state, canonicals, tools metadata, opening-soon | Typed workshop navigation + shared client context; existing controllers; header/footer; exact Cloudflare proxies |
 | 2 IA | Complete | Home/Learn/Tools/Workshop/Stories/About; nonempty real categories; preserve existing routes; desktop/mobile keyboard menus | Shared navigation config; label /tutorials/ as Learn; new /workshop/ and /stories/ discovery hubs; retain old sections and /tools/workshop/* |
-| 3 Homepage | Pending | Three action journeys, direct Engine/Sound/Speaker links, Start Job, useful recent learning, sorted dates, character/mobile performance | src/pages/index.astro, typed content arrays and existing character artwork; sort by ISO date with stable ties |
+| 3 Homepage | Complete | Three action journeys, direct Engine/Sound/Speaker links, Start Job, useful recent learning, sorted dates, character/mobile performance | src/pages/index.astro, typed content arrays and existing character artwork; sort by ISO date with stable ties |
 | 4 Journeys | Pending | Engine observation → learning → optional inspection; maintenance → workflow; distinguish stages/support | src/data/journeys.ts and reusable JourneyCards.astro with validated route IDs and bounded contextual CTAs |
 | 5 Workshop | Pending | One local application dashboard; Start/Resume/waiting/parts/billing/history; four-stage progress; useful empty states/local clarity | Existing lib/workshop queue/parts/billing/history projections, new hub controller, WorkshopLayout and all nine existing views |
 | 6 Measurement bridge | Pending | Existing/new job attachment, structured observations only, visible inspection/work evidence; safe versioned migration and tests | model/store plus dedicated observation domain; MeasurementTools capture/export reuse; bounded summary, no audio/binaries/customer data in share URLs |
@@ -191,4 +191,21 @@ Tests executed 2026-10-03 around 08:19-08:24 UTC:
 Results: zero final failures, all 41 baseline routes retained; discovery screenshots saved beneath v2-phase2-browser-pass for Chromium desktop at all six sizes.
 Problems found/fixed: sandbox denied generated Astro/file writes; authorized escalation used without ACL changes. Initial browser test used a role locator that omitted the collapsed mobile nav; corrected to its stable ID and reran all eight cases successfully. No application failure on that initial run. Existing legacy homepage expectations will be updated with the Phase 3 design and retested.
 Commit: IA checkpoint, subject Organize WorkshopGirl discovery into Learn, Tools, Workshop and Stories; exact hash recorded by following phase.
+Deployment state: not attempted; Phase 10 remains pending.
+
+## Phase 3 - action-first homepage
+
+Objective: useful next actions while retaining Workshop Girl's practical character and editorial identity.
+Files changed: src/pages/index.astro, src/data/home-feed.ts, DiscoveryLayout social metadata, two responsive hero WebP assets, tests/browser.spec.ts and discovery.test.ts, this report.
+Architecture decisions: keep the existing illustration/PNG/social image; derive 480px and 800px WebP variants locally with existing Sharp (no dependency change). Hero actions link straight to Engine, Learn and Intake. Three analyzer cards link directly to Engine/Sound/Speaker; three deliberately selected practical guides cover maintenance/drilling/electrical; Workshop start, Queue and support links follow. Latest content uses shared ISO dates across tutorials and all story types, stable canonical-slug ties, then an explicit three-card presentation limit. No duplicated activity-feed facts or array-position latest selection. Existing conditional GA configuration is retained; no tool bundle is loaded on Home.
+Implementation completed: responsive action-first hero, direct tool entry, limited learning categories/cards, connected Start/Resume operations entry and date-sorted recent discovery.
+Tests executed 2026-10-03 around 08:26-08:33 UTC:
+- npm run lint: PASS; test-results/v2-phase3/lint.log.
+- npm run check: PASS, 150 files, zero errors/warnings, two existing hints; test-results/v2-phase3/check.log.
+- npm test: PASS 194/194, zero skips; test-results/v2-phase3/unit.log.
+- npm run build: PASS; final crop build produced 43 pages in reported 1.35s; test-results/v2-phase3/build-final.log.
+- npm run test:browser -- tests/browser.spec.ts tests/discovery-browser.spec.ts --grep="Homepage promotes|Discovery navigation" --output=test-results/v2-phase3-browser-final --reporter=line: PASS 8/8, no skips, 1.1m; test-results/v2-phase3/browser-final.log. Six required viewports in four browser projects; direct Engine/Intake transitions, bounded cards, focus, navigation/current states and no horizontal overflow. Additional home checks cover 320/375px.
+Results: six final Home screenshots and discovery hub screenshots in test-results/v2-phase3-browser-final. Visual inspection of 390px and 1280px layouts plus corrected 390px crop. Hero source reduced from 2,638,000 bytes PNG to 81,742 bytes (480px) / 170,282 bytes (800px) WebP; srcset/sizes allows native browser choice. Other editorial images load lazily. These are asset observations, not Lighthouse/physical-phone certification; Phase 9 measures full startup/performance.
+Problems found/fixed: initial mobile object-position cropped the face; moved to 8% vertical positioning, rebuilt and reran all eight selected browser cases. Legacy two-family homepage assertions replaced with the implemented direct-action behavior and retained index anchors.
+Commit: homepage checkpoint, subject Make WorkshopGirl home action-first with direct tools and local jobs. Phase 2 commit is fed85286a03fb774b7376ad0478e5e5bf5f157d8.
 Deployment state: not attempted; Phase 10 remains pending.
