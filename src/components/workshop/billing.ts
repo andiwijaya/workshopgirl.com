@@ -1,4 +1,4 @@
-import { selectedWorkshopJob } from '../../lib/workshop/navigation.ts';
+import { selectedWorkshopJob, workshopJobParams } from '../../lib/workshop/navigation.ts';
 import { selectWorkshopJob } from './navigation.ts';
 import type { WorkshopInvoice, WorkshopInvoiceLine, WorkshopJob, WorkshopPayment, WorkshopPaymentMethod, WorkshopStore } from '../../lib/workshop/model.ts';
 import { addManualLine, allPaymentsForInvoice, billingSummary, calculateInvoice, createDraft, createReplacementDraft, draftNeedsRefresh, eligibleForDraft, formatQuantity, invoiceDiscrepancies, issueInvoice, netPaid, outstanding, paymentBalanceAfter, paymentStatus, QUANTITY_SCALE, recordPayment, refreshDraft, reversePayment, updateDraftLine, voidInvoice } from '../../lib/workshop/billing.ts';
@@ -13,7 +13,7 @@ const make=(tag:string,className?:string,text?:string):HTMLElement=>{const node=
 const controlId=()=>idText('billing-control');
 
 export function mountBilling(root:HTMLElement,initial:WorkshopStore):void {
-  let store=initial,selectedId=initial.invoices.find(invoice=>invoice.jobId===selectedWorkshopJob(initial,new URL(location.href).searchParams)?.id&&invoice.status!=='Void')?.invoiceId??'',query='',filter='All';
+  let store=initial,selectedId=initial.invoices.find(invoice=>invoice.jobId===selectedWorkshopJob(initial,workshopJobParams(new URL(location.href)))?.id&&invoice.status!=='Void')?.invoiceId??'',query='',filter='All';
   const status=$<HTMLElement>(root,'#billing-message')!,summary=$<HTMLElement>(root,'#billing-summary')!,jobs=$<HTMLElement>(root,'#billing-jobs')!,list=$<HTMLElement>(root,'#billing-list')!,detail=$<HTMLElement>(root,'#billing-detail')!;
   const alert=(message:string)=>{status.textContent=message;status.hidden=!message;};
   const selected=()=>store.invoices.find(i=>i.invoiceId===selectedId)??null;

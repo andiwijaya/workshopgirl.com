@@ -1,3 +1,4 @@
+import { workshopJobParams } from '../src/lib/workshop/navigation.ts';
 import { test, expect, type Page } from '@playwright/test';
 
 const prefix = '/tools/workshop/';
@@ -14,7 +15,7 @@ async function intake(page: Page, suffix = 'A'): Promise<string> {
   await page.getByLabel('License plate *').fill('WG-NAV-' + suffix);
   await page.getByRole('button', { name: 'Save intake', exact: true }).click();
   await expect(page.locator('#next-inspection')).toBeVisible();
-  return new URL((await page.locator('#continue-inspection').getAttribute('href'))!, 'http://local').searchParams.get('job')!;
+  return workshopJobParams(new URL((await page.locator('#continue-inspection').getAttribute('href'))!, 'http://local')).get('job')!;
 }
 
 test('Workshop tabs carry one validated job through all nine pages and allow neutral navigation', async ({ page }) => {
@@ -22,7 +23,7 @@ test('Workshop tabs carry one validated job through all nine pages and allow neu
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   const id = await intake(page);
-  expect(new URL(page.url()).searchParams.get('job')).toBe(id);
+  expect(workshopJobParams(new URL(page.url())).get('job')).toBe(id);
   await expect(page.locator('#workshop-job-context')).toContainText('WG-NAV-A');
   await page.getByRole('button', { name: 'Save intake', exact: true }).click();
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!).jobs.length, storageKey)).toBe(1);
@@ -31,23 +32,23 @@ test('Workshop tabs carry one validated job through all nine pages and allow neu
   await expect(page.locator('[name="existingVehicleId"]')).toBeHidden();
   for (const [tab, slug] of tabs) {
     const link = page.locator('[data-step-link="' + tab + '"]');
-    await expect(link).toHaveAttribute('href', prefix + slug + '/?job=' + encodeURIComponent(id));
+    await expect(link).toHaveAttribute('href', prefix + slug + '/#job=' + encodeURIComponent(id));
     await link.click();
-    expect(new URL(page.url()).searchParams.get('job')).toBe(id);
+    expect(workshopJobParams(new URL(page.url())).get('job')).toBe(id);
     await expect(page.locator('#workshop-job-context')).toContainText('WG-NAV-A');
     await expect(page.locator('[data-step-link="' + tab + '"]')).toHaveAttribute('aria-current', 'page');
   }
   await page.getByRole('link', { name: 'Clear job context', exact: true }).click();
-  expect(new URL(page.url()).searchParams.has('job')).toBe(false);
+  expect(workshopJobParams(new URL(page.url())).has('job')).toBe(false);
   await expect(page.locator('#workshop-job-context')).toBeHidden();
   for (const [tab, slug] of tabs) await expect(page.locator('[data-step-link="' + tab + '"]')).toHaveAttribute('href', prefix + slug + '/');
-  await page.goto(prefix + 'inspection-estimate/?job=' + id);
+  await page.goto(prefix + 'inspection-estimate/#job=' + id);
   await page.getByRole('link', { name: 'All jobs', exact: true }).click();
-  expect(new URL(page.url()).searchParams.has('job')).toBe(false);
+  expect(workshopJobParams(new URL(page.url())).has('job')).toBe(false);
   await expect(page.locator('#queue-list')).toContainText('WG-NAV-A');
-  await page.goto(prefix + 'inspection-estimate/?job=' + id);
+  await page.goto(prefix + 'inspection-estimate/#job=' + id);
   await page.getByRole('link', { name: 'Start a new job', exact: true }).click();
-  expect(new URL(page.url()).searchParams.has('job')).toBe(false);
+  expect(workshopJobParams(new URL(page.url())).has('job')).toBe(false);
   await expect(page.getByLabel('Name *')).toHaveValue('');
   expect(errors).toEqual([]);
 });
@@ -55,14 +56,14 @@ test('Workshop tabs carry one validated job through all nine pages and allow neu
 test('Missing, malformed, repeated and deleted job IDs never propagate or alter saved records', async ({ page }) => {
   test.setTimeout(60_000);
   const id = await intake(page);
-  for (const query of ['', '?job=', '?job=missing', '?job=%3Cscript%3E', '?job=' + id + '&job=missing']) {
+  for (const query of ['', '#job=', '#job=missing', '#job=%3Cscript%3E', '#job=' + id + '&job=missing']) {
     await page.goto(prefix + 'inspection-estimate/' + query);
     await expect(page.locator('#workshop-job-context')).toBeHidden();
     await expect(page.locator('#inspection-form')).toBeHidden();
     for (const [tab, slug] of tabs) await expect(page.locator('[data-step-link="' + tab + '"]')).toHaveAttribute('href', prefix + slug + '/');
   }
   expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!).jobs.length, storageKey)).toBe(1);
-  await page.goto(prefix + 'inspection-estimate/?job=' + id);
+  await page.goto(prefix + 'inspection-estimate/#job=' + id);
   const other = await page.context().newPage();
   await other.goto(prefix + 'queue/');
   await other.evaluate(key => { const data = JSON.parse(localStorage.getItem(key)!); data.jobs = []; localStorage.setItem(key, JSON.stringify(data)); }, storageKey);
@@ -76,17 +77,17 @@ test('Missing, malformed, repeated and deleted job IDs never propagate or alter 
 test('Selecting another job via local picker or Parts changes the navigation context', async ({ page }) => {
   const first = await intake(page, 'A'), second = await intake(page, 'B');
   await page.goto(prefix + 'inspection-estimate/');
-  await page.locator('#workshop-job-picker a[href="?job=' + first + '"]').click();
+  await page.locator('#workshop-job-picker a[href$="#job=' + first + '"]').click();
   await expect(page.locator('#workshop-job-context')).toContainText('WG-NAV-A');
   await page.locator('[data-step-link="parts-inventory"]').click();
   await expect(page.locator('#movement-form [name="jobId"]')).toHaveValue(first);
   await page.locator('#movement-form [name="jobId"]').selectOption(second);
   await expect(page.locator('#workshop-job-context')).toContainText('WG-NAV-B');
-  await expect(page.locator('[data-step-link="work-order"]')).toHaveAttribute('href', prefix + 'work-order/?job=' + second);
+  await expect(page.locator('[data-step-link="work-order"]')).toHaveAttribute('href', prefix + 'work-order/#job=' + second);
   for(const width of [320,390,430]) {await page.setViewportSize({width,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'selected Parts job at '+width).toBe(true);}
   await page.locator('#movement-form [name="jobId"]').selectOption('');
   await expect(page.locator('#workshop-job-context')).toBeHidden();
-  expect(new URL(page.url()).searchParams.has('job')).toBe(false);
+  expect(workshopJobParams(new URL(page.url())).has('job')).toBe(false);
 });
 
 test('Generic print actions work for intake, queue and parts; record-specific modules have no dead generic action', async ({ page }) => {
@@ -118,7 +119,7 @@ test('Generic print actions work for intake, queue and parts; record-specific mo
 
 test('Sharing a Workshop page uses the canonical URL and excludes the selected local job', async ({ page }) => {
   const id = await intake(page);
-  await page.goto(prefix + 'inspection-estimate/?job=' + id);
+  await page.goto(prefix + 'inspection-estimate/#job=' + id);
   await page.evaluate(() => { Object.defineProperty(navigator, 'share', { configurable: true, value: async (data: ShareData) => { (window as Window & { sharedUrl?: string }).sharedUrl = data.url; } }); });
   await page.getByRole('button', { name: 'Share tool' }).click();
   await expect(page.locator('.tool-share-status')).toContainText('Share sheet opened');
@@ -131,7 +132,7 @@ test('Header/footer, mobile Escape focus, copy and structural layouts work at ev
   const id = await intake(page);
   for (const [width, height] of sizes) {
     await page.setViewportSize({ width, height });
-    for (const route of ['/', '/tools/', prefix + 'inspection-estimate/?job=' + id]) {
+    for (const route of ['/', '/tools/', prefix + 'inspection-estimate/#job=' + id]) {
       await page.goto(route);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), route + ' at ' + width).toBe(true);
       const footer = page.getByRole('navigation', { name: 'Footer navigation' });

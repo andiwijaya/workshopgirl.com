@@ -64,7 +64,7 @@ test('Stored evidence is escaped, selected by exact context, neutral on clear an
   const { store, job } = syntheticWorkshop(); const observation = syntheticObservation();
   observation.notes = '<img src="/leak-personal" onerror="window.observationXss=true">'; job.observations = [observation];
   const raw = JSON.stringify(store); await seed(page, raw);
-  const url = `/tools/workshop/inspection-estimate/?job=${encodeURIComponent(job.id)}`;
+  const url = `/tools/workshop/inspection-estimate/#job=${encodeURIComponent(job.id)}`;
   await page.goto(url); await page.locator('#job-observations summary').click();
   await expect(page.locator('#job-observations')).toContainText(observation.notes); await expect(page.locator('#job-observations img')).toHaveCount(0);
   for (const [width,height] of viewports) {
@@ -74,6 +74,7 @@ test('Stored evidence is escaped, selected by exact context, neutral on clear an
   await page.getByRole('link', { name: 'Clear job context', exact: true }).click(); await expect(page.locator('#job-observations')).toBeHidden();
   await page.goto(url + '&job=other'); await expect(page.locator('#job-observations')).toBeHidden();
   await page.goto(url);
+  await expect(page.locator('#main')).toHaveAttribute('data-selected-job', job.id);
   await page.evaluate(key => { const value = JSON.parse(localStorage.getItem(key)!); value.jobs = []; localStorage.setItem(key,JSON.stringify(value)); window.dispatchEvent(new StorageEvent('storage',{key})); },key);
   await expect(page.locator('#job-observations')).toBeHidden(); await expect(page.locator('[data-step-link="inspection"]')).toHaveAttribute('href','/tools/workshop/inspection-estimate/');
   expect(await page.evaluate(() => (window as unknown as { observationXss?: boolean }).observationXss)).toBeUndefined();

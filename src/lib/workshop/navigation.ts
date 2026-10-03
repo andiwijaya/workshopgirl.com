@@ -21,5 +21,18 @@ export function selectedWorkshopJob(store: WorkshopStore, params: URLSearchParam
 
 export function workshopPageHref(pageId: string, job: WorkshopJob | null): string | null {
   const page = workshopPages.find(page => page.id === pageId);
-  return page ? page.href + (job ? `?job=${encodeURIComponent(job.id)}` : '') : null;
+  return page ? localJobHref(page.href, job?.id) : null;
+}
+
+// Fragments stay in browser history and survive reload/new tabs, but are never
+// part of HTTP request targets or Referer headers. No global "last job" fallback:
+// an unqualified route always means neutral context.
+export function localJobHref(path: string, id?: string | null): string {
+  return path + (id ? `#job=${encodeURIComponent(id)}` : '');
+}
+
+export function workshopJobParams(url: URL): URLSearchParams {
+  // Legacy queries take precedence, including invalid/repeated IDs. The early
+  // head bootstrap moves them into the fragment before loading page resources.
+  return url.searchParams.has('job') ? url.searchParams : new URLSearchParams(url.hash.slice(1));
 }

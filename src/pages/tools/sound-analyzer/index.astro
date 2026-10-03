@@ -1,4 +1,5 @@
 ---
+import LocalJobContext from '../../../components/LocalJobContext.astro';
 import JourneyCards from '../../../components/JourneyCards.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
@@ -10,7 +11,7 @@ const description = 'Analyze live microphone sound or local audio files in your 
 const canonical = 'https://workshopgirl.com/tools/sound-analyzer/';
 ---
 <!doctype html>
-<html lang="en"><head>
+<html lang="en"><head><LocalJobContext />
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" />

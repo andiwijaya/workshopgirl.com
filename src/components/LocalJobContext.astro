@@ -1,0 +1,14 @@
+<!-- Run before resource elements. The incoming legacy document request has
+     already reached the host; prevent that query from travelling any further. -->
+<meta name="referrer" content="no-referrer" />
+<script is:inline>
+  (() => {
+    const url = new URL(location.href);
+    if (!url.searchParams.has('job')) return;
+    const context = new URLSearchParams();
+    for (const id of url.searchParams.getAll('job')) context.append('job', id);
+    url.searchParams.delete('job');
+    url.hash = context.toString();
+    history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+  })();
+</script>

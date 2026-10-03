@@ -1,3 +1,4 @@
+import { localJobHref } from '../../lib/workshop/navigation.ts';
 import { workshopDashboard } from '../../lib/workshop/dashboard.ts';
 import { getVehicle, loadStore } from '../../lib/workshop/store.ts';
 import { nextWorkflowRoute, operationalStatus } from '../../lib/workshop/queue.ts';
@@ -18,7 +19,7 @@ export function mountWorkshopDashboard(root: HTMLElement) {
     for (const job of summary.active.slice(0, 6)) {
       const item = document.createElement('li'), link = document.createElement('a');
       link.textContent = `${job.number} · ${getVehicle(store, job)?.plate ?? 'Vehicle'} · ${operationalStatus(job)}`;
-      link.href = `${nextWorkflowRoute(job)}?job=${encodeURIComponent(job.id)}`; item.append(link); list.append(item);
+      link.href = localJobHref(nextWorkflowRoute(job),job.id); item.append(link); list.append(item);
     }
     root.querySelector<HTMLElement>('#parts-attention')!.textContent = summary.partsAttention.length ? summary.partsAttention.slice(0, 6).map(part => part.name).join(' · ') : 'No active parts require attention. Add and maintain parts in Parts Inventory.';
   };

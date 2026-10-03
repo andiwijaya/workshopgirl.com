@@ -1,3 +1,4 @@
+import { workshopJobParams } from '../src/lib/workshop/navigation.ts';
 import { test, expect } from '@playwright/test';
 
 test('engine, brake, oil and spark-plug journeys link relevant learning and deliberate local jobs', async ({ page, request }) => {
@@ -23,15 +24,15 @@ test('engine, brake, oil and spark-plug journeys link relevant learning and deli
 test('operator stage and support navigation preserve a selected job without numbering support as stages', async ({ page }, info) => {
   test.setTimeout(60_000);
   await page.goto('/tools/workshop/vehicle-intake/'); await page.getByLabel('Name *').fill('Synthetic Journey'); await page.getByLabel('License plate *').fill('WG-JOURNEY'); await page.getByRole('button', { name:'Save intake',exact:true }).click();
-  const id=new URL(page.url()).searchParams.get('job')!;
+  const id=workshopJobParams(new URL(page.url())).get('job')!;
   const workflow=page.getByRole('navigation',{name:'Workshop job pages'}), support=page.getByRole('navigation',{name:'Supporting workshop operations'});
   await expect(workflow.locator('[data-step-link]')).toHaveCount(4); await expect(support.locator('[data-step-link]')).toHaveCount(5); await expect(support.locator('a span')).toHaveCount(0);
   for(const [width,height] of [[390,844],[430,932],[768,1024],[1024,768],[1280,720],[1440,900]]) {
     await page.setViewportSize({width,height}); expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-    for(const link of await page.locator('[data-step-link]').all()) expect(new URL((await link.getAttribute('href'))!,page.url()).searchParams.get('job')).toBe(id);
+    for(const link of await page.locator('[data-step-link]').all()) expect(workshopJobParams(new URL((await link.getAttribute('href'))!,page.url())).get('job')).toBe(id);
     if(info.project.name==='chromium-desktop') await page.screenshot({path:info.outputPath('operator-'+width+'.png'),fullPage:true});
   }
   await page.locator('[data-step-link="inspection"]').click(); await expect(page.locator('#workshop-job-context')).toContainText('WG-JOURNEY');
   await page.locator('[data-step-link="parts-inventory"]').click(); await expect(page.locator('#workshop-job-context')).toContainText('WG-JOURNEY');
-  expect(new URL(page.url()).searchParams.get('job')).toBe(id);
+  expect(workshopJobParams(new URL(page.url())).get('job')).toBe(id);
 });

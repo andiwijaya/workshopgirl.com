@@ -1,4 +1,5 @@
 ---
+import LocalJobContext from '../../../components/LocalJobContext.astro';
 import JourneyCards from '../../../components/JourneyCards.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
@@ -9,7 +10,7 @@ const title = 'Speaker Sound Analyzer | WorkshopGirl';
 const description = 'Play music. See its frequency balance. Explore bass, mid and treble in sound captured by your microphone, locally in your browser.';
 const canonical = 'https://workshopgirl.com/tools/speaker-sound-analyzer/';
 ---
-<!doctype html><html lang="en"><head>
+<!doctype html><html lang="en"><head><LocalJobContext />
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical} /><meta property="og:type" content="website" />

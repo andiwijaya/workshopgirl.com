@@ -4,6 +4,7 @@ import { workshopFlow } from '../../data/journeys.ts';
 import SiteHeader from '../SiteHeader.astro';
 import SiteFooter from '../SiteFooter.astro';
 import ToolShare from '../ToolShare.astro';
+import LocalJobContext from '../LocalJobContext.astro';
 import '../../styles/workshop-operations.css';
 interface Props { title: string; description: string; canonical: string; step: string; heading: string; intro: string }
 const { title, description, canonical, step, heading, intro } = Astro.props;
@@ -11,6 +12,7 @@ const steps = workshopPages;
 const printKind = steps.find(page => page.id === step)?.print;
 ---
 <!doctype html><html lang="en"><head>
+  <LocalJobContext />
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width" />
   <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />

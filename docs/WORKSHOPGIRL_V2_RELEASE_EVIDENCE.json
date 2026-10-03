@@ -1,0 +1,308 @@
+{
+  "generatedUtc": "2026-10-03T06:35:52.624859+00:00",
+  "startingSha": "3128d3a408bb17f7e94ca110791dd3c5ccd7171f",
+  "branch": "codex/workshopgirl-v2",
+  "productionActions": "none; parent review before Phases 10-11",
+  "checks": {
+    "lint": "pass",
+    "astroCheck": {
+      "errors": 0,
+      "warnings": 0,
+      "establishedClipboardHints": 2
+    },
+    "unit": {
+      "passed": 238,
+      "failed": 0
+    },
+    "build": {
+      "pages": 44,
+      "status": "pass"
+    },
+    "browser": {
+      "stats": {
+        "startTime": "2026-10-03T06:11:26.380Z",
+        "duration": 1200771.793,
+        "expected": 397,
+        "skipped": 48,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "projects": {
+        "chromium-desktop": {
+          "passed": 89
+        },
+        "chromium-mobile": {
+          "passed": 89
+        },
+        "firefox-desktop": {
+          "passed": 89
+        },
+        "webkit-desktop": {
+          "skipped": 24,
+          "passed": 65
+        },
+        "webkit-mobile": {
+          "skipped": 24,
+          "passed": 65
+        }
+      }
+    },
+    "focusedBrowser": {
+      "passed": 18
+    },
+    "skipLinkAcrossProjects": {
+      "passed": 5
+    },
+    "siteAudit": {
+      "timestamp": "2026-10-03T06:03:06.315Z",
+      "htmlPages": 44,
+      "sitemapEntries": 44,
+      "localLinks": 1087,
+      "localAssets": 202,
+      "failures": []
+    },
+    "startupBenchmark": {
+      "trials": 36,
+      "errors": 0,
+      "startupWorkers": 0,
+      "scope": "Local unthrottled desktop contexts; concurrent QA, not a physical-device/production score"
+    },
+    "secretPatternScan": {
+      "files": 285,
+      "textFiles": 219,
+      "findings": [],
+      "scope": "Tracked and nonignored new files; pattern scan only. No matched secret values emitted."
+    }
+  },
+  "dependencyAudit": {
+    "rawExitCode": 1,
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    },
+    "findings": [
+      {
+        "package": "astro",
+        "version": "7.3.5",
+        "direct": true,
+        "severity": "high",
+        "advisories": [
+          "http-cache-semantics"
+        ],
+        "disposition": "unpatched upstream; nonapplicable to static browser release and trusted build/lint inputs"
+      },
+      {
+        "package": "astro-eslint-parser",
+        "version": "1.4.0",
+        "direct": false,
+        "severity": "high",
+        "advisories": [
+          "fast-glob"
+        ],
+        "disposition": "unpatched upstream; nonapplicable to static browser release and trusted build/lint inputs"
+      },
+      {
+        "package": "braces",
+        "version": "3.0.3",
+        "direct": false,
+        "severity": "high",
+        "advisories": [
+          "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm"
+        ],
+        "disposition": "unpatched upstream; nonapplicable to static browser release and trusted build/lint inputs"
+      },
+      {
+        "package": "eslint-plugin-astro",
+        "version": "1.7.0",
+        "direct": true,
+        "severity": "high",
+        "advisories": [
+          "astro-eslint-parser"
+        ],
+        "disposition": "unpatched upstream; nonapplicable to static browser release and trusted build/lint inputs"
+      },
+      {
+        "package": "fast-glob",
+        "version": "3.3.3",
+        "direct": false,
+        "severity": "high",
+        "advisories": [
+          "micromatch"
+        ],
+        "disposition": "unpatched upstream; nonapplicable to static browser release and trusted build/lint inputs"
+      },
+      {
+        "package": "http-cache-semantics",
+        "version": "4.2.0",
+        "direct": false,
+        "severity": "high",
+        "advisories": [
+          "https://github.com/advisories/GHSA-ch52-4w7c-c8xp"
+        ],
+        "disposition": "unpatched upstream; nonapplicable to static browser release and trusted build/lint inputs"
+      },
+      {
+        "package": "micromatch",
+        "version": "4.0.8",
+        "direct": false,
+        "severity": "high",
+        "advisories": [
+          "braces"
+        ],
+        "disposition": "unpatched upstream; nonapplicable to static browser release and trusted build/lint inputs"
+      }
+    ],
+    "fullAuditSha256": "bc98636d64d26f821b61d9bb37a17dcae93ebf022c15759023d71a51a6a7d161",
+    "successfulCallProbes": [
+      {
+        "command": "lint",
+        "cachePolicyConstructors": 0,
+        "bracesInputs": [],
+        "traceSha256": "feada3c5fa464cc7dddf013438993e367fba440ee10ab1b88449b14f49291045"
+      },
+      {
+        "command": "build",
+        "cachePolicyConstructors": 0,
+        "bracesInputs": [],
+        "traceSha256": "c4bedb439ffb89ca713114729b102727152efca76011f410b471ffe654049fa2"
+      }
+    ],
+    "probeSanity": {
+      "cachePolicyConstructors": 1,
+      "bracesInputs": [
+        "{a,b}"
+      ]
+    },
+    "cleanInstallation": "npm ci; full npm ls exit 0; locked optional Sharp WASM reported extraneous on Windows, also after prune"
+  },
+  "privacy": {
+    "transport": "#job=<encoded local ID>, no implicit last-job fallback",
+    "before": {
+      "requests": 16,
+      "jobMarkerRequests": 8,
+      "jobBearingDocumentRequests": 2,
+      "jobMarkerHeaders": 7
+    },
+    "afterByProject": {
+      "chromium-desktop": {
+        "generated": {
+          "requestCount": 95,
+          "jobMarkerRequests": 0,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "6b5788469beb44fc1bbc82db05bafc148bf5050fca3d410508d132fd5a099a88"
+        },
+        "legacy": {
+          "requestCount": 32,
+          "jobMarkerRequests": 1,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "ba4a51b4facba1f4b1cf5de6a9efcc83b0a2de0aa11cd9e05502cdcc369af8fa"
+        }
+      },
+      "chromium-mobile": {
+        "generated": {
+          "requestCount": 95,
+          "jobMarkerRequests": 0,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "a5a39e71b9d21051fc3ac0e0a58574019f02980577407be64baa88be64de0140"
+        },
+        "legacy": {
+          "requestCount": 32,
+          "jobMarkerRequests": 1,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "1c5554d3bf794e0c65d8d6eb6ed26c22aba07eb20b3f79e5aedc18e4227654b6"
+        }
+      },
+      "firefox-desktop": {
+        "generated": {
+          "requestCount": 100,
+          "jobMarkerRequests": 0,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "fa203c56ac23a677a8f81b815cb41948d5eaff99a5b93b70f4e52638ef2f7db6"
+        },
+        "legacy": {
+          "requestCount": 33,
+          "jobMarkerRequests": 1,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "69b6409342b825c30e83fa1b3ae7b6a51c5081ace09b1345981011225606c9a2"
+        }
+      },
+      "webkit-desktop": {
+        "generated": {
+          "requestCount": 92,
+          "jobMarkerRequests": 0,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "c7b1253f88661b69985c264513f4f03bbe4ce0451bd997b166319f6cacfa4851"
+        },
+        "legacy": {
+          "requestCount": 32,
+          "jobMarkerRequests": 1,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "f4482a3e70164cf7d66f736d631fcac7a1a177613ba8ad11d4b137e365af2a9e"
+        }
+      },
+      "webkit-mobile": {
+        "generated": {
+          "requestCount": 92,
+          "jobMarkerRequests": 0,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "15af1cc604671d2a2629d532be50492d4d612ac420eb753ccab9f200e2f26f7f"
+        },
+        "legacy": {
+          "requestCount": 32,
+          "jobMarkerRequests": 1,
+          "jobMarkerHeaders": 0,
+          "nonGetRequests": 0,
+          "traceSha256": "c4b65fd9f40be7964da28eee46df91b9474901fa67ffc6b37afae7e1f1b5829b"
+        }
+      }
+    },
+    "legacyBoundary": "Initial incoming query document request already sent; local trace has exactly one marker request, none after sanitization. Pre-document host redirects/logging are outside page JavaScript control.",
+    "viewports": [
+      390,
+      430,
+      768,
+      1024,
+      1280,
+      1440
+    ],
+    "operationsModules": 9,
+    "records": "byte-identical through read/navigation/print/share; storage schema unchanged",
+    "share": "static public canonical, query and fragment excluded",
+    "analytics": "no operations/analyzer events; optional Home GA sanitization unit test"
+  },
+  "sourceWorkspaceSha256": {
+    "package-lock.json": "7af3128b3b2eec0d23ea5bb62152c00d82d00db835c71eb4a522d341d11469be",
+    "src/lib/workshop/navigation.ts": "9652ddd374f45705f89a9c4b41bec1498818b5b1e0f360920b0f11e6c46d6175",
+    "src/components/LocalJobContext.astro": "980df62bdcb94c656cb44915de5857ed1eb0625ab0aa83b3037828276aea7b94",
+    "scripts/audit-dependency-exposure.ts": "dec09f0b781023c25519ed0d0f31c77f4369f4b592cd80e6b7b7b2fdaea056a3"
+  },
+  "preserved": {
+    "originalRootMain": "3bc271260bc2f191db403ea3f57fa2acbe256b7f",
+    "rootAuditSha256": "4BD2BAE97ED0062E2A879C75D4E21EF8AEAA7ECC3DD15C9C8F08D489D1CC8A9C",
+    "publicAssets": "no changes",
+    "photoDspAudioImplementation": "no changes",
+    "enclosingWorktree": "retained"
+  },
+  "notRun": [
+    "physical Android/iOS/real Safari hardware",
+    "physical microphone/engine audio",
+    "native/GPU/process peak memory",
+    "physical print/OS PDF output",
+    "production deployment/HTTP checks"
+  ],
+  "evidenceDirectory": "test-results/v2-release-gates",
+  "browserArtifacts": "test-results/v2-release-gates-browser-verified"
+}

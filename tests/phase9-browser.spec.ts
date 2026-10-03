@@ -60,7 +60,7 @@ test('Workshop controls stay inert while modules load, then restore old records 
   const gate = new Promise<void>(resolve => { release = resolve; });
   await page.route('**/_astro/*.js', async route => { await gate; await route.continue(); });
   try {
-    await page.goto('/tools/workshop/vehicle-intake/?job=' + store.jobs[0].id, { waitUntil: 'commit' });
+    await page.goto('/tools/workshop/vehicle-intake/#job=' + store.jobs[0].id, { waitUntil: 'commit' });
     await expect(page.locator('[data-workshop-controls]')).toHaveAttribute('inert', '');
     await expect(page.locator('#workshop-loading')).toBeVisible();
     expect(await page.getByLabel('Name *').evaluate(node => { (node as HTMLElement).focus(); return document.activeElement === node; })).toBe(false);
@@ -120,13 +120,13 @@ test('Private synthetic records, observations, image and audio names/notes never
   const leaks: string[] = [], nonGets: string[] = [];
   page.on('request', request => { const data = request.url() + JSON.stringify(request.headers()) + (request.postData() ?? ''); if (data.includes(sentinel)) leaks.push(data); if (request.method() !== 'GET') nonGets.push(request.url()); });
   await page.addInitScript(() => { Object.defineProperty(navigator,'share',{configurable:true,value:async (data:ShareData) => Reflect.set(window,'privateShare',data)}); });
-  for (const route of ['/tools/workshop/inspection-estimate/?job=' + job.id, '/tools/workshop/work-order/?job=' + job.id, '/tools/engine-sound-analyzer/', '/tools/sound-analyzer/', '/tools/speaker-sound-analyzer/', '/tools/photo-measurement/']) {
+  for (const route of ['/tools/workshop/inspection-estimate/#job=' + job.id, '/tools/workshop/work-order/#job=' + job.id, '/tools/engine-sound-analyzer/', '/tools/sound-analyzer/', '/tools/speaker-sound-analyzer/', '/tools/photo-measurement/']) {
     await page.goto(route);
     const button = page.getByRole('button', { name: 'Share tool', exact: true });
     expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
     await button.click();
     const share = await page.evaluate(() => Reflect.get(window,'privateShare'));
-    expect(share.url).toBe('https://workshopgirl.com' + route.split('?')[0]); expect(JSON.stringify(share)).not.toContain(sentinel);
+    expect(share.url).toBe('https://workshopgirl.com' + route.split(/[?#]/)[0]); expect(JSON.stringify(share)).not.toContain(sentinel);
     expect(await page.locator('script[src*="googletagmanager"],script[src*="analytics"]').count()).toBe(0);
     if (route === '/tools/photo-measurement/') {
       await page.locator('#photo-file').setInputFiles({ name: sentinel + '.png', mimeType: 'image/png', buffer: pngFixture() }); await expect(page.locator('#photo-status')).toContainText('Image opened locally');

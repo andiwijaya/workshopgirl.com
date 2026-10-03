@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- heterogeneous form rows are serialized from data-field keyed controls. */
-import { selectedWorkshopJob } from '../../lib/workshop/navigation.ts';
+import { selectedWorkshopJob, workshopJobParams, localJobHref } from '../../lib/workshop/navigation.ts';
 import { mountWorkshopNavigation, setWorkshopJobContext } from './navigation.ts';
 import type { Inspection, OperationalStatus, QualityCheck, WorkOrder, WorkRow, WorkshopJob } from '../../lib/workshop/model.ts';
 import { emptyInspection, calculateEstimate, validateIntake, validateInspection, workDuration, qcWarning, validateOdometers } from '../../lib/workshop/rules.ts';
@@ -55,10 +55,10 @@ function save(root: HTMLElement, store: ReturnType<typeof loadStore>['store']) {
 function context(root: HTMLElement, job: WorkshopJob | null, store: ReturnType<typeof loadStore>['store']) {
   setWorkshopJobContext(root, store, job);
   const picker = $(root, '#workshop-job-picker'); if (!picker) return;
-  if (!job && store.jobs.length) { picker.hidden = false; picker.replaceChildren(el('strong', undefined, 'Existing local jobs')); for (const j of store.jobs) { const v=getVehicle(store,j), c=getCustomer(store,j); const a=el('a',undefined,`${j.number} · ${v?.plate ?? ''} · ${c?.name ?? ''}`) as HTMLAnchorElement; a.href=`?job=${encodeURIComponent(j.id)}`; picker.append(a); } } else picker.hidden = true;
+  if (!job && store.jobs.length) { picker.hidden = false; picker.replaceChildren(el('strong', undefined, 'Existing local jobs')); for (const j of store.jobs) { const v=getVehicle(store,j), c=getCustomer(store,j); const a=el('a',undefined,`${j.number} · ${v?.plate ?? ''} · ${c?.name ?? ''}`) as HTMLAnchorElement; a.href=localJobHref(location.pathname,j.id); picker.append(a); } } else picker.hidden = true;
 }
-function jobFromUrl(store: ReturnType<typeof loadStore>['store']) { return selectedWorkshopJob(store, new URL(location.href).searchParams); }
-function linkFor(id: string, path: string) { return `${path}?job=${encodeURIComponent(id)}`; }
+function jobFromUrl(store: ReturnType<typeof loadStore>['store']) { return selectedWorkshopJob(store, workshopJobParams(new URL(location.href))); }
+function linkFor(id: string, path: string) { return localJobHref(path,id); }
 function labelInput(parent: HTMLElement, label: string, name: string, type='text', val='') { const l=el('label'); l.append(el('span',undefined,label)); const i=document.createElement('input'); i.name=name; i.type=type; i.value=val; i.dataset.field=name; l.append(i); parent.append(l); return i; }
 function selectField(parent: HTMLElement, label: string, name: string, choices: string[], val: string) { const l=el('label'); l.append(el('span',undefined,label)); const s=el('select'); s.name=name; s.dataset.field=name; for (const x of choices) { const o=el('option',undefined,x); o.value=x; s.append(o); } s.value=val; l.append(s); parent.append(l); return s; }
 
@@ -129,7 +129,7 @@ function mountWorkshopQueue(root: HTMLElement, store: ReturnType<typeof loadStor
   const statuses: OperationalStatus[] = ['Intake','Inspection','Waiting Approval','Work In Progress','Waiting Parts','QC','Ready for Pickup','Completed','Cancelled'];
   const rank = new Map(statuses.map((item, index) => [item, index]));
   const state = { query: '', status: 'All', sort: 'newest' };
-  const params = new URL(location.href).searchParams;
+  const params = workshopJobParams(new URL(location.href));
   const linkedJob = selectedWorkshopJob(store, params)?.id ?? null;
   if (params.has('job') && !linkedJob) { feedback.textContent = 'That job link is no longer available in this browser. Showing the saved queue.'; feedback.hidden = false; }
   const searchLabel = el('label', 'queue-search-label', 'Search jobs');
@@ -201,11 +201,17 @@ function nextAction(route: string, status: OperationalStatus): string {
   if(route.endsWith('work-order/'))return 'Continue to Work Order →';
   return status==='Completed'?'Review Completed Job →':status==='Ready for Pickup'?'Open QC & Handover →':'Continue to QC & Handover →';
 }
-function jobHref(id:string,route:string):string{return `${route}?job=${encodeURIComponent(id)}`;}
+function jobHref(id:string,route:string):string{return localJobHref(route,id);}
 
 export function mountWorkshopPage(root: HTMLElement) {
   if (root.dataset.workshopMounted === 'true') return;
   initializeWorkshopPage(root);
+  // Modules have consumed legacy/invalid context for their feedback by now.
+  // Leave only an exact validated selection in the local URL.
+  const url = new URL(location.href);
+  url.searchParams.delete('job');
+  url.hash = root.dataset.selectedJob ? new URLSearchParams({ job: root.dataset.selectedJob }).toString() : '';
+  history.replaceState(history.state, '', url.pathname + url.search + url.hash);
   root.removeAttribute('inert');
   root.querySelector<HTMLElement>('#workshop-loading')!.hidden = true;
   root.setAttribute('aria-busy', 'false');

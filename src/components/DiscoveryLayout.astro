@@ -1,11 +1,12 @@
 ---
 import SiteHeader from './SiteHeader.astro';
+import LocalJobContext from './LocalJobContext.astro';
 import SiteFooter from './SiteFooter.astro';
 import '../styles/discovery.css';
 interface Props { title: string; description: string; canonical: string; image?: string }
 const { title, description, canonical, image } = Astro.props;
 ---
-<!doctype html><html lang="en"><head>
+<!doctype html><html lang="en"><head><LocalJobContext />
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
   <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />

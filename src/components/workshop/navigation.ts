@@ -1,5 +1,5 @@
 import type { WorkshopJob, WorkshopStore } from '../../lib/workshop/model.ts';
-import { selectedWorkshopJob, workshopPageHref } from '../../lib/workshop/navigation.ts';
+import { selectedWorkshopJob, workshopPageHref, workshopJobParams } from '../../lib/workshop/navigation.ts';
 import { loadStore, getCustomer, getVehicle } from '../../lib/workshop/store.ts';
 import { workshopProgress } from '../../lib/workshop/dashboard.ts';
 import { operationalStatus } from '../../lib/workshop/queue.ts';
@@ -17,8 +17,8 @@ export function setWorkshopJobContext(root: HTMLElement, store: WorkshopStore, j
   if (updateUrl) {
     const url = new URL(location.href);
     url.searchParams.delete('job');
-    if (job) url.searchParams.set('job', job.id);
-    history.replaceState(null, '', url.pathname + url.search + url.hash);
+    url.hash = job ? new URLSearchParams({ job: job.id }).toString() : '';
+    history.replaceState(history.state, '', url.pathname + url.search + url.hash);
   }
   const node = root.querySelector<HTMLElement>('#workshop-job-context');
   if (!node) return;
@@ -55,7 +55,7 @@ export function setWorkshopJobContext(root: HTMLElement, store: WorkshopStore, j
 }
 
 export function mountWorkshopNavigation(root: HTMLElement, store: WorkshopStore): void {
-  setWorkshopJobContext(root, store, selectedWorkshopJob(store, new URL(location.href).searchParams));
+  setWorkshopJobContext(root, store, selectedWorkshopJob(store, workshopJobParams(new URL(location.href))));
   root.addEventListener('workshop-job-selected', event => {
     const id = (event as CustomEvent<string | null>).detail;
     setWorkshopJobContext(root, store, id ? store.jobs.find(job => job.id === id) ?? null : null, true);
@@ -67,12 +67,24 @@ export function mountWorkshopNavigation(root: HTMLElement, store: WorkshopStore)
     try { latest = loadStore(window.localStorage).store; } catch { return; }
     const id = root.dataset.selectedJob;
     const job = latest.jobs.find(item => item.id === id) ?? null;
-    setWorkshopJobContext(root, latest, job);
+    setWorkshopJobContext(root, latest, job, !job);
   };
   root.querySelector('.workshop-steps')?.addEventListener('pointerdown', refreshLinks);
   root.querySelector('.workshop-steps')?.addEventListener('click', refreshLinks);
   root.querySelector('.workshop-steps')?.addEventListener('keydown', refreshLinks);
   window.addEventListener('storage', refreshLinks);
+  // Native fragment navigation/history changes must reinitialize forms as well
+  // as tabs. Programmatic selections use replaceState and do not fire this.
+  window.addEventListener('hashchange', () => location.reload());
+  // In-page accessibility anchors must not replace the job fragment.
+  root.ownerDocument.addEventListener('click', event => {
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+    if (!link || link.hash.startsWith('#job=') || !link.hash || link.hash === '#') return;
+    const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+    if (!target) return;
+    event.preventDefault(); target.focus(); target.scrollIntoView();
+  });
+  window.addEventListener('pageshow', event => { if (event.persisted) location.reload(); });
 }
 
 export function selectWorkshopJob(root: HTMLElement, id: string | null): void {

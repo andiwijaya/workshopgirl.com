@@ -1,3 +1,4 @@
+import { localJobHref } from '../../lib/workshop/navigation.ts';
 import type { EngineObservationSummary } from '../../lib/workshop/observation-summary.ts';
 import { attachEngineObservation } from '../../lib/workshop/observations.ts';
 import { loadStore, getVehicle } from '../../lib/workshop/store.ts';
@@ -35,7 +36,7 @@ export class ObservationAttachment {
         } } : { jobId: selected.startsWith('job:') ? selected.slice(4) : '' });
         if (!result.ok) { this.status(result.message); return; }
         this.captured = undefined; form.hidden = true; button.setAttribute('aria-expanded','false'); button.disabled = !this.available;
-        for (const [id, path] of [['observation-open-intake','vehicle-intake'],['observation-open-inspection','inspection-estimate']]) this.el<HTMLAnchorElement>(id).href = `/tools/workshop/${path}/?job=${encodeURIComponent(result.job.id)}`;
+        for (const [id, path] of [['observation-open-intake','vehicle-intake'],['observation-open-inspection','inspection-estimate']]) this.el<HTMLAnchorElement>(id).href = localJobHref(`/tools/workshop/${path}/`,result.job.id);
         this.el('observation-saved-links').hidden = false;
         this.status('Observation saved in this browser. Review intake and inspect the evidence; this is not a fault diagnosis.'); this.el('observation-open-inspection').focus();
       } catch { this.status('Browser storage is unavailable. Nothing was attached or created.'); }

@@ -28,12 +28,14 @@ const { title, description, canonical } = Astro.props;
     if (!button || !status) return;
 
     const copyLink = async () => {
-      const url = container.dataset.canonical ?? window.location.href;
+      const url = new URL(container.dataset.canonical ?? window.location.pathname, window.location.origin);
+      url.search = ''; url.hash = '';
+      const publicUrl = url.href;
       try {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(publicUrl);
       } catch {
         const input = document.createElement('textarea');
-        input.value = url;
+        input.value = publicUrl;
         input.setAttribute('readonly', '');
         input.style.position = 'fixed';
         input.style.opacity = '0';
