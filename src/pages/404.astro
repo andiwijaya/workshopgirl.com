@@ -1,0 +1,30 @@
+---
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import '../styles/discovery.css';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Page not found | Workshop Girl</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <SiteHeader />
+    <main id="main" class="discovery" tabindex="-1">
+      <h1>Page not found</h1>
+      <p class="lead">The page may have moved or the address may be incorrect.</p>
+      <nav class="category-links" aria-label="Find another page">
+        <a href="/">Homepage</a>
+        <a href="/tutorials/">DIY repair tutorials</a>
+        <a href="/tools/">Browser tools</a>
+        <a href="/workshop/">Workshop jobs</a>
+      </nav>
+    </main>
+    <SiteFooter />
+  </body>
+</html>

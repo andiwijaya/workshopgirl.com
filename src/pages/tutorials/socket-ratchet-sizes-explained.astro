@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../../components/SeoHead.astro';
 import TutorialTopics from '../../components/TutorialTopics.astro';
 import { tutorialCategory } from '../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../components/ShareButton.astro';
@@ -8,24 +9,15 @@ import SiteHeader from '../../components/SiteHeader.astro';
 const title = 'Socket & Ratchet Sizes Explained: 1/4", 3/8" & 1/2" Drive';
 const seoTitle = 'Socket & Ratchet Sizes Explained: 1/4, 3/8 & 1/2 Drive | WorkshopGirl';
 const description = 'Confused by 1/4, 3/8 and 1/2-inch ratchets? Learn drive sizes, socket sizes, metric vs SAE, extensions, deep sockets and how to choose the right setup.';
+const published = '2026-09-23';
 const canonical = 'https://workshopgirl.com/tutorials/socket-ratchet-sizes-explained';
 const hero = 'https://workshopgirl.com/images/tutorials/socket-ratchet-sizes/workshopgirl-ratchet-drive-sizes.webp';
-const schema = {
-  '@context': 'https://schema.org', '@type': 'Article', headline: title,
-  description, url: canonical, mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }, image: hero,
-  datePublished: '2026-09-23', dateModified: '2026-09-23',
-  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
-  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: tutorialCategory(canonical)
-};
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content={tutorialCategory(canonical)} /><meta property="article:published_time" content="2026-09-23" />
-    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <SeoHead title={seoTitle} description={description} canonical={canonical} image={hero} article={{ headline: title, section: tutorialCategory(canonical), published }} />
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
       :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
@@ -48,7 +40,7 @@ const schema = {
     <a class="back" href="/tutorials/">← Back to tutorials</a><TutorialTopics /><h1>{title}</h1>
     <p class="dek">Open a socket set and you might see 1/4, 3/8 and 1/2 stamped on the ratchets—then 8 mm, 10 mm, 13 mm, 17 mm and 19 mm on the sockets. It looks like two competing size systems. They describe different things, and once you separate them, the set makes a lot more sense.</p>
     <p class="dek">The short version: <strong>drive size is the tool connection; socket size is the fastener opening.</strong> Let’s trace the connection from your hand to the nut, then choose a size for the job.</p>
-    <div class="byline">Published September 23, 2026 · Workshop Girl</div><ShareButton title={title} canonical={canonical} />
+    <div class="byline">Published <time datetime={published}>September 23, 2026</time> · Workshop Girl</div><ShareButton title={title} canonical={canonical} />
     <article>
       <figure class="hero"><img src="/images/tutorials/socket-ratchet-sizes/workshopgirl-ratchet-drive-sizes.webp" alt="WorkshopGirl comparing 1/4-inch, 3/8-inch and 1/2-inch drive ratchets and sockets on a workbench" width="1672" height="941" fetchpriority="high" /><figcaption>Three common ratchet drive sizes. Drive size describes the square connection between ratchet and socket—not the bolt size.</figcaption></figure>
       <aside class="callout"><strong>Drive size tells you how the ratchet connects to the socket. Socket size tells you what fastener the socket fits.</strong></aside>

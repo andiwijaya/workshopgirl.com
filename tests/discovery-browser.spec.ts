@@ -48,7 +48,7 @@ test('Learn and Stories expose real legacy pages; Tools links to the separate Wo
   await expect(subjects.getByRole('link')).toHaveCount(5);
   await subjects.getByRole('link', { name: /Automotive/ }).click();
   await expect(page).toHaveURL(/#automotive$/);
-  await page.locator('#automotive a').filter({ hasText: 'Read the tutorial' }).first().click();
+  await page.locator('#automotive h3 a').first().click();
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/tutorials\//);
   await page.goto('/stories/');
   await expect(page.getByRole('navigation', { name: 'Story sections' }).getByRole('link')).toHaveCount(3);

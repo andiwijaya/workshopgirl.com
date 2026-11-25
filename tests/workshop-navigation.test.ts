@@ -79,7 +79,7 @@ test('early legacy bootstrap removes every job query without touching storage or
   assert.equal(called, false);
 });
 
-test('canonical slashless tutorial URLs have exact internal proxies without redirect cycles', async () => {
+test('legacy tutorials keep their canonical URLs and direct aliases redirect to them', async () => {
   const redirects = (await fs.readFile(new URL('../public/_redirects', import.meta.url), 'utf8'))
     .trim().split(/\r?\n/).filter(line => !line.startsWith('#')).map(line => line.split(/\s+/));
   const xml = await sitemap().text();
@@ -91,7 +91,7 @@ test('canonical slashless tutorial URLs have exact internal proxies without redi
   for (const path of slashless) {
     const rules = redirects.filter(([source]) => source === path);
     assert.deepEqual(rules, [[path, path + '/', '200']], path);
-    assert.ok(!redirects.some(([source, target, status]) => source === path + '/' && target === path && status !== '200'), 'No reverse redirect: ' + path);
+    assert.deepEqual(redirects.filter(([source]) => source === path + '/'), [[path + '/', path, '301']], path);
     const source = await fs.readFile(new URL('../src/pages' + path + '.astro', import.meta.url), 'utf8');
     assert.ok(source.includes("const canonical = 'https://workshopgirl.com" + path + "'"), path);
   }

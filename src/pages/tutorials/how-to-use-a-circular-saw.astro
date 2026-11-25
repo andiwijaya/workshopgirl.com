@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../../components/SeoHead.astro';
 import JourneyCards from '../../components/JourneyCards.astro';
 import TutorialTopics from '../../components/TutorialTopics.astro';
 import { tutorialCategory } from '../../data/tutorial-taxonomy.ts';
@@ -9,24 +10,15 @@ import SiteHeader from '../../components/SiteHeader.astro';
 const title = 'How to Use a Circular Saw: A Beginner’s Guide';
 const seoTitle = `${title} | WorkshopGirl`;
 const description = 'Learn how to use a circular saw safely, from setting blade depth and supporting the workpiece to making a straight cut and avoiding common beginner mistakes.';
+const published = '2026-09-23';
 const canonical = 'https://workshopgirl.com/tutorials/how-to-use-a-circular-saw';
 const hero = 'https://workshopgirl.com/images/tutorials/circular-saw/workshopgirl-circular-saw-preparation.webp';
-const schema = {
-  '@context': 'https://schema.org', '@type': 'Article', headline: title,
-  description, url: canonical, mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }, image: hero,
-  datePublished: '2026-09-23', dateModified: '2026-09-23',
-  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
-  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: tutorialCategory(canonical)
-};
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content={tutorialCategory(canonical)} /><meta property="article:published_time" content="2026-09-23" />
-    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <SeoHead title={seoTitle} description={description} canonical={canonical} image={hero} article={{ headline: title, section: tutorialCategory(canonical), published }} />
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
       :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
@@ -48,7 +40,7 @@ const schema = {
     <a class="back" href="/tutorials/">← Back to tutorials</a><TutorialTopics /><h1>{title}</h1>
     <p class="dek">A circular saw can make quick, clean straight cuts in boards and sheet material, but its spinning blade deserves respect. Once you understand the guard, shoe, depth setting, cut line and workpiece support, the setup becomes much less mysterious.</p>
     <p class="dek">This beginner guide walks through a basic straight cut. If you are still choosing between saws, our <a href="/tutorials/jigsaw-vs-circular-saw">jigsaw vs circular saw guide</a> explains which tool fits different cuts.</p>
-    <div class="byline">Published September 23, 2026 · Workshop Girl</div><ShareButton title={title} canonical={canonical} />
+    <div class="byline">Published <time datetime={published}>September 23, 2026</time> · Workshop Girl</div><ShareButton title={title} canonical={canonical} />
     <article>
       <aside class="safety"><h2>A safety note before you begin</h2><p>Circular saws can cause serious injury. Read the instructions for your specific saw, wear suitable eye and hearing protection, secure the work correctly, and keep hands out of the blade path. Disconnect the cord or remove the battery before adjusting the saw or handling its blade.</p></aside>
 

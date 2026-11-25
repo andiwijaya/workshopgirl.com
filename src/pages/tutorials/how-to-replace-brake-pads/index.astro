@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../../../components/SeoHead.astro';
 import TutorialTopics from '../../../components/TutorialTopics.astro';
 import { tutorialCategory } from '../../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../../components/ShareButton.astro';
@@ -8,6 +9,7 @@ import SiteFooter from '../../../components/SiteFooter.astro';
 
 const title = 'How to Replace Brake Pads: Beginner’s Guide | WorkshopGirl';
 const description = 'Learn the basic process of replacing front brake pads safely, including caliper support, piston retraction, new pad installation and critical final brake checks.';
+const published = '2026-09-22';
 const canonical = 'https://workshopgirl.com/tutorials/how-to-replace-brake-pads/';
 ---
 <!doctype html>
@@ -15,17 +17,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-replace-brake-pads/
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <meta property="og:title" content="How to Replace Brake Pads — A Beginner’s Guide" />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="article" />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:image" content="https://workshopgirl.com/images/tutorials/brake-pads/workshopgirl-brake-pad-inspection.webp?v=1" />
-    <meta property="article:section" content={tutorialCategory(canonical)} />
-    <meta property="article:published_time" content="2026-09-22" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
+    <SeoHead title={title} description={description} canonical={canonical} image="https://workshopgirl.com/images/tutorials/brake-pads/workshopgirl-brake-pad-inspection.webp?v=1" article={{ headline: 'How to Replace Brake Pads — A Beginner’s Guide', section: tutorialCategory(canonical), published }} />
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
       :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
@@ -80,7 +72,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-replace-brake-pads/
         <TutorialTopics />
         <h1>How to Replace Brake Pads — A Beginner’s Guide</h1>
         <p class="dek">Brake pads are wear components: every application converts the vehicle’s motion into heat through friction between the pads and rotor. Replacing them is understandable, but it is more safety-critical than an oil change and must be performed and verified correctly.</p>
-        <div class="byline">Published September 22, 2026 · Workshop Girl</div>
+        <div class="byline">Published <time datetime={published}>September 22, 2026</time> · Workshop Girl</div>
         <ShareButton title="How to Replace Brake Pads — A Beginner’s Guide" canonical={canonical} />
 
         <article>

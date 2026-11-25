@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../../../components/SeoHead.astro';
 import LocalJobContext from '../../../components/LocalJobContext.astro';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import JourneyCards from "../../../components/JourneyCards.astro";
@@ -12,9 +13,7 @@ const canonical = 'https://workshopgirl.com/tools/engine-sound-analyzer/';
 ---
 <!doctype html><html lang="en"><head><LocalJobContext />
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
-  <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />
-  <meta property="og:image" content="https://workshopgirl.com/images/workshop-girl/workshop-girl-hero.png" /><meta name="twitter:card" content="summary" /><link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <SeoHead title={title} description={description} canonical={canonical} image="https://workshopgirl.com/images/workshop-girl/workshop-girl-hero.png" />
 </head><body class="engine-page">
   <a class="skip-link" href="#main">Skip to engine sound analyzer</a><SiteHeader current="tools" />
   <main id="main" tabindex="-1"><div class="hero"><a class="eyebrow" href="/tools/">WorkshopGirl / Digital workbench</a><h1>Engine Sound <span>Analyzer.</span></h1><p>Listen live. Inspect the frequencies. See what changed.</p><div class="hero-actions"><span class="privacy-note">No recording required · local audio processing · observations, not fault diagnosis</span><ToolShare title="WorkshopGirl Engine Sound Analyzer" description={description} canonical={canonical} /></div></div>

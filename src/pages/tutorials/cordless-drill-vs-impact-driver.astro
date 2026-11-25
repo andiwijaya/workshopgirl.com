@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../../components/SeoHead.astro';
 import TutorialTopics from '../../components/TutorialTopics.astro';
 import { tutorialCategory } from '../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../components/ShareButton.astro';
@@ -8,23 +9,15 @@ import SiteHeader from '../../components/SiteHeader.astro';
 const title = 'Cordless Drill vs Impact Driver: What’s the Difference?';
 const seoTitle = `${title} | WorkshopGirl`;
 const description = 'A beginner-friendly comparison of cordless drills and impact drivers: how their mechanisms and bit holders differ, what each tool does well, and which one belongs in your toolkit.';
+const published = '2026-09-23';
 const canonical = 'https://workshopgirl.com/tutorials/cordless-drill-vs-impact-driver';
 const hero = 'https://workshopgirl.com/images/tutorials/drill-vs-impact-driver/workshopgirl-drill-vs-impact-driver.webp';
-const schema = {
-  '@context': 'https://schema.org', '@type': 'Article', headline: title,
-  description, url: canonical, image: hero, datePublished: '2026-09-23', dateModified: '2026-09-23',
-  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
-  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: tutorialCategory(canonical)
-};
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content={tutorialCategory(canonical)} /><meta property="article:published_time" content="2026-09-23" />
-    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <SeoHead title={seoTitle} description={description} canonical={canonical} image={hero} article={{ headline: title, section: tutorialCategory(canonical), published }} />
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
       :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
@@ -44,7 +37,7 @@ const schema = {
     <a class="back" href="/tutorials/">← Back to tutorials</a><TutorialTopics /><h1>{title}</h1>
     <p class="dek">Put a cordless drill and an impact driver beside each other and they can look surprisingly similar. Both use batteries, have pistol grips, spin bits and can drive screws. So why do both tools exist?</p>
     <p class="dek">The key difference is not simply that one has “more power.” Their mechanisms and tool-holding systems differ, and that changes how they behave under load.</p>
-    <div class="byline">Published September 23, 2026 · Workshop Girl</div><ShareButton title={title} canonical={canonical} />
+    <div class="byline">Published <time datetime={published}>September 23, 2026</time> · Workshop Girl</div><ShareButton title={title} canonical={canonical} />
     <article>
       <figure class="hero"><img src="/images/tutorials/drill-vs-impact-driver/workshopgirl-drill-vs-impact-driver.webp" alt="WorkshopGirl comparing a cordless drill driver and a compact impact driver" width="1672" height="941" fetchpriority="high" /><figcaption>They may look like siblings, but the front end tells you immediately that these tools are built for different jobs.</figcaption></figure>
       <aside class="quick-answer" aria-labelledby="quick-answer-title"><h2 id="quick-answer-title">The quick answer</h2><div class="answer-grid"><section><h3>Cordless drill/driver</h3><p><strong>Versatile drilling and controlled fastening.</strong></p><ul><li>Drilling holes and using a broad range of bits</li><li>Adjustable clutch on many models</li><li>Controlled screw driving and general DIY</li></ul></section><section><h3>Impact driver</h3><p><strong>A compact fastening specialist.</strong></p><ul><li>Driving screws and compatible fasteners</li><li>Substantial fastening capability for its size</li><li>A compact nose and less continuous reaction at the wrist than simply raising steady motor torque</li></ul></section></div><p>That last point does not mean an impact driver eliminates reaction forces or kickback. Keep a secure grip, use the right accessory and let the tool’s behavior suit the job.</p></aside>

@@ -1,0 +1,72 @@
+---
+import { siteNavigation } from '../data/navigation.ts';
+import { storySections } from '../data/stories.ts';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  image?: string;
+  imageSize?: { width: number; height: number };
+  article?: { headline: string; section: string; published: string };
+}
+
+const { title, description, canonical, article, image, imageSize } = Astro.props;
+const site = Astro.site!;
+const path = new URL(canonical).pathname;
+const parentPath = path.startsWith('/tools/workshop/')
+  ? '/workshop/'
+  : `/${path.split('/')[1]}/`;
+const parent = [...siteNavigation, ...storySections].find(section => section.href === parentPath);
+const headline = article?.headline ?? title;
+const socialImage = new URL(image ?? '/images/workshop-girl/workshop-girl-hero-800.webp', site).href;
+const publisher = { '@type': 'Organization', name: 'Workshop Girl', url: site.href };
+const website = {
+  '@type': 'WebSite', name: 'Workshop Girl', alternateName: 'WorkshopGirl', url: site.href, inLanguage: 'en',
+};
+const breadcrumbs = [
+  { name: 'Home', item: site.href },
+  ...(parent && parentPath !== path ? [{ name: parent.label, item: new URL(parent.href, site).href }] : []),
+  { name: article?.headline ?? title.split(' | WorkshopGirl')[0], item: canonical },
+];
+const breadcrumbSchema = {
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs.map((crumb, index) => ({ '@type': 'ListItem', position: index + 1, ...crumb })),
+};
+const articleSchema = article && {
+  '@type': 'Article',
+  headline: article.headline,
+  description,
+  url: canonical,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  inLanguage: 'en',
+  image: [socialImage],
+  datePublished: article.published,
+  articleSection: article.section,
+  author: publisher,
+  publisher,
+};
+const graph = path === '/' ? [website] : [breadcrumbSchema, ...(articleSchema ? [articleSchema] : [])];
+const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replaceAll('<', '\\u003c');
+---
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+<meta name="robots" content="max-image-preview:large" />
+<meta property="og:site_name" content="Workshop Girl" />
+<meta property="og:title" content={headline} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content={article ? 'article' : 'website'} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={socialImage} />
+{imageSize && <meta property="og:image:width" content={String(imageSize.width)} />}
+{imageSize && <meta property="og:image:height" content={String(imageSize.height)} />}
+{article && <meta property="article:section" content={article.section} />}
+{article && <meta property="article:published_time" content={article.published} />}
+<meta name="twitter:card" content={image && (article || path === '/' || parentPath === path) ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={headline} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={socialImage} />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+{path === '/' && <meta name="google-site-verification" content="5FLPbkTcOR3EAX-LR-JSlyF3d14lC0VYAnDboMe_Jsc" />}
+<script type="application/ld+json" set:html={jsonLd}></script>

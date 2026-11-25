@@ -17,7 +17,7 @@ test('all legacy tutorials have shared subjects and the same display/schema taxo
     const file = guide.slug.endsWith('/') ? new URL('index.astro', directory) : new URL(directory.href + '.astro');
     const source = await fs.readFile(file, 'utf8');
     assert.ok(source.includes('<TutorialTopics />'), guide.slug);
-    assert.ok(source.includes('content={tutorialCategory(canonical)}'), guide.slug);
+    assert.ok(source.includes('section: tutorialCategory(canonical)'), guide.slug);
     assert.doesNotMatch(source, /articleSection:\s*'/);
   }
   assert.deepEqual(subjectsForTutorial('/unknown/'), []);

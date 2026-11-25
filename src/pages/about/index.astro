@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../../components/SeoHead.astro';
 import ShareButton from '../../components/ShareButton.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
@@ -11,9 +12,7 @@ const canonical = 'https://workshopgirl.com/about/';
 <html lang="en">
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} /><meta property="og:image" content="https://workshopgirl.com/images/about/workshopgirl-about-hero.webp?v=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{title}</title>
+    <SeoHead title={title} description={description} canonical={canonical} image="https://workshopgirl.com/images/about/workshopgirl-about-hero.webp?v=1" />
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
       :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --orange:#e58445; --line:#ded8d0; --soft:#fffaf4; } * { box-sizing:border-box; } html { background:var(--paper); color:var(--ink); font-family:'DM Sans',sans-serif; } body { margin:0; min-width:320px; } a { color:inherit; }

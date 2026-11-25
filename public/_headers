@@ -1,0 +1,3 @@
+# Keep the Cloudflare Pages alternate hostname out of search.
+https://workshopgirl-com.pages.dev/*
+  X-Robots-Tag: noindex
