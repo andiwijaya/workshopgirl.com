@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../../../components/SeoHead.astro';
 import TutorialTopics from '../../../components/TutorialTopics.astro';
 import { tutorialCategory } from '../../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../../components/ShareButton.astro';
@@ -8,6 +9,7 @@ import SiteFooter from '../../../components/SiteFooter.astro';
 
 const title = 'How to Change Engine Oil: Beginner’s Guide | WorkshopGirl';
 const description = 'Learn how to change engine oil step by step, from preparing your tools and draining old oil to replacing the filter and adding fresh oil safely.';
+const published = '2026-09-21';
 const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/';
 ---
 <!doctype html>
@@ -15,17 +17,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/'
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="article" />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:image" content="https://workshopgirl.com/images/tutorials/engine-oil/workshopgirl-engine-oil-preparation.webp?v=2" />
-    <meta property="article:section" content={tutorialCategory(canonical)} />
-    <meta property="article:published_time" content="2026-09-21" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
+    <SeoHead title={title} description={description} canonical={canonical} image="https://workshopgirl.com/images/tutorials/engine-oil/workshopgirl-engine-oil-preparation.webp?v=2" article={{ headline: 'How to Change Engine Oil — A Beginner’s Guide', section: tutorialCategory(canonical), published }} />
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
       :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --orange:#e58445; --line:#ded8d0; --soft:#fffaf4; }
@@ -79,7 +71,7 @@ const canonical = 'https://workshopgirl.com/tutorials/how-to-change-engine-oil/'
         <TutorialTopics />
         <h1>How to Change Engine Oil — A Beginner’s Guide</h1>
         <p class="dek">Changing engine oil is one of the most useful maintenance skills a beginner can learn. Done carefully, it gives you a better understanding of your vehicle and a solid workshop habit.</p>
-        <div class="byline">Published September 21, 2026 · Workshop Girl</div>
+        <div class="byline">Published <time datetime={published}>September 21, 2026</time> · Workshop Girl</div>
         <ShareButton title={title} canonical={canonical} />
 
         <article>

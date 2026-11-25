@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../../../components/SeoHead.astro';
 import JourneyCards from '../../../components/JourneyCards.astro';
 import TutorialTopics from '../../../components/TutorialTopics.astro';
 import { tutorialCategory } from '../../../data/tutorial-taxonomy.ts';
@@ -9,24 +10,15 @@ import SiteHeader from '../../../components/SiteHeader.astro';
 const title = 'How to Use a Jigsaw: A Beginner’s Guide';
 const seoTitle = 'How to Use a Jigsaw: Beginner’s Guide | WorkshopGirl';
 const description = 'Learn how to use a jigsaw safely, from choosing a blade and securing the workpiece to cutting curves and avoiding common beginner mistakes.';
+const published = '2026-09-23';
 const canonical = 'https://workshopgirl.com/tutorials/how-to-use-a-jigsaw/';
 const hero = 'https://workshopgirl.com/images/tutorials/jigsaw/workshopgirl-cutting-plywood-with-jigsaw.webp';
-const schema = {
-  '@context': 'https://schema.org', '@type': 'Article', headline: title,
-  description, url: canonical, mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }, image: hero,
-  datePublished: '2026-09-23', dateModified: '2026-09-23',
-  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
-  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: tutorialCategory(canonical)
-};
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="og:image:width" content="1672" /><meta property="og:image:height" content="941" /><meta property="article:section" content={tutorialCategory(canonical)} /><meta property="article:published_time" content="2026-09-23" />
-    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <SeoHead title={seoTitle} description={description} canonical={canonical} image={hero} article={{ headline: title, section: tutorialCategory(canonical), published }} imageSize={{ width: 1672, height: 941 }} />
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
       :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
@@ -49,7 +41,7 @@ const schema = {
     <a class="back" href="/tutorials/">← Back to tutorials</a><TutorialTopics /><h1>{title}</h1>
     <p class="dek">A jigsaw is a useful first power saw for curved cuts, cutouts and shaped details. Its narrow blade moves up and down, so you can steer it through a line that a circular saw is designed to cut straight.</p>
     <p class="dek">This beginner guide follows one simple workflow: prepare the saw and stock, choose and install a blade, mark and support the cut, then guide a broad curve and inspect the result. For a side-by-side tool choice, see <a href="/tutorials/jigsaw-vs-circular-saw">Jigsaw vs Circular Saw: Which One Should a Beginner Use?</a></p>
-    <div class="byline">Published September 23, 2026 · Workshop Girl</div>
+    <div class="byline">Published <time datetime={published}>September 23, 2026</time> · Workshop Girl</div>
     <article>
       <aside class="safety"><h2>A safety note before you begin</h2><p>Wear eye protection and hearing protection while cutting. Secure the workpiece, keep hands clear of the blade path, and check underneath the material before starting. Remove the battery or disconnect power before installing a blade or adjusting the saw; wait for the blade to stop before setting the tool down. Read and follow the instructions for your specific jigsaw.</p></aside>
 

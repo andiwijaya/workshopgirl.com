@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../SeoHead.astro';
 import { workshopPages } from '../../lib/workshop/navigation.ts';
 import { workshopFlow } from '../../data/journeys.ts';
 import SiteHeader from '../SiteHeader.astro';
@@ -14,9 +15,7 @@ const printKind = steps.find(page => page.id === step)?.print;
 <!doctype html><html lang="en"><head>
   <LocalJobContext />
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width" />
-  <title>{title}</title><meta name="description" content={description} /><link rel="canonical" href={canonical} />
-  <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="website" /><meta property="og:url" content={canonical} />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <SeoHead title={title} description={description} canonical={canonical} />
 </head><body>
   <a class="skip-link" href="#main" tabindex="0">Skip to workshop tool</a><SiteHeader current="workshop" />
   <noscript><p>Enable JavaScript to work with local records. Your saved records have not been changed.</p></noscript>

@@ -1,4 +1,5 @@
 ---
+import SeoHead from '../../components/SeoHead.astro';
 import TutorialTopics from '../../components/TutorialTopics.astro';
 import { tutorialCategory } from '../../data/tutorial-taxonomy.ts';
 import ShareButton from '../../components/ShareButton.astro';
@@ -8,24 +9,15 @@ import SiteHeader from '../../components/SiteHeader.astro';
 const title = 'Angle Grinder Basics: Cutting Disc vs Grinding Wheel vs Flap Disc';
 const seoTitle = `${title} | WorkshopGirl`;
 const description = 'Learn what cutting discs, grinding wheels, and flap discs do, how to choose the right angle grinder accessory, and the essential safety checks for beginners.';
+const published = '2026-09-23';
 const canonical = 'https://workshopgirl.com/tutorials/angle-grinder-basics';
 const hero = 'https://workshopgirl.com/images/tutorials/angle-grinder-basics/angle-grinder-accessory-basics.png';
-const schema = {
-  '@context': 'https://schema.org', '@type': 'Article', headline: title,
-  description, url: canonical, mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }, image: hero,
-  datePublished: '2026-09-23', dateModified: '2026-09-23',
-  author: { '@type': 'Organization', name: 'WorkshopGirl', url: 'https://workshopgirl.com/' },
-  publisher: { '@type': 'Organization', name: 'WorkshopGirl' }, articleSection: tutorialCategory(canonical)
-};
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} /><link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:type" content="article" /><meta property="og:url" content={canonical} /><meta property="og:image" content={hero} /><meta property="article:section" content={tutorialCategory(canonical)} /><meta property="article:published_time" content="2026-09-23" />
-    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} /><meta name="twitter:image" content={hero} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /><title>{seoTitle}</title><script type="application/ld+json" set:html={JSON.stringify(schema)}></script>
+    <SeoHead title={seoTitle} description={description} canonical={canonical} image={hero} article={{ headline: title, section: tutorialCategory(canonical), published }} />
     <style>
       @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
       :root { --ink:#171717; --muted:#655f59; --paper:#f7f4ef; --pink:#e53b7d; --line:#ded8d0; --soft:#fffaf4; }
@@ -48,7 +40,7 @@ const schema = {
   <body><div class="shell"><SiteHeader current="tutorials" /><main>
     <a class="back" href="/tutorials/">← Back to tutorials</a><TutorialTopics /><h1>{title}</h1>
     <p class="dek">Several round accessories can fit an angle grinder, but they are not interchangeable. A thin cutting disc, a thicker grinding wheel, and a flap disc are built to meet the work in different ways. As a first mental model, think <strong>CUT, REMOVE, FINISH</strong>—then check the exact accessory instructions, because designs and applications vary.</p>
-    <div class="byline">Published September 23, 2026 · Workshop Girl</div><ShareButton title={title} canonical={canonical} label="Share this article" idSuffix="intro" />
+    <div class="byline">Published <time datetime={published}>September 23, 2026</time> · Workshop Girl</div><ShareButton title={title} canonical={canonical} label="Share this article" idSuffix="intro" />
     <figure class="hero"><img src="/images/tutorials/angle-grinder-basics/angle-grinder-accessory-basics.png" alt="WorkshopGirl comparing an angle grinder with a cutting disc, grinding wheel, and flap disc" width="1672" height="941" fetchpriority="high" /><figcaption>One grinder can accept very different accessories. The right choice depends on the tool, wheel, material, and operation.</figcaption></figure>
 
     <article>

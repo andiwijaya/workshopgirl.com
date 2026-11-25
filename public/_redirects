@@ -8,4 +8,15 @@ https://www.workshopgirl.com/* https://workshopgirl.com/:splat 301
 /tutorials/angle-grinder-basics /tutorials/angle-grinder-basics/ 200
 /tutorials/how-to-use-a-circular-saw /tutorials/how-to-use-a-circular-saw/ 200
 /tutorials/how-to-solder-wires /tutorials/how-to-solder-wires/ 200
+# The proxy above resolves the static asset internally. A direct visit to the
+# directory URL redirects to the existing public canonical.
+/tutorials/cordless-drill-vs-impact-driver/ /tutorials/cordless-drill-vs-impact-driver 301
+/tutorials/drill-bit-types-explained/ /tutorials/drill-bit-types-explained 301
+/tutorials/socket-ratchet-sizes-explained/ /tutorials/socket-ratchet-sizes-explained 301
+/tutorials/jigsaw-vs-circular-saw/ /tutorials/jigsaw-vs-circular-saw 301
+/tutorials/types-of-clamps-explained/ /tutorials/types-of-clamps-explained 301
+/tutorials/how-to-use-a-multimeter/ /tutorials/how-to-use-a-multimeter 301
+/tutorials/angle-grinder-basics/ /tutorials/angle-grinder-basics 301
+/tutorials/how-to-use-a-circular-saw/ /tutorials/how-to-use-a-circular-saw 301
+/tutorials/how-to-solder-wires/ /tutorials/how-to-solder-wires 301
 /sitemap.xml /sitemap-index.xml 301

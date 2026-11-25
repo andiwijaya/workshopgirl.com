@@ -1,50 +1,25 @@
+import { siteNavigation } from '../data/navigation.ts';
+import { stories, storySections } from '../data/stories.ts';
+import { tutorials } from '../data/tutorials.ts';
+import { workshopPages } from '../lib/workshop/navigation.ts';
+
 export function GET() {
-  const urls = [
-    'https://workshopgirl.com/',
-    'https://workshopgirl.com/tools/',
-    'https://workshopgirl.com/workshop/',
-    'https://workshopgirl.com/stories/',
-    'https://workshopgirl.com/tools/sound-analyzer/',
-    'https://workshopgirl.com/tools/engine-sound-analyzer/',
-    'https://workshopgirl.com/tools/speaker-sound-analyzer/',
-    'https://workshopgirl.com/tools/dsp-validation/',
-    'https://workshopgirl.com/tools/photo-measurement/',
-    'https://workshopgirl.com/tools/workshop/vehicle-intake/',
-    'https://workshopgirl.com/tools/workshop/inspection-estimate/',
-    'https://workshopgirl.com/tools/workshop/work-order/',
-    'https://workshopgirl.com/tools/workshop/qc-handover/',
-    'https://workshopgirl.com/tools/workshop/queue/',
-    'https://workshopgirl.com/tools/workshop/parts-inventory/',
-    'https://workshopgirl.com/tools/workshop/service-history/',
-    'https://workshopgirl.com/tools/workshop/billing/',
-    'https://workshopgirl.com/tools/workshop/procurement/',
-    'https://workshopgirl.com/tutorials/',
-    'https://workshopgirl.com/diary/',
-    'https://workshopgirl.com/diary/the-first-bolt-i-couldnt-remove/',
-    'https://workshopgirl.com/about/',
-    'https://workshopgirl.com/projects/',
-    'https://workshopgirl.com/projects/bringing-an-old-motorcycle-back-to-life/',
-    'https://workshopgirl.com/sport/',
-    'https://workshopgirl.com/sport/indoor-rock-climbing/',
-    'https://workshopgirl.com/tutorials/engine-air-filter/',
-    'https://workshopgirl.com/tutorials/how-to-replace-a-car-battery/',
-    'https://workshopgirl.com/tutorials/how-to-change-spark-plugs/',
-    'https://workshopgirl.com/tutorials/how-to-use-a-torque-wrench/',
-    'https://workshopgirl.com/tutorials/how-to-use-a-cordless-drill/',
-    'https://workshopgirl.com/tutorials/cordless-drill-vs-impact-driver',
-    'https://workshopgirl.com/tutorials/drill-bit-types-explained',
-    'https://workshopgirl.com/tutorials/socket-ratchet-sizes-explained',
-    'https://workshopgirl.com/tutorials/jigsaw-vs-circular-saw',
-    'https://workshopgirl.com/tutorials/how-to-use-a-circular-saw',
-    'https://workshopgirl.com/tutorials/how-to-use-a-jigsaw/',
-    'https://workshopgirl.com/tutorials/types-of-clamps-explained',
-    'https://workshopgirl.com/tutorials/how-to-use-a-multimeter',
-    'https://workshopgirl.com/tutorials/how-to-solder-wires',
-    'https://workshopgirl.com/tutorials/angle-grinder-basics',
-    'https://workshopgirl.com/tutorials/how-to-replace-brake-pads/',
-    'https://workshopgirl.com/tutorials/how-to-change-a-flat-tire/',
-    'https://workshopgirl.com/tutorials/how-to-change-engine-oil/',
+  const paths = [
+    ...siteNavigation.map(({ href }) => href),
+    '/tools/sound-analyzer/',
+    '/tools/engine-sound-analyzer/',
+    '/tools/speaker-sound-analyzer/',
+    '/tools/dsp-validation/',
+    '/tools/photo-measurement/',
+    ...workshopPages.map(({ href }) => href),
+    ...storySections.map(({ href }) => href),
+    ...stories.map(({ slug }) => slug),
+    ...tutorials.map(({ slug }) => slug),
   ];
-  const body = urls.map((url) => `<url><loc>${url}</loc></url>`).join('');
-  return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</urlset>`, { headers: { 'Content-Type': 'application/xml' } });
+  const entries = paths.map(path => `  <url><loc>https://workshopgirl.com${path}</loc></url>`).join('\n');
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${entries}
+</urlset>`;
+  return new Response(xml, { headers: { 'Content-Type': 'application/xml' } });
 }

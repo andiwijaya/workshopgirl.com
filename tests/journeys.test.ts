@@ -53,11 +53,12 @@ test('four sequential stages and five supporting modules partition the existing 
   assert.deepEqual(new Set([...stages, ...workshopFlow.support]), new Set(workshopPages.map(page => page.id)));
 });
 
-test('all 44 source HTML routes remain in the sitemap, including legacy section indexes', async () => {
+test('all 44 public HTML routes remain in the sitemap and the error page is excluded', async () => {
   const xml = await sitemap().text();
   const files = await fs.readdir(new URL('../src/pages/', import.meta.url), { recursive: true });
-  const routes = files.filter(file => file.endsWith('.astro')).map(file => '/' + file.replaceAll('\\', '/').replace(/index\.astro$/, '').replace(/\.astro$/, '/'));
+  const routes = files.filter(file => file.endsWith('.astro') && file !== '404.astro').map(file => '/' + file.replaceAll('\\', '/').replace(/index\.astro$/, '').replace(/\.astro$/, '/'));
   assert.equal(routes.length, 44);
+  assert.doesNotMatch(xml, /<loc>[^<]*\/404/);
   for (const route of routes) assert.ok(xml.includes('https://workshopgirl.com' + route.replace(/\/$/, '') + '<') || xml.includes('https://workshopgirl.com' + route + '<'), route);
   for (const legacy of ['/diary/', '/projects/', '/sport/', '/tutorials/', ...workshopPages.map(page => page.href)]) assert.ok(xml.includes('https://workshopgirl.com' + legacy + '<'));
 });

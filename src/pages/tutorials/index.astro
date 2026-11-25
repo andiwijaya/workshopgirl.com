@@ -4,13 +4,13 @@ import { availableLearnCategories } from '../../data/learn.ts';
 import { newestFirst } from '../../data/content-order.ts';
 const categories = availableLearnCategories();
 ---
-<DiscoveryLayout title="Learn - Practical Tutorials & Reference | WorkshopGirl" description="Practical workshop tutorials, vehicle maintenance, woodworking, electrical skills and tool reference guides. Learn by doing with Workshop Girl." canonical="https://workshopgirl.com/tutorials/">
-  <div class="eyebrow">Learn by doing</div><h1>Learn. Fix. Build.</h1><p class="lead">A useful skill starts with a better understanding. Find a practical guide for the work in front of you.</p>
+<DiscoveryLayout title="DIY Repair & Workshop Tutorials | Workshop Girl" description="Browse step-by-step tutorials for vehicle maintenance, woodworking, electrical basics and hand or power tools. Find the right guide for your next workshop job." canonical="https://workshopgirl.com/tutorials/">
+  <div class="eyebrow">Learn by doing</div><h1>DIY repair and workshop tutorials</h1><p class="lead">Find practical guides for car maintenance, woodworking, basic electrical checks and using workshop tools.</p>
   <nav class="category-links" aria-label="Learning subjects">{categories.map(category => <a href={'#' + category.id}>{category.label} ({category.tutorials.length})</a>)}</nav>
   {categories.map(category => <section id={category.id} aria-labelledby={category.id + '-title'}>
     <h2 id={category.id + '-title'}>{category.label}</h2><p>{category.description}</p>
     <div class="card-grid">{newestFirst(category.tutorials).map(tutorial => <article class="discovery-card">
-      <img src={tutorial.image} alt={tutorial.imageAlt} width="1672" height="941" loading="lazy" /><h3>{tutorial.title}</h3><p>{tutorial.description}</p><time datetime={tutorial.publishedAt}>{tutorial.published}</time><p><a href={tutorial.slug}>Read the tutorial</a></p>
+      <img src={tutorial.image} alt={tutorial.imageAlt} width="1672" height="941" loading="lazy" /><h3><a href={tutorial.slug}>{tutorial.title}</a></h3><p>{tutorial.description}</p><time datetime={tutorial.publishedAt}>{tutorial.published}</time>
     </article>)}</div>
   </section>)}
 </DiscoveryLayout>
